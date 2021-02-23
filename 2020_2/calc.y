@@ -4,13 +4,20 @@
 extern int yylex (void);
 extern int yyerror (const char* str);
 %}
+
+%union {
+    int int_value;
+}
+
 %token LF
-%token INTEGER
+%token<int_value> INTEGER
 
 %left '+' '-'
 %left '*' '/'
 
+%type<int_value> expr
 %start program
+
 %%
 program : /* empty */
      | program LF
@@ -23,6 +30,7 @@ expr : INTEGER
      | expr '/' expr { $$ = $1 / $3; }
      | '(' expr ')'  { $$ = $2;      }
      ;
+
 %%
 #include "lex.yy.c"
 
@@ -32,6 +40,7 @@ int yyerror (const char* str){
 }
 
 int main() {
+    /* yydebug = 1; */
     yyparse();
     return 0;
 }

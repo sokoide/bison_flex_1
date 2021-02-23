@@ -1,0 +1,6 @@
+*.tab.c
+*.yy.c
+*.output
+
+# binaries
+calc

@@ -1,7 +1,7 @@
 WHITESPACE [ \t]
 INTEGER    [0-9]+
 SYMBOL     [+\-*/()]
-LF         "\n"
+LF         [\n]
 
 SUBJECT "I"
 VERB "LIKE"
@@ -13,14 +13,14 @@ OBJECT "SOCCER"
 
 %%
 {WHITESPACE}
-{INTEGER} { yylval = atoi(yytext);
+{INTEGER} { yylval.int_value = atoi(yytext);
             return(INTEGER); }
 {SYMBOL}  { return(yytext[0]); }
 {LF}      { return(LF); }
 
 {SUBJECT} { return(SUBJECT); }
 {VERB} { return(VERB); }
-{OBJECT} { yylval = 42; return(OBJECT); }
+{OBJECT} { yylval.int_value = 42; return(OBJECT); }
 .
 %%
 

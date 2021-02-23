@@ -1,25 +1,37 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 
 extern int yylex (void);
 extern int yyerror (const char* str);
 %}
+%union {
+    int int_value;
+}
+
 %token LF
-%token INTEGER
-%token SUBJECT VERB OBJECT
+%token<int_value> INTEGER
+%token<int_value> SUBJECT VERB OBJECT
 
 %left '+' '-'
 
-%start program
-%%
+%type<int_value> obj
 
-program : /* empty */
-     | SUBJECT VERB obj LF { printf("result: %d\n", $3 )}
-     ;
+%start program
+
+%%
+program: line
+    | program line
+    ;
+
+line:  LF { exit(0); }
+    | SUBJECT VERB obj LF { printf("result: %d\n", $3 ); }
+    ;
 
 obj  : OBJECT {$$=$1;}
 	 | INTEGER { $$=$1;}
 	 ;
+
 %%
 #include "lex.yy.c"
 
@@ -29,6 +41,7 @@ int yyerror (const char* str){
 }
 
 int main() {
+    /* yydebug = 1; */
     yyparse();
     return 0;
 }
