@@ -45,8 +45,8 @@ program: expr {
 	}
 
 expr: NUMBER {
-		f, _ := strconv.ParseFloat($1.Literal, 64)
-		$$ = Number(f)
+		i, _ := strconv.Atoi($1.Literal)
+		$$ = Number(i)
 	}
     | expr ADD expr {
         $$ = Number($1.Eval() + $3.Eval())
@@ -118,9 +118,6 @@ func (l *Lexer) Error(e string) {
 }
 
 func main() {
-	/* lexer := NewLexer(strings.NewReader("(1 + 2) * 3 / 4"))
-    yyParse(lexer) */
-    
     s := bufio.NewScanner(os.Stdin)
     for s.Scan() {
 	    lexer := NewLexer(strings.NewReader(s.Text()))
