@@ -1,126 +1,43 @@
 %{
 package main
-
-import (
-    "bufio"
-	"fmt"
-	"io"
-	"os"
-	"strconv"
-	"strings"
-
-	"github.com/macrat/simplexer"
-)
-
-type Expression interface {
-	Eval() int
-}
-
-type Number int
-
-func (n Number) Eval() int {
-	return int(n)
-}
 %}
 
 %union{
-	token *simplexer.Token
-	expr  Expression
+    expr    expression
+    tok     token
 }
 
 %type<expr> program expr
-%token<token> NUMBER LP RP
+%token<tok> NUMBER
 
-%left ADD SUB
-%left MUL DIV
+%left '+' '-'
+%left '*' '/'
 
 %start program
 
 %%
 program: expr {
 		$$ = $1
-		yylex.(*Lexer).result = $$
-        // fmt.Printf("%v\n", $$)
-        fmt.Printf("%v\n", $$.Eval())
+        yylex.(*lexer).program = $$
 	}
 
 expr: NUMBER {
-		i, _ := strconv.Atoi($1.Literal)
-		$$ = Number(i)
+        $$ = &numberExpression{Lit: $1.lit}
 	}
-    | expr ADD expr {
-        $$ = Number($1.Eval() + $3.Eval())
+    | expr '+' expr {
+        $$ = &binOpExpression{LHS: $1, Operator: int('+'), RHS: $3}
 	}
-    | expr SUB expr {
-        $$ = Number($1.Eval() - $3.Eval())
+    | expr '-' expr {
+        $$ = &binOpExpression{LHS: $1, Operator: int('-'), RHS: $3}
 	}
-    | expr MUL expr {
-        $$ = Number($1.Eval() * $3.Eval())
+    | expr '*' expr {
+        $$ = &binOpExpression{LHS: $1, Operator: int('*'), RHS: $3}
 	}
-    | expr DIV expr {
-        $$ = Number($1.Eval() / $3.Eval())
+    | expr '/' expr {
+        $$ = &binOpExpression{LHS: $1, Operator: int('/'), RHS: $3}
 	}
-    | LP expr RP {
-        $$ = $2
+    | '(' expr ')' {
+        $$ = &parenExpression{SubExpr: $2}
     }
 
 %%
-
-type Lexer struct {
-	lexer        *simplexer.Lexer
-	lastToken    *simplexer.Token
-	result       Expression
-}
-
-func NewLexer(reader io.Reader) *Lexer {
-	l := simplexer.NewLexer(reader)
-
-	l.TokenTypes = []simplexer.TokenType{
-		simplexer.NewRegexpTokenType(NUMBER, `[0-9]+`),
-		simplexer.NewRegexpTokenType(ADD, `\+`),
-		simplexer.NewRegexpTokenType(SUB, `\-`),
-		simplexer.NewRegexpTokenType(MUL, `\*`),
-		simplexer.NewRegexpTokenType(DIV, `/`),
-		simplexer.NewRegexpTokenType(LP, `\(`),
-		simplexer.NewRegexpTokenType(RP, `\)`),
-	}
-
-	return &Lexer{ lexer: l }
-}
-
-func (l *Lexer) Lex(lval *yySymType) int {
-	token, err := l.lexer.Scan()
-	if err != nil {
-		if e, ok := err.(simplexer.UnknownTokenError); ok {
-			fmt.Fprintln(os.Stderr, e.Error() + ":")
-			fmt.Fprintln(os.Stderr, l.lexer.GetLastLine())
-			fmt.Fprintln(os.Stderr, strings.Repeat(" ", e.Position.Column) + strings.Repeat("^", len(e.Literal)))
-		} else {
-			l.Error(err.Error())
-		}
-		os.Exit(1)
-	}
-	if token == nil {
-		return -1
-	}
-
-	lval.token = token
-
-	l.lastToken = token
-
-	return int(token.Type.GetID())
-}
-
-func (l *Lexer) Error(e string) {
-	fmt.Fprintln(os.Stderr, e + ":")
-	fmt.Fprintln(os.Stderr, l.lexer.GetLastLine())
-	fmt.Fprintln(os.Stderr, strings.Repeat(" ", l.lastToken.Position.Column) + strings.Repeat("^", len(l.lastToken.Literal)))
-}
-
-func main() {
-    s := bufio.NewScanner(os.Stdin)
-    for s.Scan() {
-	    lexer := NewLexer(strings.NewReader(s.Text()))
-        yyParse(lexer)
-    }
-}

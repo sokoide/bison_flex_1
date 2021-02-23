@@ -1,8 +1,9 @@
 TARGET=./calc
+SRCS=main.go lexer.go eval.go ast.go
 
 all: $(TARGET)
 
-$(TARGET): y.go
+$(TARGET): y.go $(SRCS)
 	go build -o $(TARGET)
 
 y.go: calc.go.y
