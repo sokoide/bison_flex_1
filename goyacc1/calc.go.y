@@ -21,27 +21,6 @@ type Number int
 func (n Number) Eval() int {
 	return int(n)
 }
-
-type Operator struct {
-	Left     Expression
-	Operator string
-	Right    Expression
-}
-
-func (s Operator) Eval() int {
-	switch s.Operator {
-	case "+":
-		return s.Left.Eval() + s.Right.Eval()
-	case "-":
-		return s.Left.Eval() - s.Right.Eval()
-	case "*":
-		return s.Left.Eval() * s.Right.Eval()
-	case "/":
-		return s.Left.Eval() / s.Right.Eval()
-	}
-	return 0
-}
-
 %}
 
 %union{
@@ -49,11 +28,12 @@ func (s Operator) Eval() int {
 	expr  Expression
 }
 
-%type<expr> program expr operator
-%token<token> NUMBER L1_OPERATOR L2_OPERATOR LP RP
+%type<expr> program expr
+%token<token> NUMBER LP RP
 
-%left L1_OPERATOR
-%left L2_OPERATOR
+%left ADD SUB
+%left MUL DIV
+
 %start program
 
 %%
@@ -68,23 +48,17 @@ expr: NUMBER {
 		f, _ := strconv.ParseFloat($1.Literal, 64)
 		$$ = Number(f)
 	}
-	| operator {
-		$$ = $1
+    | expr ADD expr {
+        $$ = Number($1.Eval() + $3.Eval())
 	}
-
-operator: expr L2_OPERATOR expr {
-		$$ = Operator{
-			Left: $1,
-			Operator: $2.Literal,
-			Right: $3,
-		}
+    | expr SUB expr {
+        $$ = Number($1.Eval() - $3.Eval())
 	}
-	| expr L1_OPERATOR expr {
-		$$ = Operator{
-			Left: $1,
-			Operator: $2.Literal,
-			Right: $3,
-		}
+    | expr MUL expr {
+        $$ = Number($1.Eval() * $3.Eval())
+	}
+    | expr DIV expr {
+        $$ = Number($1.Eval() / $3.Eval())
 	}
     | LP expr RP {
         $$ = $2
@@ -103,8 +77,10 @@ func NewLexer(reader io.Reader) *Lexer {
 
 	l.TokenTypes = []simplexer.TokenType{
 		simplexer.NewRegexpTokenType(NUMBER, `[0-9]+`),
-		simplexer.NewRegexpTokenType(L1_OPERATOR, `[-+]`),
-		simplexer.NewRegexpTokenType(L2_OPERATOR, `[*/]`),
+		simplexer.NewRegexpTokenType(ADD, `\+`),
+		simplexer.NewRegexpTokenType(SUB, `\-`),
+		simplexer.NewRegexpTokenType(MUL, `\*`),
+		simplexer.NewRegexpTokenType(DIV, `/`),
 		simplexer.NewRegexpTokenType(LP, `\(`),
 		simplexer.NewRegexpTokenType(RP, `\)`),
 	}
@@ -142,8 +118,8 @@ func (l *Lexer) Error(e string) {
 }
 
 func main() {
-	// lexer := NewLexer(strings.NewReader("(1 + 2) * 3 / 4"))
-    // yyParse(lexer)
+	/* lexer := NewLexer(strings.NewReader("(1 + 2) * 3 / 4"))
+    yyParse(lexer) */
     
     s := bufio.NewScanner(os.Stdin)
     for s.Scan() {

@@ -17,5 +17,6 @@
 ## How to run
 
 ```bash
+make test
 make run
 ```
