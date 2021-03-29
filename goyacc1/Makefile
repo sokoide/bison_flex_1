@@ -1,13 +1,13 @@
-TARGET=./calc
-SRCS=main.go lexer.go eval.go ast.go
+TARGET=./hoge
+SRCS=main.go lexer.go
 
 all: $(TARGET)
 
 $(TARGET): y.go $(SRCS)
 	go build -o $(TARGET)
 
-y.go: calc.go.y
-	goyacc calc.go.y
+y.go: hoge.go.y
+	goyacc $<
 
 clean:
 	rm $(TARGET) y.go
@@ -16,7 +16,7 @@ run: $(TARGET)
 	$(TARGET)
 
 test: $(TARGET)
-	echo "(1*2)+10/3" | $(TARGET)
-	@echo "did you see 5?"
-	echo "(40+1)+2/2" | $(TARGET)
-	@echo "did you see 42?"
+	echo "(1*2)+6/3" | $(TARGET)
+	@echo "did you see 4?"
+	echo "(4+1)+2/2" | $(TARGET)
+	@echo "did you see 6?"

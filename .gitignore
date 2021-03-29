@@ -2,6 +2,8 @@
 *.yy.c
 *.output
 y.go
+tags
 
 # binaries
 calc
+hoge

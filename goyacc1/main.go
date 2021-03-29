@@ -3,57 +3,52 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
-	"strings"
 )
 
-func main() {
-	s := bufio.NewScanner(os.Stdin)
-	scanner := new(scanner)
-	source := []string{}
-	for s.Scan() {
-		source = append(source, s.Text())
-	}
-	scanner.Init(strings.Join(source, "\n"))
-
-	var program expression = parse(scanner)
-	v, err := evaluate(program)
-	if err != nil {
-		panic(nil)
-	}
-	fmt.Println(v)
-}
-
 type lexer struct {
-	s         *scanner
-	recentLit string
-	recentPos position
-	program   expression
+	src    string
+	index  int
+	result int
 }
 
 // Lex Called by goyacc
 func (l *lexer) Lex(lval *yySymType) int {
-	tok, lit, pos := l.s.Scan()
-	if tok == EOF {
-		return 0
+	for l.index < len(l.src) {
+		c := l.src[l.index]
+		l.index++
+		if c == '+' {
+			return int(c)
+		}
+		if c == '-' {
+			return int(c)
+		}
+		if c == '*' {
+			return int(c)
+		}
+		if c == '/' {
+			return int(c)
+		}
+		if '0' <= c && c <= '9' {
+			lval.num = int(c - '0')
+			return NUMBER
+		}
 	}
-	lval.tok = token{tok: tok, lit: lit, pos: pos}
-	l.recentLit = lit
-	l.recentPos = pos
-	return tok
+	return -1
 }
 
 // Error Called by goyacc
 func (l *lexer) Error(e string) {
-	log.Fatalf("Line %d, Column %d: %q %s",
-		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
+	fmt.Println("[error] " + e)
 }
 
-func parse(s *scanner) expression {
-	l := lexer{s: s}
-	if yyParse(&l) != 0 {
-		panic("Parse error")
+func main() {
+	s := bufio.NewScanner(os.Stdin)
+	var source string
+	for s.Scan() {
+		source += s.Text()
 	}
-	return l.program
+	lexer := &lexer{src: source, index: 0}
+	yyParse(lexer)
+	println("result:", lexer.result)
 }
