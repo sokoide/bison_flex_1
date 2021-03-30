@@ -30,7 +30,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 			return int(c)
 		}
 		if '0' <= c && c <= '9' {
-			lval.num = int(c - '0')
+			lval.num = l.getNumber()
 			return NUMBER
 		}
 	}
@@ -40,6 +40,17 @@ func (l *lexer) Lex(lval *yySymType) int {
 // Error Called by goyacc
 func (l *lexer) Error(e string) {
 	fmt.Println("[error] " + e)
+}
+
+func (l *lexer) getNumber() int {
+	n := int(l.src[l.index-1] - '0')
+
+	for l.index < len(l.src) && '0' <= l.src[l.index] && l.src[l.index] <= '9' {
+		c := int(l.src[l.index] - '0')
+		n = n*10 + c
+		l.index++
+	}
+	return n
 }
 
 func main() {

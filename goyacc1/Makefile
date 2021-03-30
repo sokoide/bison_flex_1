@@ -20,6 +20,7 @@ test: $(TARGET)
 	@echo "did you see 4?"
 	echo "(4+1)+2/2" | $(TARGET)
 	@echo "did you see 6?"
-	# multi digit number not supported yet
-	# echo "(40+1)+2/2" | $(TARGET)
-	# @echo "did you see 42?"
+	echo "(40+1)+2/2" | $(TARGET)
+	@echo "did you see 42?"
+	echo "1+10*20*30" | $(TARGET)
+	@echo "did you see 6001?"
