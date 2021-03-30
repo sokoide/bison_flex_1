@@ -1,5 +1,5 @@
 TARGET=./hoge
-SRCS=main.go lexer.go
+SRCS=main.go
 
 all: $(TARGET)
 
@@ -10,7 +10,7 @@ y.go: hoge.go.y
 	goyacc $<
 
 clean:
-	rm $(TARGET) y.go
+	rm $(TARGET) y.go y.output
 
 run: $(TARGET)
 	$(TARGET)
@@ -20,3 +20,6 @@ test: $(TARGET)
 	@echo "did you see 4?"
 	echo "(4+1)+2/2" | $(TARGET)
 	@echo "did you see 6?"
+	# multi digit number not supported yet
+	# echo "(40+1)+2/2" | $(TARGET)
+	# @echo "did you see 42?"

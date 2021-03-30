@@ -7,10 +7,10 @@ $(TARGET): y.go $(SRCS)
 	go build -o $(TARGET)
 
 y.go: calc.go.y
-	goyacc calc.go.y
+	goyacc $<
 
 clean:
-	rm $(TARGET) y.go
+	rm $(TARGET) y.go y.output
 
 run: $(TARGET)
 	$(TARGET)
