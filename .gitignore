@@ -3,7 +3,11 @@
 *.output
 y.go
 tags
+*.lst
 
 # binaries
 calc
 hoge
+**/bin/*
+**/obj/*
+**/YaccLexTools*/*

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup Label="Calc">
+    <YaccFile Include="Calc\Calc.Language.grammar.y">
+      <OutputFile>Calc\Calc.Parser.Generated.cs</OutputFile>
+      <Arguments>/gplex /nolines</Arguments>
+    </YaccFile>
+    <None Include="Calc\Calc.Parser.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Calc.Language.grammar.y</DependentUpon>
+    </None>
+    <LexFile Include="Calc\Calc.Language.analyzer.lex">
+      <OutputFile>Calc\Calc.Scanner.Generated.cs</OutputFile>
+    </LexFile>
+    <None Include="Calc\Calc.Scanner.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Calc.Language.analyzer.lex</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="YaccLexTools" Version="1.2.0" />
+  </ItemGroup>
+</Project>
