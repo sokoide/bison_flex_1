@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup Label="Interp">
+    <YaccFile Include="Interp\Interp.Language.grammar.y">
+      <OutputFile>Interp\Interp.Parser.Generated.cs</OutputFile>
+      <Arguments>/gplex /nolines</Arguments>
+    </YaccFile>
+    <None Include="Interp\Interp.Parser.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Interp.Language.grammar.y</DependentUpon>
+    </None>
+    <LexFile Include="Interp\Interp.Language.analyzer.lex">
+      <OutputFile>Interp\Interp.Scanner.Generated.cs</OutputFile>
+    </LexFile>
+    <None Include="Interp\Interp.Scanner.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Interp.Language.analyzer.lex</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="YaccLexTools" Version="1.2.0" />
+  </ItemGroup>
+</Project>
