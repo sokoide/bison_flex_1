@@ -26,9 +26,23 @@
 %type<node> expr cond
 %start program
 
+%{
+       private int currentLine = 1;
+       private void UpdatePosition()
+       {
+              // currentLine = yyline + 1; // yyline is 0-based
+              currentLine++;
+       }
+
+       public int CurrentLine
+       {
+              get { return currentLine; }
+       }
+%}
+
 %%
 
-program: stmts { Dump(); }
+program: stmts { }
        ;
 
 stmts: stmts stmt

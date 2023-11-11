@@ -39,12 +39,24 @@ Ident           [a-zA-Z][0-9a-zA-Z_]*
 Space           [ \t]
 Eol             (\r\n?|\n)
 /* what is NotWh? */
-NotWh           [^ \t\r\n]
+/* NotWh           [^ \t\r\n] */
 
-/* %option yylineno */
 
 %{
-int strcnt = 0;
+//using System;
+
+// public struct YYLTYPE {
+//     public int StartLine;
+//     public int StartColumn;
+//     public int EndLine;
+//     public int EndColumn;
+// }
+
+// public class ParserValue {
+//     // Define your token values here
+// }
+
+// int strcnt = 0;
 %}
 
 %%
@@ -77,7 +89,7 @@ int strcnt = 0;
                 }
 <INITIAL>{Space}+    ; /* skip */
 <INITIAL>{Eol}       ; /* skip */
-<INITIAL>{Dq}       { strcnt=0; BEGIN(STR); }
+<INITIAL>{Dq}       { /*strcnt=0;*/ BEGIN(STR); }
 <INITIAL>{CommSt}   { BEGIN(COMMENT); }
 <STR>{Dq}           { BEGIN(INITIAL); }
 <COMMENT>{CommEd}   { BEGIN(INITIAL); }

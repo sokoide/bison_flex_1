@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using System.Text;
 
 namespace interp_lib.Interp
 {
     internal partial class InterpScanner
     {
-
         void GetNumber()
         {
             yylval.s = yytext;
@@ -21,8 +21,9 @@ namespace interp_lib.Interp
         public override void yyerror(string format, params object[] args)
         {
             base.yyerror(format, args);
-            throw new Exception(string.Format(format, args));
-            // throw new Exception(string.Format("line: {0}", yylineno);
+
+            string msg = string.Format(format, args);
+            throw new Exception(string.Format("{0}:{1} {2}", yyline, yycol, msg));
         }
     }
 }

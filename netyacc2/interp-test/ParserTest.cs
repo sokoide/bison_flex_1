@@ -1,6 +1,7 @@
 using interp_lib;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Xunit.Abstractions;
+using interp_lib.Interp;
 
 namespace interp_test;
 
@@ -37,14 +38,17 @@ public class ParserTest : IDisposable
         var exc = Assert.Throws<Exception>(() =>
         t.Parse(input));
 
-        string want = "Syntax error, unexpected IF";
+        // "1:2" means line 1, col 2
+        string want = "1:2 Syntax error, unexpected IF";
         string got = exc.Message.Substring(0, want.Length);
         // test if got starts with want
         Assert.Equal(want, got);
     }
 
     [Theory]
-    [InlineData("a then", "Syntax error, unexprected IDENT at line 1")]
+    [InlineData("a then", "1:2 Syntax error, unexpected IDENT")]
+    [InlineData("a=1;\nb hoge", "2:2 Syntax error, unexpected IDENT")]
+    [InlineData("a=1;\nb=1;\nc hoge", "3:2 Syntax error, unexpected IDENT")]
     public void Parser_Exceptions(string input, string want)
     {
         var exc = Assert.Throws<Exception>(() =>
@@ -55,4 +59,15 @@ public class ParserTest : IDisposable
         Assert.Equal(want, got);
     }
 
+    [Fact]
+    public void Parser_GeneratedCode()
+    {
+        string input = @"foo=42;";
+        t.Parse(input);
+        Assert.Equal(2, t.Code.Count);
+        Assert.Equal(Op.PushN, t.Code[0].Op);
+        Assert.Equal(42, t.Code[0].Sub);
+        Assert.Equal(Op.Pop, t.Code[1].Op);
+        Assert.Equal('f' - 'a', t.Code[1].Sub);
+    }
 }

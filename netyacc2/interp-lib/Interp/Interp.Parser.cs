@@ -8,8 +8,14 @@ namespace interp_lib.Interp
 {
     public partial class InterpParser
     {
-        private List<Instr> code = new List<Instr>();
+        public List<Instr> Code = new List<Instr>();
         public InterpParser() : base(null) { }
+
+
+        public void Reset()
+        {
+            Code = new List<Instr>();
+        }
 
         public void Parse(string s)
         {
@@ -82,7 +88,7 @@ namespace interp_lib.Interp
                     instr = new Instr(op, (int)n.I);
                     break;
             }
-            code.Add(instr);
+            Code.Add(instr);
         }
 
         internal static int labelno = 0;
@@ -106,8 +112,7 @@ namespace interp_lib.Interp
 
         public void Dump()
         {
-            Console.WriteLine("* Dump");
-            foreach (var instr in code)
+            foreach (var instr in Code)
             {
                 Console.WriteLine(instr);
             }

@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/11/2023 11:06:11AM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 11:06:07AM>
+//  DateTime: 11/11/2023 11:42:51AM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 11:39:13AM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -139,8 +139,7 @@ namespace interp_lib.Interp
 /* number, ident */
 /* others */
 /* what is NotWh? */
-/* %option yylineno */
-int strcnt = 0;
+/* NotWh           [^ \t\r\n] */
 #endregion user code
 
         int state;
@@ -783,7 +782,7 @@ int NextState() {
 ; /* skip */
             break;
         case 4: // Recognized '{Dq}',	Shortest string "\""
-strcnt=0; BEGIN(STR);
+/*strcnt=0;*/ BEGIN(STR);
             break;
         case 5: // Recognized '{Symbol}',	Shortest string "("
         case 6: // Recognized '{Symbol}',	Shortest string "/"

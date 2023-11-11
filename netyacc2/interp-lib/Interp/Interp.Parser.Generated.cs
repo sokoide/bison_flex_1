@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/11/2023 9:55:30AM
-// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 9:53:36AM>
+// DateTime: 11/11/2023 11:52:44AM
+// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 11:51:58AM>
 
 // options: no-lines gplex
 
@@ -52,6 +52,20 @@ public class ScanObj {
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
 public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
 {
+  // Verbatim content from Interp/Interp.Language.grammar.y - 11/11/2023 11:51:58AM
+       private int currentLine = 1;
+       private void UpdatePosition()
+       {
+              // currentLine = yyline + 1; // yyline is 0-based
+              currentLine++;
+       }
+
+       public int CurrentLine
+       {
+              get { return currentLine; }
+       }
+  // End verbatim content from Interp/Interp.Language.grammar.y - 11/11/2023 11:51:58AM
+
 #pragma warning disable 649
   private static Dictionary<int, string> aliases;
 #pragma warning restore 649
@@ -182,7 +196,7 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
     switch (action)
     {
       case 2: // program -> stmts
-{ Dump(); }
+{ }
         break;
       case 6: // stmt -> IDENT, '=', expr, ';'
 {
