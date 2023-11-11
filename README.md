@@ -9,8 +9,8 @@
   * goyacc1: simple goyacc example (Go)
   * goyacc2: simple goyacc example2 (Go)
   * goyacc3: another goyacc example with parser and expression (Go)
-  * netyacc1: .net version of goyacc1 (C#)_
-  * netyacc2: simple interpreter
+  * netyacc1: .net version of goyacc1 (C#)
+  * netyacc2: simple interpreter (C#)
 
 ## Prereqs
 
