@@ -1,5 +1,3 @@
-using interp_lib;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Xunit.Abstractions;
 using interp_lib.Interp;
 
