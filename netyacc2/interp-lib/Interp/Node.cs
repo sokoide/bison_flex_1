@@ -1,12 +1,12 @@
-namespace netyacc2.Interp
+namespace interp_lib.Interp
 {
-    internal class Node
+    public class Node
     {
-        internal Token Token;
-        internal int? I;
-        internal string? S;
-        internal Node? Left;
-        internal Node? Right;
+        public Token Token;
+        public int? I;
+        public string? S;
+        public Node? Left;
+        public Node? Right;
 
         public Node(Token t)
         {

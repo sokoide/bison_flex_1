@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace netyacc2.Interp
+namespace interp_lib.Interp
 {
-    internal partial class InterpParser
+    public partial class InterpParser
     {
         private List<Instr> code = new List<Instr>();
         public InterpParser() : base(null) { }
@@ -111,10 +111,6 @@ namespace netyacc2.Interp
             {
                 Console.WriteLine(instr);
             }
-        }
-
-        public void Execute()
-        {
         }
     }
 }

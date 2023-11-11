@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/11/2023 12:14:58AM
-// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 12:14:55AM>
+// DateTime: 11/11/2023 9:55:30AM
+// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 9:53:36AM>
 
 // options: no-lines gplex
 
@@ -15,15 +15,15 @@ using System.Globalization;
 using System.Text;
 using QUT.Gppg;
 
-namespace netyacc2.Interp
+namespace interp_lib.Interp
 {
-internal enum Token {
+public enum Token {
     error=127,EOF=128,MINUS=129,NUMBER=130,IDENT=131,IF=132,
     ELSE=133,WHILE=134,EQOP=135,GTOP=136,GEOP=137,LTOP=138,
     LEOP=139,NEOP=140,ADD=141,SUB=142,MUL=143,DIV=144,
     PUT=145,GET=146};
 
-internal partial struct ValueType
+public partial struct ValueType
 {
        public int n;
        public string s;
@@ -32,7 +32,7 @@ internal partial struct ValueType
 }
 // Abstract base class for GPLEX scanners
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
-internal abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
+public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
   private LexLocation __yylloc = new LexLocation();
   public override LexLocation yylloc { get { return __yylloc; } set { __yylloc = value; } }
   protected virtual bool yywrap() { return true; }
@@ -40,7 +40,7 @@ internal abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
 
 // Utility class for encapsulating token information
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
-internal class ScanObj {
+public class ScanObj {
   public int token;
   public ValueType yylval;
   public LexLocation yylloc;
@@ -50,7 +50,7 @@ internal class ScanObj {
 }
 
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
-internal partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
+public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
 {
 #pragma warning disable 649
   private static Dictionary<int, string> aliases;

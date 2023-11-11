@@ -1,7 +1,7 @@
-%namespace netyacc2.Interp
+%namespace interp_lib.Interp
 %partial
 %parsertype InterpParser
-%visibility internal
+%visibility public
 %tokentype Token
 
 %union {

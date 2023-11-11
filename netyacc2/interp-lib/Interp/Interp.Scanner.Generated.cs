@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/11/2023 12:09:25AM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 12:09:22AM>
+//  DateTime: 11/11/2023 11:06:11AM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 11:06:07AM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -33,7 +33,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using QUT.GplexBuffers;
 
-namespace netyacc2.Interp
+namespace interp_lib.Interp
 {   
     /// <summary>
     /// Summary Canonical example of GPLEX automaton
@@ -139,6 +139,7 @@ namespace netyacc2.Interp
 /* number, ident */
 /* others */
 /* what is NotWh? */
+/* %option yylineno */
 int strcnt = 0;
 #endregion user code
 

@@ -1,4 +1,4 @@
-namespace netyacc2.Interp
+namespace interp_lib.Interp
 {
     public enum Op
     {

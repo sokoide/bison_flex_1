@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "netyacc2", "netyacc2.csproj", "{BAF5322F-E45D-46D6-B869-FBE8CCF3C30C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "interp-test", "interp-test\interp-test.csproj", "{81B8AB6D-EA42-4ED9-9D82-19EC5895DEA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "interp-lib", "interp-lib\interp-lib.csproj", "{16373D1E-A79B-4D46-B96E-1F8F10B8B7E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +13,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BAF5322F-E45D-46D6-B869-FBE8CCF3C30C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BAF5322F-E45D-46D6-B869-FBE8CCF3C30C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BAF5322F-E45D-46D6-B869-FBE8CCF3C30C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BAF5322F-E45D-46D6-B869-FBE8CCF3C30C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81B8AB6D-EA42-4ED9-9D82-19EC5895DEA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81B8AB6D-EA42-4ED9-9D82-19EC5895DEA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81B8AB6D-EA42-4ED9-9D82-19EC5895DEA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81B8AB6D-EA42-4ED9-9D82-19EC5895DEA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1556B744-6C2C-43D2-96AE-6C75300801F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1556B744-6C2C-43D2-96AE-6C75300801F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1556B744-6C2C-43D2-96AE-6C75300801F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1556B744-6C2C-43D2-96AE-6C75300801F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16373D1E-A79B-4D46-B96E-1F8F10B8B7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16373D1E-A79B-4D46-B96E-1F8F10B8B7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16373D1E-A79B-4D46-B96E-1F8F10B8B7E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16373D1E-A79B-4D46-B96E-1F8F10B8B7E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D21B5099-B9AC-4EF0-B1AC-174B4949F25E}
+		SolutionGuid = {95335C6F-D862-4C2F-8D12-5F6267AA5CCC}
 	EndGlobalSection
 EndGlobal

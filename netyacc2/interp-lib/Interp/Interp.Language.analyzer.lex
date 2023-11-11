@@ -1,4 +1,4 @@
-%namespace netyacc2.Interp
+%namespace interp_lib.Interp
 %scannertype InterpScanner
 %visibility internal
 %tokentype Token
@@ -40,6 +40,8 @@ Space           [ \t]
 Eol             (\r\n?|\n)
 /* what is NotWh? */
 NotWh           [^ \t\r\n]
+
+/* %option yylineno */
 
 %{
 int strcnt = 0;

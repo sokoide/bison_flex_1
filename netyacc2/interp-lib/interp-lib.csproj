@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>interp_lib</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DefineConstants>EXPORT_GPPG</DefineConstants>
   </PropertyGroup>
   <ItemGroup Label="Interp">
     <YaccFile Include="Interp\Interp.Language.grammar.y">
