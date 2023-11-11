@@ -7,12 +7,12 @@ namespace interp_test;
 
 public class ParserTest : IDisposable
 {
-    private interp_lib.Interp.InterpParser t;
+    private InterpParser tgt;
     private readonly ITestOutputHelper output;
 
     public ParserTest(ITestOutputHelper output)
     {
-        this.t = new interp_lib.Interp.InterpParser();
+        this.tgt = new InterpParser();
         this.output = output;
     }
 
@@ -27,7 +27,7 @@ public class ParserTest : IDisposable
     public void Parser_BasicSyntax(string input)
     {
         output.WriteLine("* Testing {0}...", input);
-        t.Parse(input);
+        tgt.Parse(input);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ParserTest : IDisposable
         string input = @"a if then;";
 
         var exc = Assert.Throws<Exception>(() =>
-        t.Parse(input));
+        tgt.Parse(input));
 
         // "1:2" means line 1, col 2
         string want = "1:2 Syntax error, unexpected IF";
@@ -52,7 +52,7 @@ public class ParserTest : IDisposable
     public void Parser_Exceptions(string input, string want)
     {
         var exc = Assert.Throws<Exception>(() =>
-        t.Parse(input));
+        tgt.Parse(input));
 
         string got = exc.Message.Substring(0, want.Length);
         // test if got starts with want
@@ -63,11 +63,40 @@ public class ParserTest : IDisposable
     public void Parser_GeneratedCode()
     {
         string input = @"foo=42;";
-        t.Parse(input);
-        Assert.Equal(2, t.Code.Count);
-        Assert.Equal(Op.PushN, t.Code[0].Op);
-        Assert.Equal(42, t.Code[0].Sub);
-        Assert.Equal(Op.Pop, t.Code[1].Op);
-        Assert.Equal('f' - 'a', t.Code[1].Sub);
+        tgt.Parse(input);
+        Assert.Equal(2, tgt.Code.Count);
+        Assert.Equal(Op.PushN, tgt.Code[0].Op);
+        Assert.Equal(42, tgt.Code[0].Sub);
+        Assert.Equal(Op.Pop, tgt.Code[1].Op);
+        Assert.Equal('f' - 'a', tgt.Code[1].Sub);
+    }
+
+    [Theory]
+    [InlineData(Op.PushN, Token.NUMBER, 42, 42)]
+    [InlineData(Op.Calc, Token.ADD, (int)Token.ADD, (int)Token.ADD)]
+    [InlineData(Op.Calc, Token.SUB, (int)Token.SUB, (int)Token.SUB)]
+    [InlineData(Op.Calc, Token.MUL, (int)Token.MUL, (int)Token.MUL)]
+    [InlineData(Op.Calc, Token.DIV, (int)Token.DIV, (int)Token.DIV)]
+    [InlineData(Op.Calc, Token.MINUS, (int)Token.MINUS, (int)Token.MINUS)]
+    public void Parser_GenCodeN(Op op, Token token, int n, int wantSub)
+    {
+        tgt.GenCode(op, new Node(token, n));
+        Assert.Single(tgt.Code);
+        Assert.Equal(op, tgt.Code[0].Op);
+        Assert.Equal(wantSub, tgt.Code[0].Sub);
+    }
+
+    [Theory]
+    [InlineData(Op.PushI, Token.IDENT, "a", 0)]
+    [InlineData(Op.PushI, Token.IDENT, "foo", 5)]
+    [InlineData(Op.PushI, Token.IDENT, "zoo", 25)]
+    [InlineData(Op.Pop, Token.IDENT, "b", 1)]
+    [InlineData(Op.PutI, Token.IDENT, "c", 2)]
+    public void Parser_GenCodeS(Op op, Token token, string s, int wantSub)
+    {
+        tgt.GenCode(op, new Node(token, s));
+        Assert.Single(tgt.Code);
+        Assert.Equal(op, tgt.Code[0].Op);
+        Assert.Equal(wantSub, tgt.Code[0].Sub);
     }
 }
