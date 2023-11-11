@@ -63,9 +63,6 @@ namespace interp_lib.Interp
             Instr instr;
             switch (op)
             {
-                // case Op.PushN:
-                //     instr = new Instr(op, (int)n.I);
-                //     break;
                 case Op.PushI:
                     instr = new Instr(op, IdentId(n.S));
                     break;

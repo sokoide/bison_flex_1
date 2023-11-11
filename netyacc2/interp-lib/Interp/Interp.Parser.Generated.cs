@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/11/2023 9:28:10PM
-// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 9:28:05PM>
+// DateTime: 11/11/2023 11:17:58PM
+// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 11:17:55PM>
 
 // options: no-lines gplex
 
@@ -21,7 +21,7 @@ public enum Token {
     error=127,EOF=128,MINUS=129,NUMBER=130,IDENT=131,IF=132,
     ELSE=133,WHILE=134,EQOP=135,GTOP=136,GEOP=137,LTOP=138,
     LEOP=139,NEOP=140,ADD=141,SUB=142,MUL=143,DIV=144,
-    PUT=145,GET=146};
+    PUT=145,GET=146,NULL=147};
 
 public partial struct ValueType
 {
@@ -208,13 +208,13 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 9: // Anon@2 -> /* empty */
 {
-              GenCode(Op.JumpF, MakeNode(Token.WHILE, CurrentSemanticValue.label = NewLabel()));
+              GenCode(Op.JumpF, MakeNode(Token.NULL, CurrentSemanticValue.label = NewLabel()));
        }
         break;
       case 10: // stmt -> while_prefix, Anon@2, stmt
 {
-              GenCode(Op.Jump, MakeNode(Token.WHILE, ValueStack[ValueStack.Depth-3].label));
-              GenCode(Op.Label, MakeNode(Token.WHILE, ValueStack[ValueStack.Depth-2].label));
+              GenCode(Op.Jump, MakeNode(Token.NULL, ValueStack[ValueStack.Depth-3].label));
+              GenCode(Op.Label, MakeNode(Token.NULL, ValueStack[ValueStack.Depth-2].label));
        }
         break;
       case 16: // put_id_num_str -> IDENT
@@ -231,7 +231,7 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 19: // while_prefix -> WHILE, '(', cond, ')'
 {
-              GenCode(Op.Label, MakeNode(Token.WHILE, CurrentSemanticValue.label=NewLabel()));
+              GenCode(Op.Label, MakeNode(Token.NULL, CurrentSemanticValue.label=NewLabel()));
               GenExpr(ValueStack[ValueStack.Depth-2].node);
        }
         break;

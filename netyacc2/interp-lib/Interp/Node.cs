@@ -1,46 +1,58 @@
 namespace interp_lib.Interp
 {
+    public enum NodeType
+    {
+        I,
+        S,
+        LR
+    }
+
     public class Node
     {
+        public NodeType NodeType;
         public Token Token;
         public int? I;
         public string? S;
         public Node? Left;
         public Node? Right;
 
-        public Node(Token t)
+        public Node(Token token)
         {
-            this.Token = t;
+            this.NodeType = NodeType.I;
+            this.Token = token;
         }
 
-        public Node(Token t, int? i)
+        public Node(Token token, int? i)
         {
-            this.Token = t;
+            this.NodeType = NodeType.I;
+            this.Token = token;
             this.I = i;
         }
 
-        public Node(Token t, string? s)
+        public Node(Token token, string? s)
         {
-            this.Token = t;
+            this.NodeType = NodeType.S;
+            this.Token = token;
             this.S = s;
         }
-        public Node(Token t, Node? l, Node? r)
+        public Node(Token token, Node? l, Node? r)
         {
-            this.Token = t;
+            this.NodeType = NodeType.LR;
+            this.Token = token;
             this.Left = l;
             this.Right = r;
         }
 
         public override string ToString()
         {
-            switch (this.Token)
+            switch (this.NodeType)
             {
-                case Token.IDENT:
-                    return $"Node: {Token}, {S}";
-                case Token.NUMBER:
-                    return $"Node: {Token}, {I}";
+                case NodeType.S:
+                    return $"Node: {NodeType}, {Token}, {S}";
+                case NodeType.I:
+                    return $"Node: {NodeType}, {Token}, {I}";
                 default:
-                    return $"Node: {Token}, {Left}, {Right}";
+                    return $"Node: {NodeType}, {Token}, {Left}, {Right}";
             }
         }
     }

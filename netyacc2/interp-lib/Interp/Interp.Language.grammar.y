@@ -19,6 +19,7 @@
 %token EQOP GTOP GEOP LTOP LEOP NEOP
 %token ADD SUB MUL DIV
 %token PUT GET
+%token NULL
 
 %type<label> if_prefix while_prefix
 %type<node> expr cond
@@ -50,10 +51,10 @@ stmt:  IDENT '=' expr ';' {
               // GenCode(Op.Label, $<label>4);
        }
        | while_prefix {
-              GenCode(Op.JumpF, MakeNode(Token.WHILE, $<label>$ = NewLabel()));
+              GenCode(Op.JumpF, MakeNode(Token.NULL, $<label>$ = NewLabel()));
        } stmt {
-              GenCode(Op.Jump, MakeNode(Token.WHILE, $1));
-              GenCode(Op.Label, MakeNode(Token.WHILE, $<label>2));
+              GenCode(Op.Jump, MakeNode(Token.NULL, $1));
+              GenCode(Op.Label, MakeNode(Token.NULL, $<label>2));
        }
        | PUT '(' put_list ')' ';'
        | '{' stmts '}'
@@ -75,7 +76,7 @@ if_prefix: IF '(' cond ')' {
        ;
 
 while_prefix: WHILE '(' cond ')' {
-              GenCode(Op.Label, MakeNode(Token.WHILE, $$=NewLabel()));
+              GenCode(Op.Label, MakeNode(Token.NULL, $$=NewLabel()));
               GenExpr($3);
        }
        ;
