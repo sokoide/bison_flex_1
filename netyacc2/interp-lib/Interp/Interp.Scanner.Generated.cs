@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/11/2023 11:42:51AM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 11:39:13AM>
+//  DateTime: 11/11/2023 2:45:03PM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 2:45:00PM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -333,14 +333,14 @@ namespace interp_lib.Interp
       new Table(42, 1, 36, new sbyte[] {-1}),
 /* NxS[  37] */ new Table(0, 0, -1, null), // Shortest string "*/"
 /* NxS[  38] */ // Shortest string ""
-      new Table(9, 114, -1, new sbyte[] {1, 2, -1, -1, 3, -1, 
+      new Table(9, 117, -1, new sbyte[] {1, 2, -1, -1, 3, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
           -1, 1, 39, 4, -1, -1, -1, -1, -1, 5, 5, 5, 5, 5, 5, -1, 
           6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, -1, 5, 8, 9, 10, 
           -1, -1, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 
           11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, -1, -1, -1, -1, 
           -1, -1, 11, 11, 11, 11, 12, 11, 13, 11, 14, 11, 11, 11, 11, 11, 
-          11, 15, 11, 11, 11, 11, 11, 11, 16, 11, 11, 11}),
+          11, 15, 11, 11, 11, 11, 11, 11, 16, 11, 11, 11, 5, -1, 5}),
 /* NxS[  39] */ // Shortest string "!"
       new Table(61, 1, -1, new sbyte[] {33}),
 /* NxS[  40] */ // Shortest string ""

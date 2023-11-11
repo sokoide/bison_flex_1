@@ -109,13 +109,5 @@ namespace interp_lib.Interp
                 return int.MinValue;
             }
         }
-
-        public void Dump()
-        {
-            foreach (var instr in Code)
-            {
-                Console.WriteLine(instr);
-            }
-        }
     }
 }

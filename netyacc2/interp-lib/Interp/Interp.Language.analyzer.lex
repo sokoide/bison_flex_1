@@ -29,7 +29,7 @@ Dq              \"
 Sq              \'
 CommSt          \/\*
 CommEd          \*\/
-Symbol          [+\-\*\/\(\)=;,]
+Symbol          [+\-\*\/\(\)=;,\{\}]
 
 /* number, ident */
 Number          [0-9]+

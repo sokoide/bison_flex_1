@@ -45,12 +45,11 @@
 program: stmts { }
        ;
 
-stmts: stmts stmt
-       | stmt
+stmts: /* empty  */
+       | stmts stmt
        ;
 
-stmt: PUT '(' put_list ')' ';'
-       | IDENT '=' expr ';' {
+stmt:  IDENT '=' expr ';' {
               GenExpr($3);
               GenCode(Op.Pop, MakeNode(Token.IDENT, $1));
        }
@@ -72,7 +71,8 @@ stmt: PUT '(' put_list ')' ';'
               GenCode(Op.Jump, MakeNode(Token.WHILE, $1));
               GenCode(Op.Label, MakeNode(Token.WHILE, $<label>2));
        }
-       | '{' stmts '}' { ; }
+       | PUT '(' put_list ')' ';'
+       | '{' stmts '}'
        | ';'
        ;
 
@@ -96,7 +96,7 @@ while_prefix: WHILE '(' cond ')' {
        }
        ;
 
-cond: expr EQOP expr { $$ = MakeExpr(Token.EQOP, $1, $3); }
+cond:  expr EQOP expr { $$ = MakeExpr(Token.EQOP, $1, $3); }
        | expr GTOP expr { $$ = MakeExpr(Token.GTOP, $1, $3); }
        | expr GEOP expr { $$ = MakeExpr(Token.GEOP, $1, $3); }
        | expr LTOP expr { $$ = MakeExpr(Token.LTOP, $1, $3); }
