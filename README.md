@@ -10,6 +10,7 @@
   * goyacc2: simple goyacc example2 (Go)
   * goyacc3: another goyacc example with parser and expression (Go)
   * netyacc1: .net version of goyacc1 (C#)_
+  * netyacc2: simple interpreter
 
 ## Prereqs
 
@@ -27,7 +28,25 @@
 
 ## How to run
 
+* C/Go
+
 ```bash
 make test
 make run
+```
+
+* .NET
+
+```bash
+cd netyacc2
+# to run unit tests in interp-test
+dotnet test -v
+# to build interp-exe
+dotnet build
+# to run a demo
+dotnet run --project interp-exe/interp-exe.csproj demo
+# or,
+./interp-exe/bin/Debug/net7.0/interp-exe demo
+# to run your app
+cat samples/sample1.txt | dotnet run --project interp-exe/interp-exe.csproj
 ```

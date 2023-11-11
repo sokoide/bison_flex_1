@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Xml;
 namespace interp_lib.Interp
 {
     public class VM
@@ -118,7 +116,6 @@ namespace interp_lib.Interp
                 }
                 pc++;
             }
-            System.Console.WriteLine("* Done");
         }
 
         public List<Instr> ResoleLabels(List<Instr> code)
