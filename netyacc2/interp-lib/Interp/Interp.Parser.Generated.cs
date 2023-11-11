@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/11/2023 2:36:37PM
-// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 2:36:34PM>
+// DateTime: 11/11/2023 9:28:10PM
+// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 9:28:05PM>
 
 // options: no-lines gplex
 
@@ -25,8 +25,6 @@ public enum Token {
 
 public partial struct ValueType
 {
-       public int n;
-       public string s;
        public int label;
        public Node node;
 }
@@ -52,20 +50,6 @@ public class ScanObj {
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
 public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
 {
-  // Verbatim content from Interp/Interp.Language.grammar.y - 11/11/2023 2:36:34PM
-       private int currentLine = 1;
-       private void UpdatePosition()
-       {
-              // currentLine = yyline + 1; // yyline is 0-based
-              currentLine++;
-       }
-
-       public int CurrentLine
-       {
-              get { return currentLine; }
-       }
-  // End verbatim content from Interp/Interp.Language.grammar.y - 11/11/2023 2:36:34PM
-
 #pragma warning disable 649
   private static Dictionary<int, string> aliases;
 #pragma warning restore 649
@@ -200,7 +184,7 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
       case 5: // stmt -> IDENT, '=', expr, ';'
 {
               GenExpr(ValueStack[ValueStack.Depth-2].node);
-              GenCode(Op.Pop, MakeNode(Token.IDENT, ValueStack[ValueStack.Depth-4].s));
+              GenCode(Op.Pop, ValueStack[ValueStack.Depth-4].node);
        }
         break;
       case 6: // stmt -> if_prefix, stmt
@@ -234,10 +218,10 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
        }
         break;
       case 16: // put_id_num_str -> IDENT
-{ GenCode(Op.PutI, MakeNode(Token.IDENT, ValueStack[ValueStack.Depth-1].s)); }
+{ GenCode(Op.PutI, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 17: // put_id_num_str -> NUMBER
-{ GenCode(Op.PutN, MakeNode(Token.NUMBER, ValueStack[ValueStack.Depth-1].n)); }
+{ GenCode(Op.PutN, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 18: // if_prefix -> IF, '(', cond, ')'
 {
@@ -294,10 +278,10 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
 { CurrentSemanticValue.node = ValueStack[ValueStack.Depth-2].node; }
         break;
       case 33: // expr -> IDENT
-{ CurrentSemanticValue.node = MakeNode(Token.IDENT, ValueStack[ValueStack.Depth-1].s); }
+{ CurrentSemanticValue.node = ValueStack[ValueStack.Depth-1].node; }
         break;
       case 34: // expr -> NUMBER
-{ CurrentSemanticValue.node = MakeNode(Token.NUMBER, ValueStack[ValueStack.Depth-1].n); }
+{ CurrentSemanticValue.node = ValueStack[ValueStack.Depth-1].node; }
         break;
     }
 #pragma warning restore 162, 1522

@@ -79,12 +79,12 @@ Eol             (\r\n?|\n)
 <INITIAL>{Symbol}    { return(yytext[0]); }
 <INITIAL>{Number}    {
                     // Console.WriteLine("number: {0}", yytext);
-                    GetNumber();
+                    yylval.node = new Node(Token.NUMBER, int.Parse(yytext));
                     return (int)Token.NUMBER;
                 }
 <INITIAL>{Ident}     {
                     // Console.WriteLine("ident: {0}", yytext);
-                    GetString();
+                    yylval.node = new Node(Token.IDENT, yytext);
                     return (int)Token.IDENT;
                 }
 <INITIAL>{Space}+    ; /* skip */

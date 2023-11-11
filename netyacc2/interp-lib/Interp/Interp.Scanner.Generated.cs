@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/11/2023 2:45:03PM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 2:45:00PM>
+//  DateTime: 11/11/2023 9:27:22PM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/11/2023 9:27:19PM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -790,7 +790,7 @@ int NextState() {
 return(yytext[0]);
             break;
         case 7: // Recognized '{Number}',	Shortest string "0"
-GetNumber();
+yylval.node = new Node(Token.NUMBER, int.Parse(yytext));
                     return (int)Token.NUMBER;
             break;
         case 8: // Recognized '{Ltop}',	Shortest string "<"
@@ -812,7 +812,7 @@ return(int)Token.GTOP;
         case 24: // Recognized '{Ident}',	Shortest string "ge"
         case 26: // Recognized '{Ident}',	Shortest string "el"
         case 27: // Recognized '{Ident}',	Shortest string "els"
-GetString();
+yylval.node = new Node(Token.IDENT, yytext);
                     return (int)Token.IDENT;
             break;
         case 20: // Recognized '{While}',	Shortest string "while"

@@ -5,8 +5,6 @@
 %tokentype Token
 
 %union {
-       public int n;
-       public string s;
        public int label;
        public Node node;
 }
@@ -15,8 +13,8 @@
 %left '*' '/'
 %right MINUS
 
-%token<n> NUMBER
-%token<s> IDENT
+%token<node> NUMBER
+%token<node> IDENT
 %token IF ELSE WHILE
 %token EQOP GTOP GEOP LTOP LEOP NEOP
 %token ADD SUB MUL DIV
@@ -25,20 +23,6 @@
 %type<label> if_prefix while_prefix
 %type<node> expr cond
 %start program
-
-%{
-       private int currentLine = 1;
-       private void UpdatePosition()
-       {
-              // currentLine = yyline + 1; // yyline is 0-based
-              currentLine++;
-       }
-
-       public int CurrentLine
-       {
-              get { return currentLine; }
-       }
-%}
 
 %%
 
@@ -51,7 +35,7 @@ stmts: /* empty  */
 
 stmt:  IDENT '=' expr ';' {
               GenExpr($3);
-              GenCode(Op.Pop, MakeNode(Token.IDENT, $1));
+              GenCode(Op.Pop, $1);
        }
        | if_prefix stmt {
               // TODO:
@@ -80,8 +64,8 @@ put_list: put_id_num_str
        | put_list ',' put_id_num_str
        ;
 
-put_id_num_str: IDENT { GenCode(Op.PutI, MakeNode(Token.IDENT, $1)); }
-       | NUMBER { GenCode(Op.PutN, MakeNode(Token.NUMBER, $1)); }
+put_id_num_str: IDENT { GenCode(Op.PutI, $1); }
+       | NUMBER { GenCode(Op.PutN, $1); }
        ;
 
 if_prefix: IF '(' cond ')' {
@@ -114,8 +98,8 @@ expr:  expr '+' expr { $$ = MakeExpr(Token.ADD, $1, $3); }
        | expr '*' expr { $$ = MakeExpr(Token.MUL, $1, $3); }
        | expr '/' expr { $$ = MakeExpr(Token.DIV, $1, $3); }
        | '(' expr ')' { $$ = $2; }
-       | IDENT { $$ = MakeNode(Token.IDENT, $1); }
-       | NUMBER { $$ = MakeNode(Token.NUMBER, $1); }
+       | IDENT { $$ = $1; }
+       | NUMBER { $$ = $1; }
        ;
 
 %%

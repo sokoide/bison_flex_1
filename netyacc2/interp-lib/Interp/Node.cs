@@ -24,7 +24,6 @@ namespace interp_lib.Interp
             this.Token = t;
             this.S = s;
         }
-
         public Node(Token t, Node? l, Node? r)
         {
             this.Token = t;
