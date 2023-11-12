@@ -19,7 +19,7 @@ namespace interp_lib.Interp
             this.Parse();
         }
 
-        public Node MakeExpr(Token t, Node? l, Node? r)
+        public Node MakeNode(Token t, Node? l, Node? r)
         {
             return new Node(t, l, r);
         }
@@ -34,15 +34,15 @@ namespace interp_lib.Interp
             return new Node(t, s);
         }
 
-        public void GenExpr(Node n)
+        public void GenNode(Node n)
         {
             if (n.Left != null)
             {
-                GenExpr(n.Left);
+                GenNode(n.Left);
             }
             if (n.Right != null)
             {
-                GenExpr(n.Right);
+                GenNode(n.Right);
             }
             switch (n.Token)
             {
@@ -76,13 +76,21 @@ namespace interp_lib.Interp
                     instr = new Instr(op, (int)n.Token);
                     break;
                 default:
-                    instr = new Instr(op, (int)n.I);
+                    instr = new Instr(op, n.I);
                     break;
             }
             Code.Add(instr);
         }
 
-        internal static int labelno = 0;
+        public void GenCode(Op op, int i)
+        {
+            Instr instr = new Instr(op, i);
+            Code.Add(instr);
+        }
+
+
+        public const int FIRST_LABEL = 1001; // for debugging purpose only. 0 is fine, too.
+        internal static int labelno = FIRST_LABEL;
         public int NewLabel()
         {
             return labelno++;

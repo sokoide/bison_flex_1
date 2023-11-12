@@ -5,8 +5,8 @@
 %tokentype Token
 
 %union {
-       public int label;
        public Node node;
+       public int labelno;
 }
 
 %left '+' '-'
@@ -21,7 +21,7 @@
 %token PUT GET
 %token NULL
 
-%type<label> if_prefix while_prefix
+%type<labelno> if_prefix while_prefix
 %type<node> expr cond
 %start program
 
@@ -35,7 +35,7 @@ stmts: /* empty  */
        ;
 
 stmt:  IDENT '=' expr ';' {
-              GenExpr($3);
+              GenNode($3);
               GenCode(Op.Pop, $1);
        }
        | if_prefix stmt {
@@ -51,10 +51,14 @@ stmt:  IDENT '=' expr ';' {
               // GenCode(Op.Label, $<label>4);
        }
        | while_prefix {
-              GenCode(Op.JumpF, MakeNode(Token.NULL, $<label>$ = NewLabel()));
+              // $<labelno>$ means a value of this scope which means $2 usied by the following `stmt``
+              GenCode(Op.JumpF, $<labelno>$=NewLabel());
        } stmt {
-              GenCode(Op.Jump, MakeNode(Token.NULL, $1));
-              GenCode(Op.Label, MakeNode(Token.NULL, $<label>2));
+              // $1 means a value of `while_prefix`
+              GenCode(Op.Jump, $1);
+              // $<labelno>2 means a value of $2 as `labelno` type  which is `GenCode(Op.JumpF... inside while_prefix`
+              // `stmt` is $3
+              GenCode(Op.Label, $<labelno>2);
        }
        | PUT '(' put_list ')' ';'
        | '{' stmts '}'
@@ -70,34 +74,34 @@ put_id_num_str: IDENT { GenCode(Op.PutI, $1); }
        ;
 
 if_prefix: IF '(' cond ')' {
-              GenExpr($3);
+              GenNode($3);
               // GenCode(Op.JumpF, $$=NewLabel());
               }
        ;
 
 while_prefix: WHILE '(' cond ')' {
-              GenCode(Op.Label, MakeNode(Token.NULL, $$=NewLabel()));
-              GenExpr($3);
+              GenCode(Op.Label, $$=NewLabel());
+              GenNode($3);
        }
        ;
 
-cond:  expr EQOP expr { $$ = MakeExpr(Token.EQOP, $1, $3); }
-       | expr GTOP expr { $$ = MakeExpr(Token.GTOP, $1, $3); }
-       | expr GEOP expr { $$ = MakeExpr(Token.GEOP, $1, $3); }
-       | expr LTOP expr { $$ = MakeExpr(Token.LTOP, $1, $3); }
-       | expr LEOP expr { $$ = MakeExpr(Token.LEOP, $1, $3); }
-       | expr NEOP expr { $$ = MakeExpr(Token.NEOP, $1, $3); }
+cond:  expr EQOP expr { $$ = MakeNode(Token.EQOP, $1, $3); }
+       | expr GTOP expr { $$ = MakeNode(Token.GTOP, $1, $3); }
+       | expr GEOP expr { $$ = MakeNode(Token.GEOP, $1, $3); }
+       | expr LTOP expr { $$ = MakeNode(Token.LTOP, $1, $3); }
+       | expr LEOP expr { $$ = MakeNode(Token.LEOP, $1, $3); }
+       | expr NEOP expr { $$ = MakeNode(Token.NEOP, $1, $3); }
        | expr { $$ = $1; }
        ;
 
-expr:  expr '+' expr { $$ = MakeExpr(Token.ADD, $1, $3); }
+expr:  expr '+' expr { $$ = MakeNode(Token.ADD, $1, $3); }
        | '-' expr %prec MINUS {
-              $$ = MakeExpr(Token.MINUS, $2, null);
+              $$ = MakeNode(Token.MINUS, $2, null);
               //Console.WriteLine("%prec MINUS {0}", $2);
        }
-       | expr '-' expr { $$ = MakeExpr(Token.SUB, $1, $3); }
-       | expr '*' expr { $$ = MakeExpr(Token.MUL, $1, $3); }
-       | expr '/' expr { $$ = MakeExpr(Token.DIV, $1, $3); }
+       | expr '-' expr { $$ = MakeNode(Token.SUB, $1, $3); }
+       | expr '*' expr { $$ = MakeNode(Token.MUL, $1, $3); }
+       | expr '/' expr { $$ = MakeNode(Token.DIV, $1, $3); }
        | '(' expr ')' { $$ = $2; }
        | IDENT { $$ = $1; }
        | NUMBER { $$ = $1; }

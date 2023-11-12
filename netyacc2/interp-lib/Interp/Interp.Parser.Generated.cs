@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/11/2023 11:17:58PM
-// Input file <Interp/Interp.Language.grammar.y - 11/11/2023 11:17:55PM>
+// DateTime: 11/12/2023 2:45:48PM
+// Input file <Interp/Interp.Language.grammar.y - 11/12/2023 2:45:46PM>
 
 // options: no-lines gplex
 
@@ -25,8 +25,8 @@ public enum Token {
 
 public partial struct ValueType
 {
-       public int label;
        public Node node;
+       public int labelno;
 }
 // Abstract base class for GPLEX scanners
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
@@ -183,7 +183,7 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 5: // stmt -> IDENT, '=', expr, ';'
 {
-              GenExpr(ValueStack[ValueStack.Depth-2].node);
+              GenNode(ValueStack[ValueStack.Depth-2].node);
               GenCode(Op.Pop, ValueStack[ValueStack.Depth-4].node);
        }
         break;
@@ -208,13 +208,17 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 9: // Anon@2 -> /* empty */
 {
-              GenCode(Op.JumpF, MakeNode(Token.NULL, CurrentSemanticValue.label = NewLabel()));
+              // $<labelno>$ means a value of this scope which means $2 usied by the following `stmt``
+              GenCode(Op.JumpF, CurrentSemanticValue.labelno=NewLabel());
        }
         break;
       case 10: // stmt -> while_prefix, Anon@2, stmt
 {
-              GenCode(Op.Jump, MakeNode(Token.NULL, ValueStack[ValueStack.Depth-3].label));
-              GenCode(Op.Label, MakeNode(Token.NULL, ValueStack[ValueStack.Depth-2].label));
+              // $1 means a value of `while_prefix`
+              GenCode(Op.Jump, ValueStack[ValueStack.Depth-3].labelno);
+              // $<labelno>2 means a value of $2 as `labelno` type  which is `GenCode(Op.JumpF... inside while_prefix`
+              // `stmt` is $3
+              GenCode(Op.Label, ValueStack[ValueStack.Depth-2].labelno);
        }
         break;
       case 16: // put_id_num_str -> IDENT
@@ -225,54 +229,54 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 18: // if_prefix -> IF, '(', cond, ')'
 {
-              GenExpr(ValueStack[ValueStack.Depth-2].node);
+              GenNode(ValueStack[ValueStack.Depth-2].node);
               // GenCode(Op.JumpF, $$=NewLabel());
               }
         break;
       case 19: // while_prefix -> WHILE, '(', cond, ')'
 {
-              GenCode(Op.Label, MakeNode(Token.NULL, CurrentSemanticValue.label=NewLabel()));
-              GenExpr(ValueStack[ValueStack.Depth-2].node);
+              GenCode(Op.Label, CurrentSemanticValue.labelno=NewLabel());
+              GenNode(ValueStack[ValueStack.Depth-2].node);
        }
         break;
       case 20: // cond -> expr, EQOP, expr
-{ CurrentSemanticValue.node = MakeExpr(Token.EQOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.EQOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 21: // cond -> expr, GTOP, expr
-{ CurrentSemanticValue.node = MakeExpr(Token.GTOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.GTOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 22: // cond -> expr, GEOP, expr
-{ CurrentSemanticValue.node = MakeExpr(Token.GEOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.GEOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 23: // cond -> expr, LTOP, expr
-{ CurrentSemanticValue.node = MakeExpr(Token.LTOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.LTOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 24: // cond -> expr, LEOP, expr
-{ CurrentSemanticValue.node = MakeExpr(Token.LEOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.LEOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 25: // cond -> expr, NEOP, expr
-{ CurrentSemanticValue.node = MakeExpr(Token.NEOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.NEOP, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 26: // cond -> expr
 { CurrentSemanticValue.node = ValueStack[ValueStack.Depth-1].node; }
         break;
       case 27: // expr -> expr, '+', expr
-{ CurrentSemanticValue.node = MakeExpr(Token.ADD, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.ADD, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 28: // expr -> '-', expr
 {
-              CurrentSemanticValue.node = MakeExpr(Token.MINUS, ValueStack[ValueStack.Depth-1].node, null);
+              CurrentSemanticValue.node = MakeNode(Token.MINUS, ValueStack[ValueStack.Depth-1].node, null);
               //Console.WriteLine("%prec MINUS {0}", $2);
        }
         break;
       case 29: // expr -> expr, '-', expr
-{ CurrentSemanticValue.node = MakeExpr(Token.SUB, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.SUB, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 30: // expr -> expr, '*', expr
-{ CurrentSemanticValue.node = MakeExpr(Token.MUL, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.MUL, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 31: // expr -> expr, '/', expr
-{ CurrentSemanticValue.node = MakeExpr(Token.DIV, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
+{ CurrentSemanticValue.node = MakeNode(Token.DIV, ValueStack[ValueStack.Depth-3].node, ValueStack[ValueStack.Depth-1].node); }
         break;
       case 32: // expr -> '(', expr, ')'
 { CurrentSemanticValue.node = ValueStack[ValueStack.Depth-2].node; }

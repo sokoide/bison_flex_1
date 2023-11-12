@@ -11,34 +11,39 @@ namespace interp_lib.Interp
     {
         public NodeType NodeType;
         public Token Token;
-        public int? I;
-        public string? S;
+        public int I;
+        public string S;
         public Node? Left;
         public Node? Right;
 
         public Node(Token token)
         {
             this.NodeType = NodeType.I;
+            this.S = "";
             this.Token = token;
         }
 
-        public Node(Token token, int? i)
+        public Node(Token token, int i)
         {
             this.NodeType = NodeType.I;
+            this.S = "";
             this.Token = token;
             this.I = i;
         }
 
-        public Node(Token token, string? s)
+        public Node(Token token, string s)
         {
             this.NodeType = NodeType.S;
             this.Token = token;
+            this.I = int.MinValue;
             this.S = s;
         }
         public Node(Token token, Node? l, Node? r)
         {
             this.NodeType = NodeType.LR;
             this.Token = token;
+            this.S = "";
+            this.I = int.MinValue;
             this.Left = l;
             this.Right = r;
         }

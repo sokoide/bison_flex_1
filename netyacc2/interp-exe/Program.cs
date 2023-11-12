@@ -31,15 +31,15 @@ public class Exe
 
     public static void Demo(InterpParser parser, VM vm)
     {
-        var input = "a=3;\nwhile(a>0)\n{\n\tput(a);\n\ta=a-1;\n}";
+        var input = "e=3;\nwhile(e>0)\n{\n\tput(e);\n\te=e-1;\n}";
         parser.Parse(input);
 
         var resolvedCode = vm.ResoleLabels(parser.Code);
         Console.WriteLine("* Source");
         Console.WriteLine(input);
-        Console.WriteLine("* Original");
+        Console.WriteLine("* Original. Jump/JumpF's operands mean Label name");
         vm.Dump(parser.Code);
-        Console.WriteLine("* Label Resolved");
+        Console.WriteLine("* Label Resolved. Jump/JumpF's operands mean PC");
         vm.Dump(resolvedCode);
         Console.WriteLine("* Executing...");
         vm.Execute(resolvedCode);

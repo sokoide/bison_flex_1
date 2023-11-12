@@ -141,7 +141,7 @@ namespace interp_lib.Interp
                 Instr instr = resolvedCode[i];
                 if (instr.Op == Op.Jump || instr.Op == Op.JumpF)
                 {
-                    resolvedCode[i].Sub = labels[instr.Sub];
+                    resolvedCode[i].Sub = labels[instr.Sub - Interp.InterpParser.FIRST_LABEL];
                 }
             }
 

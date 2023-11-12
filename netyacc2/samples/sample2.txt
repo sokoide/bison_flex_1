@@ -1,6 +1,5 @@
-a=3;
-while(a>0){
-	put(a);
-	a=a-1;
+e=3;
+while(e>0){
+	put(e);
+	e=e-1;
 }
-
