@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/12/2023 2:57:01PM
-// Input file <Interp/Interp.Language.grammar.y - 11/12/2023 2:56:58PM>
+// DateTime: 11/12/2023 3:19:52PM
+// Input file <Interp/Interp.Language.grammar.y - 11/12/2023 3:12:43PM>
 
 // options: no-lines gplex
 
@@ -25,8 +25,9 @@ public enum Token {
 
 public partial struct ValueType
 {
-       public Node node;
-       public int labelno;
+       public Node node;    // node
+       public int labelno;  // label number
+       public int addr;     // string address
 }
 // Abstract base class for GPLEX scanners
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
@@ -194,17 +195,12 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 7: // Anon@1 -> /* empty */
 {
-              // TODO:
-              // GenCode(Op.Jump, $<label>$ = "newlbl");
-              // GenCode(Op.Label, $1);
               GenCode(Op.Jump, CurrentSemanticValue.labelno = NewLabel());
               GenCode(Op.Label, ValueStack[ValueStack.Depth-3].labelno);
        }
         break;
       case 8: // stmt -> if_prefix, stmt, ELSE, Anon@1, stmt
 {
-              // TODO:
-              // GenCode(Op.Label, $<label>4);
               GenCode(Op.Label, ValueStack[ValueStack.Depth-2].labelno);
        }
         break;

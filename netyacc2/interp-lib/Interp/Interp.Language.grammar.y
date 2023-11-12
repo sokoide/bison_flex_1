@@ -5,8 +5,9 @@
 %tokentype Token
 
 %union {
-       public Node node;
-       public int labelno;
+       public Node node;    // node
+       public int labelno;  // label number
+       public int addr;     // string address
 }
 
 %left '+' '-'

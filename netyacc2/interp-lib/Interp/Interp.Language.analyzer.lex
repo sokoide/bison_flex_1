@@ -5,6 +5,10 @@
 
 %option stack, minimize, parser, verbose, persistbuffer, noembedbuffers
 
+%{
+    StringBuilder sb = new System.Text.StringBuilder();
+%}
+
 %x STR
 %x COMMENT
 
@@ -38,26 +42,6 @@ Ident           [a-zA-Z][0-9a-zA-Z_]*
 /* others */
 Space           [ \t]
 Eol             (\r\n?|\n)
-/* what is NotWh? */
-/* NotWh           [^ \t\r\n] */
-
-
-%{
-//using System;
-
-// public struct YYLTYPE {
-//     public int StartLine;
-//     public int StartColumn;
-//     public int EndLine;
-//     public int EndColumn;
-// }
-
-// public class ParserValue {
-//     // Define your token values here
-// }
-
-// int strcnt = 0;
-%}
 
 %%
 
@@ -89,9 +73,17 @@ Eol             (\r\n?|\n)
                 }
 <INITIAL>{Space}+    ; /* skip */
 <INITIAL>{Eol}       ; /* skip */
-<INITIAL>{Dq}       { /*strcnt=0;*/ BEGIN(STR); }
+
+/* string */
+<INITIAL>{Dq}       { sb.Clear(); BEGIN(STR);}
+<STR>{Dq}           { yylval.addr = Pool(sb.ToString()); BEGIN(INITIAL); }
+<STR>\\\"           { sb.Append("\""); }
+<STR>\\n            { sb.Append("\n"); }
+<STR>\n             { throw new Exception("string not closed"); }
+<STR>.              { sb.Append(yytext[0]); }
+
+/* comment */
 <INITIAL>{CommSt}   { BEGIN(COMMENT); }
-<STR>{Dq}           { BEGIN(INITIAL); }
 <COMMENT>{CommEd}   { BEGIN(INITIAL); }
 <COMMENT>[^\*]*     ;
 

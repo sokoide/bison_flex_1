@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AssemblyName>interp_test</AssemblyName>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>interp_test</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>

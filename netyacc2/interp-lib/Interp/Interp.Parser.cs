@@ -3,8 +3,8 @@ namespace interp_lib.Interp
     public partial class InterpParser
     {
         public List<Instr> Code = new List<Instr>();
-        public InterpParser() : base(null) { }
 
+        public InterpParser() : base(null) { }
 
         public void Reset()
         {
