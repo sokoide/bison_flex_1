@@ -39,16 +39,13 @@ stmt:  IDENT '=' expr ';' {
               GenCode(Op.Pop, $1);
        }
        | if_prefix stmt {
-              // TODO:
-              // GenCode(Op.Label, $1);
+              GenCode(Op.Label, $1);
        }
        | if_prefix stmt ELSE {
-              // TODO:
-              // GenCode(Op.Jump, $<label>$ = "newlbl");
-              // GenCode(Op.Label, $1);
+              GenCode(Op.Jump, $<labelno>$ = NewLabel());
+              GenCode(Op.Label, $1);
        } stmt {
-              // TODO:
-              // GenCode(Op.Label, $<label>4);
+              GenCode(Op.Label, $<labelno>4);
        }
        | while_prefix {
               // $<labelno>$ means a value of this scope which means $2 usied by the following `stmt``
@@ -75,8 +72,8 @@ put_id_num_str: IDENT { GenCode(Op.PutI, $1); }
 
 if_prefix: IF '(' cond ')' {
               GenNode($3);
-              // GenCode(Op.JumpF, $$=NewLabel());
-              }
+              GenCode(Op.JumpF, $$=NewLabel());
+       }
        ;
 
 while_prefix: WHILE '(' cond ')' {

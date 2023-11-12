@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/12/2023 2:45:48PM
-// Input file <Interp/Interp.Language.grammar.y - 11/12/2023 2:45:46PM>
+// DateTime: 11/12/2023 2:57:01PM
+// Input file <Interp/Interp.Language.grammar.y - 11/12/2023 2:56:58PM>
 
 // options: no-lines gplex
 
@@ -189,8 +189,7 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 6: // stmt -> if_prefix, stmt
 {
-              // TODO:
-              // GenCode(Op.Label, $1);
+              GenCode(Op.Label, ValueStack[ValueStack.Depth-2].labelno);
        }
         break;
       case 7: // Anon@1 -> /* empty */
@@ -198,12 +197,15 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
               // TODO:
               // GenCode(Op.Jump, $<label>$ = "newlbl");
               // GenCode(Op.Label, $1);
+              GenCode(Op.Jump, CurrentSemanticValue.labelno = NewLabel());
+              GenCode(Op.Label, ValueStack[ValueStack.Depth-3].labelno);
        }
         break;
       case 8: // stmt -> if_prefix, stmt, ELSE, Anon@1, stmt
 {
               // TODO:
               // GenCode(Op.Label, $<label>4);
+              GenCode(Op.Label, ValueStack[ValueStack.Depth-2].labelno);
        }
         break;
       case 9: // Anon@2 -> /* empty */
@@ -230,8 +232,8 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
       case 18: // if_prefix -> IF, '(', cond, ')'
 {
               GenNode(ValueStack[ValueStack.Depth-2].node);
-              // GenCode(Op.JumpF, $$=NewLabel());
-              }
+              GenCode(Op.JumpF, CurrentSemanticValue.labelno=NewLabel());
+       }
         break;
       case 19: // while_prefix -> WHILE, '(', cond, ')'
 {
