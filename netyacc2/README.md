@@ -63,6 +63,7 @@ dotnet run --project interp-exe/interp-exe.csproj demo
   [0003] PutS 1
   * String table
   [0001] \n
+
   42
   ```
 
@@ -159,6 +160,7 @@ dotnet run --project interp-exe/interp-exe.csproj demo
   [0003] fib(1)=1
   [0004] fib(
   [0005] )=
+
   fib(0)=0
   fib(1)=1
   fib(2)=1

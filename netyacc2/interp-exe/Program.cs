@@ -81,6 +81,7 @@ while (e > 0)
             vm.Dump(resolvedCode);
             Console.WriteLine("* String table");
             vm.DumpStringTable(parser.ItoS);
+            Console.WriteLine();
         }
 
         ret = vm.Execute(resolvedCode, parser.ItoS);
