@@ -80,7 +80,14 @@ namespace interp_lib.Interp
                     instr = new Instr(op, (int)n.Token);
                     break;
                 default:
-                    instr = new Instr(op, n.I);
+                    if (n.NodeType == NodeType.S)
+                    {
+                        instr = new Instr(op, IdentId(n.S));
+                    }
+                    else
+                    {
+                        instr = new Instr(op, n.I);
+                    }
                     break;
             }
             Code.Add(instr);

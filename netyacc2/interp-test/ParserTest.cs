@@ -24,7 +24,6 @@ public class ParserTest : IDisposable
     [InlineData("a=1;if(a==1){put(a);}")]
     public void Parser_BasicSyntax(string input)
     {
-        output.WriteLine("* Testing {0}...", input);
         tgt.Parse(input);
     }
 

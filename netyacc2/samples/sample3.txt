@@ -12,3 +12,4 @@ if(a>5) {
 } else {
     put("a<=5: a=", a);
 }
+return 0;

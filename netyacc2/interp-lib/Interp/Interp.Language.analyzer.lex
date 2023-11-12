@@ -16,6 +16,7 @@
 If              if
 Else            else
 While           while
+Return          return
 Put             put
 Get             get
 
@@ -50,6 +51,7 @@ Eol             (\r\n?|\n)
 <INITIAL>{If}        { return(int)Token.IF; }
 <INITIAL>{Else}      { return(int)Token.ELSE; }
 <INITIAL>{While}     { return(int)Token.WHILE; }
+<INITIAL>{Return}    { return(int)Token.RETURN; }
 <INITIAL>{Put}       { return(int)Token.PUT; }
 <INITIAL>{Get}       { return(int)Token.GET; }
 

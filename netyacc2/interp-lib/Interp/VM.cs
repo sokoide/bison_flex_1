@@ -17,7 +17,7 @@ namespace interp_lib.Interp
             Reset();
         }
 
-        public void Execute(List<Instr> code, Dictionary<int, string> ItoS)
+        public int Execute(List<Instr> code, Dictionary<int, string> ItoS)
         {
             Op op;
             int sub;
@@ -116,11 +116,16 @@ namespace interp_lib.Interp
                     case Op.PutS:
                         Console.Write("{0}", ItoS[sub]);
                         break;
+                    case Op.ReturnI:
+                        return g[sub];
+                    case Op.ReturnN:
+                        return sub;
                     default:
                         throw new NotImplementedException(op.ToString());
                 }
                 pc++;
             }
+            return 0;
         }
 
         public List<Instr> ResoleLabels(List<Instr> code)

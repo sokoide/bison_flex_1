@@ -17,7 +17,7 @@
 %token<node> NUMBER
 %token<node> IDENT
 %token<node> STRING
-%token IF ELSE WHILE
+%token IF ELSE WHILE RETURN
 %token EQOP GTOP GEOP LTOP LEOP NEOP
 %token ADD SUB MUL DIV
 %token PUT GET
@@ -62,6 +62,12 @@ stmt:  IDENT '=' expr ';' {
        | PUT '(' put_list ')' ';' {
               // print \n after put_list
               GenCode(Op.PutS, Pool("\n"));
+       }
+       | RETURN IDENT ';' {
+              GenCode(Op.ReturnI, $2);
+       }
+       | RETURN NUMBER ';' {
+              GenCode(Op.ReturnN, $2);
        }
        | '{' stmts '}'
        | ';'

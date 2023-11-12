@@ -5,14 +5,15 @@ namespace interp_exe;
 
 public class Exe
 {
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
+        int ret = 0;
         var parser = new InterpParser();
         var vm = new VM();
 
         if (args.Length > 0 && args[0] == "demo")
         {
-            Demo(parser, vm);
+            ret = Demo(parser, vm);
         }
         else
         {
@@ -25,11 +26,13 @@ public class Exe
 
             parser.Parse(sb.ToString());
             var resolvedCode = vm.ResoleLabels(parser.Code);
-            vm.Execute(resolvedCode, parser.ItoS);
+            ret = vm.Execute(resolvedCode, parser.ItoS);
         }
+
+        return ret;
     }
 
-    public static void Demo(InterpParser parser, VM vm)
+    public static int Demo(InterpParser parser, VM vm)
     {
         var input = @"put(""*** Demo ***"");
 put(""counting down..."");
@@ -52,6 +55,6 @@ while (e > 0)
         Console.WriteLine("* String table");
         vm.DumpStringTable(parser.ItoS);
         Console.WriteLine("* Executing...");
-        vm.Execute(resolvedCode, parser.ItoS);
+        return vm.Execute(resolvedCode, parser.ItoS);
     }
 }

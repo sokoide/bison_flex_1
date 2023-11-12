@@ -13,6 +13,8 @@ namespace interp_lib.Interp
         PutI,
         PutN,
         PutS,
+        ReturnI,
+        ReturnN,
     }
 
     public class Instr
