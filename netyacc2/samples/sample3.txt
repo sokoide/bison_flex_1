@@ -1,12 +1,14 @@
 a=10;
+put("a=", a);
 if(a>5) {
-    put(a);
+    put("a>5: a=", a);
 } else {
-    put(12345);
+    put("a<=5: a=", a);
 }
 a=3;
+put("a=", a);
 if(a>5) {
-    put(a);
+    put("a>5: a=", a);
 } else {
-    put(12345);
+    put("a<=5: a=", a);
 }

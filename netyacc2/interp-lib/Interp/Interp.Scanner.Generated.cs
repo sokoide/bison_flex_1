@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/12/2023 4:08:52PM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/12/2023 4:08:49PM>
+//  DateTime: 11/12/2023 4:46:38PM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/12/2023 4:45:15PM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -870,7 +870,9 @@ sb.Append(yytext[0]);
 throw new Exception("string not closed");
             break;
         case 36: // In <STR> Recognized '{Dq}',	Shortest string "\""
-yylval.addr = Pool(sb.ToString()); BEGIN(INITIAL);
+yylval.node = new Node(Token.STRING, sb.ToString());
+                    BEGIN(INITIAL);
+                    return (int)Token.STRING;
             break;
         case 38: // In <STR> Recognized '\\\"',	Shortest string "\\\""
 sb.Append("\"");

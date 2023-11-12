@@ -25,13 +25,22 @@ public class Exe
 
             parser.Parse(sb.ToString());
             var resolvedCode = vm.ResoleLabels(parser.Code);
-            vm.Execute(resolvedCode);
+            vm.Execute(resolvedCode, parser.ItoS);
         }
     }
 
     public static void Demo(InterpParser parser, VM vm)
     {
-        var input = "e=3;\nwhile(e>0)\n{\n\tput(e);\n\te=e-1;\n}";
+        var input = @"put(""hoge"");
+put(""page"");
+put(""hoge"");
+e = 3;
+while (e > 0)
+{
+    put(e);
+    e = e - 1;
+    }
+";
         parser.Parse(input);
 
         var resolvedCode = vm.ResoleLabels(parser.Code);
@@ -42,6 +51,6 @@ public class Exe
         Console.WriteLine("* Label Resolved. Jump/JumpF's operands mean PC");
         vm.Dump(resolvedCode);
         Console.WriteLine("* Executing...");
-        vm.Execute(resolvedCode);
+        vm.Execute(resolvedCode, parser.ItoS);
     }
 }

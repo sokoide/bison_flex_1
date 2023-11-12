@@ -64,19 +64,20 @@ Eol             (\r\n?|\n)
 <INITIAL>{Number}    {
                     // Console.WriteLine("number: {0}", yytext);
                     yylval.node = new Node(Token.NUMBER, int.Parse(yytext));
-                    return (int)Token.NUMBER;
-                }
+                    return (int)Token.NUMBER; }
 <INITIAL>{Ident}     {
                     // Console.WriteLine("ident: {0}", yytext);
                     yylval.node = new Node(Token.IDENT, yytext);
-                    return (int)Token.IDENT;
-                }
+                    return (int)Token.IDENT; }
 <INITIAL>{Space}+    ; /* skip */
 <INITIAL>{Eol}       ; /* skip */
 
 /* string */
-<INITIAL>{Dq}       { sb.Clear(); BEGIN(STR);}
-<STR>{Dq}           { yylval.addr = Pool(sb.ToString()); BEGIN(INITIAL); }
+<INITIAL>{Dq}       { sb.Clear(); BEGIN(STR); }
+<STR>{Dq}           {
+                    yylval.node = new Node(Token.STRING, sb.ToString());
+                    BEGIN(INITIAL);
+                    return (int)Token.STRING; }
 <STR>\\\"           { sb.Append("\""); }
 <STR>\\n            { sb.Append("\n"); }
 <STR>\n             { throw new Exception("string not closed"); }

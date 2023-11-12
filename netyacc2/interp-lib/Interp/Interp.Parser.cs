@@ -3,12 +3,16 @@ namespace interp_lib.Interp
     public partial class InterpParser
     {
         public List<Instr> Code = new List<Instr>();
+        public Dictionary<string, int> StoI = new Dictionary<string, int>();
+        public Dictionary<int, string> ItoS = new Dictionary<int, string>();
 
         public InterpParser() : base(null) { }
 
         public void Reset()
         {
             Code = new List<Instr>();
+            StoI = new Dictionary<string, int>();
+            ItoS = new Dictionary<int, string>();
         }
 
         public void Parse(string s)
@@ -107,6 +111,18 @@ namespace interp_lib.Interp
             {
                 return int.MinValue;
             }
+        }
+
+        public int Pool(string s)
+        {
+            if (StoI.ContainsKey(s))
+            {
+                return StoI[s];
+            }
+            int n = StoI.Count + 1;
+            StoI[s] = n;
+            ItoS[n] = s;
+            return n;
         }
     }
 }

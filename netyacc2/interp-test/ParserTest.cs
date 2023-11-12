@@ -97,4 +97,28 @@ public class ParserTest : IDisposable
         Assert.Equal(op, tgt.Code[0].Op);
         Assert.Equal(wantSub, tgt.Code[0].Sub);
     }
+
+    [Fact]
+    public void Parser_Pool()
+    {
+        int got;
+        int want;
+
+        want = 1;
+        got = tgt.Pool("hoge");
+        Assert.Equal(want, got);
+
+        want = 2;
+        got = tgt.Pool("page");
+        Assert.Equal(want, got);
+
+        want = 3;
+        got = tgt.Pool("foo");
+        Assert.Equal(want, got);
+
+        want = 1;
+        got = tgt.Pool("hoge");
+        Assert.Equal(want, got);
+    }
+
 }

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace interp_lib.Interp
 {
     public class VM
@@ -15,7 +17,7 @@ namespace interp_lib.Interp
             Reset();
         }
 
-        public void Execute(List<Instr> code)
+        public void Execute(List<Instr> code, Dictionary<int, string> ItoS)
         {
             Op op;
             int sub;
@@ -106,10 +108,13 @@ namespace interp_lib.Interp
                         }
                         break;
                     case Op.PutI:
-                        Console.WriteLine("{0}", g[sub]);
+                        Console.Write("{0}", g[sub]);
                         break;
                     case Op.PutN:
-                        Console.WriteLine("{0}", sub);
+                        Console.Write("{0}", sub);
+                        break;
+                    case Op.PutS:
+                        Console.Write("{0}", ItoS[sub]);
                         break;
                     default:
                         throw new NotImplementedException(op.ToString());

@@ -16,6 +16,7 @@
 
 %token<node> NUMBER
 %token<node> IDENT
+%token<node> STRING
 %token IF ELSE WHILE
 %token EQOP GTOP GEOP LTOP LEOP NEOP
 %token ADD SUB MUL DIV
@@ -58,7 +59,10 @@ stmt:  IDENT '=' expr ';' {
               // `stmt` is $3
               GenCode(Op.Label, $<labelno>2);
        }
-       | PUT '(' put_list ')' ';'
+       | PUT '(' put_list ')' ';' {
+              // print \n after put_list
+              GenCode(Op.PutS, Pool("\n"));
+       }
        | '{' stmts '}'
        | ';'
        ;
@@ -69,6 +73,9 @@ put_list: put_id_num_str
 
 put_id_num_str: IDENT { GenCode(Op.PutI, $1); }
        | NUMBER { GenCode(Op.PutN, $1); }
+       | STRING {
+              GenCode(Op.PutS, Pool($1.S));
+       }
        ;
 
 if_prefix: IF '(' cond ')' {

@@ -23,27 +23,4 @@ public class ScannerTest : IDisposable
     {
         Assert.Equal("interp_test", System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
     }
-
-    [Fact]
-    public void Scanner_Pool()
-    {
-        int got;
-        int want;
-
-        want = 1;
-        got = tgt.Pool("hoge");
-        Assert.Equal(want, got);
-
-        want = 2;
-        got = tgt.Pool("page");
-        Assert.Equal(want, got);
-
-        want = 3;
-        got = tgt.Pool("foo");
-        Assert.Equal(want, got);
-
-        want = 1;
-        got = tgt.Pool("hoge");
-        Assert.Equal(want, got);
-    }
 }
