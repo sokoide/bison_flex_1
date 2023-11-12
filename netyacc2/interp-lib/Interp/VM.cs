@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace interp_lib.Interp
 {
     public class VM
@@ -131,6 +129,7 @@ namespace interp_lib.Interp
         public List<Instr> ResoleLabels(List<Instr> code)
         {
             List<Instr> resolvedCode = new List<Instr>(code.Count);
+            Debug.Print("start");
 
             // resolve labels
             for (int i = 0; i < code.Count; i++)
@@ -141,6 +140,7 @@ namespace interp_lib.Interp
 
                 if (instr.Op == Op.Label)
                 {
+                    Debug.Print("adding i:{0} {1}", i, instr);
                     // i == pc
                     labels.Add(i);
                 }
@@ -151,10 +151,12 @@ namespace interp_lib.Interp
                 Instr instr = resolvedCode[i];
                 if (instr.Op == Op.Jump || instr.Op == Op.JumpF)
                 {
-                    resolvedCode[i].Sub = labels[instr.Sub - Interp.InterpParser.FIRST_LABEL];
+                    Debug.Print("resolving {0}", instr);
+                    resolvedCode[i].Sub = labels[instr.Sub - InterpParser.FIRST_LABEL];
                 }
             }
 
+            Debug.Print("end");
             return resolvedCode;
         }
 

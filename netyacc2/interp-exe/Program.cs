@@ -1,40 +1,59 @@
-﻿using System.Text;
+﻿using System.ComponentModel.Design;
+using System.Security.Cryptography;
+using System.Text;
 using interp_lib.Interp;
 
 namespace interp_exe;
 
 public class Exe
 {
+
     public static int Main(string[] args)
     {
         int ret = 0;
         var parser = new InterpParser();
         var vm = new VM();
+        bool demo = false;
+        bool debug = false;
+        string inputFilePath = "";
+        string input;
 
-        if (args.Length > 0 && args[0] == "demo")
+        for (int i = 0; i < args.Length; i++)
         {
-            ret = Demo(parser, vm);
-        }
-        else
-        {
-            string line;
-            StringBuilder sb = new StringBuilder();
-            while ((line = Console.ReadLine()) != null && line != "")
+            string arg = args[i].ToLower();
+            if (arg == "--verbose")
             {
-                sb.AppendLine(line);
+                debug = true;
             }
+            else if (arg == "demo")
+            {
+                debug = true;
+                demo = true;
+            }
+            else if (arg == "--file")
+            {
+                if (i + 1 >= args.Length)
+                {
+                    Console.WriteLine("please specify a script path");
+                    return 1;
+                }
+                i++;
+                inputFilePath = args[i];
 
-            parser.Parse(sb.ToString());
-            var resolvedCode = vm.ResoleLabels(parser.Code);
-            ret = vm.Execute(resolvedCode, parser.ItoS);
+            }
+            else if (arg == "--help")
+            {
+                Console.WriteLine("dotnet run [--verbose] [--file scriptpath] [demo]");
+                Console.WriteLine(" verbose: verbose output");
+                Console.WriteLine(" file:    script file path");
+                Console.WriteLine(" demo:    demo mode");
+                return 0;
+            }
         }
 
-        return ret;
-    }
-
-    public static int Demo(InterpParser parser, VM vm)
-    {
-        var input = @"put(""*** Demo ***"");
+        if (demo)
+        {
+            input = @"put(""*** Demo ***"");
 put(""counting down..."");
 e = 3;
 while (e > 0)
@@ -43,18 +62,29 @@ while (e > 0)
     e = e - 1;
     }
 ";
-        parser.Parse(input);
+        }
+        else
+        {
+            input = File.ReadAllText(inputFilePath);
+        }
 
+        parser.Parse(input);
         var resolvedCode = vm.ResoleLabels(parser.Code);
-        Console.WriteLine("* Source");
-        Console.WriteLine(input);
-        Console.WriteLine("* Original. Jump/JumpF's operands mean Label name");
-        vm.Dump(parser.Code);
-        Console.WriteLine("* Label Resolved. Jump/JumpF's operands mean PC");
-        vm.Dump(resolvedCode);
-        Console.WriteLine("* String table");
-        vm.DumpStringTable(parser.ItoS);
-        Console.WriteLine("* Executing...");
-        return vm.Execute(resolvedCode, parser.ItoS);
+
+        if (debug)
+        {
+            Console.WriteLine("* Source");
+            Console.WriteLine(input);
+            Console.WriteLine("* Original. Jump/JumpF's operands mean Label name");
+            vm.Dump(parser.Code);
+            Console.WriteLine("* Label Resolved. Jump/JumpF's operands mean PC");
+            vm.Dump(resolvedCode);
+            Console.WriteLine("* String table");
+            vm.DumpStringTable(parser.ItoS);
+        }
+
+        ret = vm.Execute(resolvedCode, parser.ItoS);
+
+        return ret;
     }
 }

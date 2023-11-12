@@ -6,10 +6,13 @@ namespace interp_lib.Interp
         public Dictionary<string, int> StoI = new Dictionary<string, int>();
         public Dictionary<int, string> ItoS = new Dictionary<int, string>();
 
+        internal int labelno = FIRST_LABEL;
+
         public InterpParser() : base(null) { }
 
         public void Reset()
         {
+            labelno = FIRST_LABEL;
             Code = new List<Instr>();
             StoI = new Dictionary<string, int>();
             ItoS = new Dictionary<int, string>();
@@ -101,7 +104,6 @@ namespace interp_lib.Interp
 
 
         public const int FIRST_LABEL = 1001; // for debugging purpose only. 0 is fine, too.
-        internal static int labelno = FIRST_LABEL;
         public int NewLabel()
         {
             return labelno++;

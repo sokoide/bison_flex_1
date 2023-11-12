@@ -32,4 +32,25 @@ public class VMTest : IDisposable
         int got = vm.Execute(resolvedCode, parser.ItoS);
         Assert.Equal(want, got);
     }
+
+    [Theory]
+    [InlineData("a=1; b=2; x=3; if(x>=3) { return 1; } return 0;", 1)]
+    // [InlineData("x=0; if(x>0) {return 1;} else {return 2;}", 2)]
+    public void VM_Execute_If(string input, int want)
+    {
+        parser.Parse(input);
+        var resolvedCode = vm.ResoleLabels(parser.Code);
+        int got = vm.Execute(resolvedCode, parser.ItoS);
+        Assert.Equal(want, got);
+    }
+
+    [Theory]
+    [InlineData("a=3; b=100; while(a>0){b=b+1; a=a-1;} return b;", 103)]
+    public void VM_Execute_While(string input, int want)
+    {
+        parser.Parse(input);
+        var resolvedCode = vm.ResoleLabels(parser.Code);
+        int got = vm.Execute(resolvedCode, parser.ItoS);
+        Assert.Equal(want, got);
+    }
 }
