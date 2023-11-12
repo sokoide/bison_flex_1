@@ -1,0 +1,12 @@
+put("fib(0)=0");
+a=0;
+put("fib(1)=1");
+b=1;
+i=2;
+while(i<40){
+    f=a+b;
+    put("fib(",i,")=",f);
+    a=b;
+    b=f;
+    i=i+1;
+}
