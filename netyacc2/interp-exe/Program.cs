@@ -31,13 +31,12 @@ public class Exe
 
     public static void Demo(InterpParser parser, VM vm)
     {
-        var input = @"put(""hoge"");
-put(""page"");
-put(""hoge"");
+        var input = @"put(""*** Demo ***"");
+put(""counting down..."");
 e = 3;
 while (e > 0)
 {
-    put(e);
+    put(""e="", e);
     e = e - 1;
     }
 ";
@@ -50,6 +49,8 @@ while (e > 0)
         vm.Dump(parser.Code);
         Console.WriteLine("* Label Resolved. Jump/JumpF's operands mean PC");
         vm.Dump(resolvedCode);
+        Console.WriteLine("* String table");
+        vm.DumpStringTable(parser.ItoS);
         Console.WriteLine("* Executing...");
         vm.Execute(resolvedCode, parser.ItoS);
     }

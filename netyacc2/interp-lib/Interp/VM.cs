@@ -162,6 +162,14 @@ namespace interp_lib.Interp
             }
         }
 
+        public void DumpStringTable(Dictionary<int, string> ItoS)
+        {
+            foreach (var item in ItoS)
+            {
+                Console.WriteLine("[{0:D4}] {1}", item.Key, item.Value.Replace("\n", "\\n"));
+            }
+        }
+
         public void Reset()
         {
             stack = new int[STACK_SIZE];

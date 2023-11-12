@@ -48,5 +48,9 @@ dotnet run --project interp-exe/interp-exe.csproj demo
 # or,
 ./interp-exe/bin/Debug/net7.0/interp-exe demo
 # to run your app
+dotnet run --project interp-exe/interp-exe.csproj demo
 cat samples/sample1.txt | dotnet run --project interp-exe/interp-exe.csproj
+cat samples/sample2.txt | dotnet run --project interp-exe/interp-exe.csproj
+cat samples/sample3.txt | dotnet run --project interp-exe/interp-exe.csproj
+cat samples/sample_fib.txt | dotnet run --project interp-exe/interp-exe.csproj
 ```
