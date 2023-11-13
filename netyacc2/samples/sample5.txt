@@ -1,6 +1,10 @@
+/* int and string variable examples */
 int i;
 string s;
 
+// integer
 i=42;
+// string
 s="hello";
+// print both string and integer
 put("s=", s, ", i=", i);

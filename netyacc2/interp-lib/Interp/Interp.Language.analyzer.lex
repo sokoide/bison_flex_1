@@ -10,7 +10,8 @@
 %}
 
 %x STR
-%x COMMENT
+%x MLCOMMENT
+%x SLCOMMENT
 
 /* types */
 Int             int
@@ -35,8 +36,10 @@ Neop            !=
 /* symbols */
 Dq              \"
 Sq              \'
-CommSt          \/\*
-CommEd          \*\/
+MLCommSt        \/\*
+MLCommEd        \*\/
+SLCommSt        \/\/
+Eol             (\r\n?|\n)
 Symbol          [+\-\*\/\(\)=;,\{\}]
 
 /* number, ident */
@@ -45,7 +48,6 @@ Ident           [a-zA-Z][0-9a-zA-Z_]*
 
 /* others */
 Space           [ \t]
-Eol             (\r\n?|\n)
 
 %%
 
@@ -92,8 +94,12 @@ Eol             (\r\n?|\n)
 <STR>.              { sb.Append(yytext[0]); }
 
 /* comment */
-<INITIAL>{CommSt}   { BEGIN(COMMENT); }
-<COMMENT>{CommEd}   { BEGIN(INITIAL); }
-<COMMENT>[^\*]*     ;
+<INITIAL>{MLCommSt}     { BEGIN(MLCOMMENT); }
+<MLCOMMENT>{MLCommEd}   { BEGIN(INITIAL); }
+<MLCOMMENT>{Eol}        ;
+<MLCOMMENT>.            ;
 
+<INITIAL>{SLCommSt}     { BEGIN(SLCOMMENT); }
+<SLCOMMENT>{Eol}        { BEGIN(INITIAL); }
+<SLCOMMENT>.            ;
 %%

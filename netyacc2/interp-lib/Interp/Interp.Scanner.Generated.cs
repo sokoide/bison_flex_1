@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/13/2023 10:06:46PM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/13/2023 10:04:54PM>
+//  DateTime: 11/13/2023 11:00:11PM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/13/2023 11:00:08PM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -18,7 +18,6 @@
 // Version 1.2.1 of 24-June-2013
 //
 //
-#define BACKUP
 #define STACK
 #define PERSIST
 #define BYTEMODE
@@ -124,13 +123,14 @@ namespace interp_lib.Interp
         
         enum Result {accept, noMatch, contextFound};
 
-        const int maxAccept = 56;
-        const int initial = 57;
+        const int maxAccept = 62;
+        const int initial = 63;
         const int eofNum = 0;
         const int goStart = -1;
         const int INITIAL = 0;
         const int STR = 1;
-        const int COMMENT = 2;
+        const int MLCOMMENT = 2;
+        const int SLCOMMENT = 3;
 
 #region user code
 StringBuilder sb = new System.Text.StringBuilder();
@@ -171,9 +171,9 @@ StringBuilder sb = new System.Text.StringBuilder();
         }
     };
 
-    static int[] startState = new int[] {57, 59, 54, 0};
+    static int[] startState = new int[] {63, 65, 66, 67, 0};
 
-    static Table[] NxS = new Table[61] {
+    static Table[] NxS = new Table[68] {
 /* NxS[   0] */ new Table(0, 0, 0, null), // Shortest string ""
 /* NxS[   1] */ // Shortest string "\t"
       new Table(9, 24, -1, new sbyte[] {1, -1, -1, -1, -1, -1, 
@@ -185,7 +185,7 @@ StringBuilder sb = new System.Text.StringBuilder();
 /* NxS[   4] */ new Table(0, 0, -1, null), // Shortest string "\""
 /* NxS[   5] */ new Table(0, 0, -1, null), // Shortest string "("
 /* NxS[   6] */ // Shortest string "/"
-      new Table(42, 1, -1, new sbyte[] {46}),
+      new Table(42, 6, -1, new sbyte[] {46, -1, -1, -1, -1, 47}),
 /* NxS[   7] */ // Shortest string "0"
       new Table(48, 10, -1, new sbyte[] {7, 7, 7, 7, 7, 7, 
           7, 7, 7, 7}),
@@ -423,44 +423,55 @@ StringBuilder sb = new System.Text.StringBuilder();
 /* NxS[  44] */ new Table(0, 0, -1, null), // Shortest string "=="
 /* NxS[  45] */ new Table(0, 0, -1, null), // Shortest string "<="
 /* NxS[  46] */ new Table(0, 0, -1, null), // Shortest string "/*"
-/* NxS[  47] */ new Table(0, 0, -1, null), // Shortest string "!="
-/* NxS[  48] */ new Table(0, 0, -1, null), // Shortest string "\x01"
-/* NxS[  49] */ new Table(0, 0, -1, null), // Shortest string "\n"
-/* NxS[  50] */ new Table(0, 0, -1, null), // Shortest string "\""
-/* NxS[  51] */ // Shortest string "\\"
-      new Table(34, 77, -1, new sbyte[] {52, -1, -1, -1, -1, -1, 
+/* NxS[  47] */ new Table(0, 0, -1, null), // Shortest string "//"
+/* NxS[  48] */ new Table(0, 0, -1, null), // Shortest string "!="
+/* NxS[  49] */ new Table(0, 0, -1, null), // Shortest string "\x01"
+/* NxS[  50] */ new Table(0, 0, -1, null), // Shortest string "\n"
+/* NxS[  51] */ new Table(0, 0, -1, null), // Shortest string "\""
+/* NxS[  52] */ // Shortest string "\\"
+      new Table(34, 77, -1, new sbyte[] {53, -1, -1, -1, -1, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
-          -1, -1, -1, -1, -1, -1, 53}),
-/* NxS[  52] */ new Table(0, 0, -1, null), // Shortest string "\\\""
-/* NxS[  53] */ new Table(0, 0, -1, null), // Shortest string "\\n"
-/* NxS[  54] */ // Shortest string ""
-      new Table(42, 1, 55, new sbyte[] {60}),
-/* NxS[  55] */ // Shortest string "\x01"
-      new Table(42, 1, 55, new sbyte[] {-1}),
-/* NxS[  56] */ new Table(0, 0, -1, null), // Shortest string "*/"
-/* NxS[  57] */ // Shortest string ""
+          -1, -1, -1, -1, -1, -1, 54}),
+/* NxS[  53] */ new Table(0, 0, -1, null), // Shortest string "\\\""
+/* NxS[  54] */ new Table(0, 0, -1, null), // Shortest string "\\n"
+/* NxS[  55] */ new Table(0, 0, -1, null), // Shortest string "\x01"
+/* NxS[  56] */ new Table(0, 0, -1, null), // Shortest string "\n"
+/* NxS[  57] */ // Shortest string "\r"
+      new Table(10, 1, -1, new sbyte[] {56}),
+/* NxS[  58] */ // Shortest string "*"
+      new Table(47, 1, -1, new sbyte[] {59}),
+/* NxS[  59] */ new Table(0, 0, -1, null), // Shortest string "*/"
+/* NxS[  60] */ new Table(0, 0, -1, null), // Shortest string "\x01"
+/* NxS[  61] */ new Table(0, 0, -1, null), // Shortest string "\n"
+/* NxS[  62] */ // Shortest string "\r"
+      new Table(10, 1, -1, new sbyte[] {61}),
+/* NxS[  63] */ // Shortest string ""
       new Table(9, 117, -1, new sbyte[] {1, 2, -1, -1, 3, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
-          -1, 1, 58, 4, -1, -1, -1, -1, -1, 5, 5, 5, 5, 5, 5, -1, 
+          -1, 1, 64, 4, -1, -1, -1, -1, -1, 5, 5, 5, 5, 5, 5, -1, 
           6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, -1, 5, 8, 9, 10, 
           -1, -1, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 
           11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, -1, -1, -1, -1, 
           -1, -1, 11, 11, 11, 11, 12, 11, 13, 11, 14, 11, 11, 11, 11, 11, 
           11, 15, 11, 16, 17, 11, 11, 11, 18, 11, 11, 11, 5, -1, 5}),
-/* NxS[  58] */ // Shortest string "!"
-      new Table(61, 1, -1, new sbyte[] {47}),
-/* NxS[  59] */ // Shortest string ""
-      new Table(10, 83, 48, new sbyte[] {49, 48, 48, 48, 48, 48, 
-          48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 
-          48, 48, 50, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 
-          48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 
-          48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 
-          48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 51}),
-/* NxS[  60] */ // Shortest string "*"
-      new Table(47, 1, -1, new sbyte[] {56}),
+/* NxS[  64] */ // Shortest string "!"
+      new Table(61, 1, -1, new sbyte[] {48}),
+/* NxS[  65] */ // Shortest string ""
+      new Table(10, 83, 49, new sbyte[] {50, 49, 49, 49, 49, 49, 
+          49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 
+          49, 49, 51, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 
+          49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 
+          49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 
+          49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 52}),
+/* NxS[  66] */ // Shortest string ""
+      new Table(10, 33, 55, new sbyte[] {56, 55, 55, 57, 55, 55, 
+          55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 
+          55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 58}),
+/* NxS[  67] */ // Shortest string ""
+      new Table(10, 4, 60, new sbyte[] {61, 60, 60, 62}),
     };
 
 int NextState() {
@@ -975,35 +986,49 @@ return(int)Token.EQOP;
         case 45: // Recognized '{Leop}',	Shortest string "<="
 return(int)Token.LEOP;
             break;
-        case 46: // Recognized '{CommSt}',	Shortest string "/*"
-BEGIN(COMMENT);
+        case 46: // Recognized '{MLCommSt}',	Shortest string "/*"
+BEGIN(MLCOMMENT);
             break;
-        case 47: // Recognized '{Neop}',	Shortest string "!="
+        case 47: // Recognized '{SLCommSt}',	Shortest string "//"
+BEGIN(SLCOMMENT);
+            break;
+        case 48: // Recognized '{Neop}',	Shortest string "!="
 return(int)Token.NEOP;
             break;
-        case 48: // In <STR> Recognized '.',	Shortest string "\x01"
-        case 51: // In <STR> Recognized '.',	Shortest string "\\"
+        case 49: // In <STR> Recognized '.',	Shortest string "\x01"
+        case 52: // In <STR> Recognized '.',	Shortest string "\\"
 sb.Append(yytext[0]);
             break;
-        case 49: // In <STR> Recognized '\n',	Shortest string "\n"
+        case 50: // In <STR> Recognized '\n',	Shortest string "\n"
 throw new Exception("string not closed");
             break;
-        case 50: // In <STR> Recognized '{Dq}',	Shortest string "\""
+        case 51: // In <STR> Recognized '{Dq}',	Shortest string "\""
 yylval.node = new Node(Token.STRING_LITERAL, sb.ToString());
                     BEGIN(INITIAL);
                     return (int)Token.STRING_LITERAL;
             break;
-        case 52: // In <STR> Recognized '\\\"',	Shortest string "\\\""
+        case 53: // In <STR> Recognized '\\\"',	Shortest string "\\\""
 sb.Append("\"");
             break;
-        case 53: // In <STR> Recognized '\\n',	Shortest string "\\n"
+        case 54: // In <STR> Recognized '\\n',	Shortest string "\\n"
 sb.Append("\n");
             break;
-        case 54: // In <COMMENT> Recognized '[^\*]*',	Shortest string ""
-        case 55: // In <COMMENT> Recognized '[^\*]*',	Shortest string "\x01"
+        case 55: // In <MLCOMMENT> Recognized '.',	Shortest string "\x01"
+        case 58: // In <MLCOMMENT> Recognized '.',	Shortest string "*"
 ;
             break;
-        case 56: // In <COMMENT> Recognized '{CommEd}',	Shortest string "*/"
+        case 56: // In <MLCOMMENT> Recognized '{Eol}',	Shortest string "\n"
+        case 57: // In <MLCOMMENT> Recognized '{Eol}',	Shortest string "\r"
+;
+            break;
+        case 59: // In <MLCOMMENT> Recognized '{MLCommEd}',	Shortest string "*/"
+BEGIN(INITIAL);
+            break;
+        case 60: // In <SLCOMMENT> Recognized '.',	Shortest string "\x01"
+;
+            break;
+        case 61: // In <SLCOMMENT> Recognized '{Eol}',	Shortest string "\n"
+        case 62: // In <SLCOMMENT> Recognized '{Eol}',	Shortest string "\r"
 BEGIN(INITIAL);
             break;
         default:
