@@ -12,8 +12,8 @@ namespace interp_lib.Interp
             {
                 var st = new StackTrace();
                 var sf = st.GetFrame(1);
-                var cn = sf.GetMethod().ReflectedType.Name ?? "";
-                var mn = sf.GetMethod().Name ?? "";
+                var cn = sf?.GetMethod()?.ReflectedType?.Name ?? "";
+                var mn = sf?.GetMethod()?.Name ?? "";
                 Console.WriteLine("[{0}::{1}] {2}", cn, mn, s);
             }
         }
@@ -23,8 +23,8 @@ namespace interp_lib.Interp
             {
                 var st = new StackTrace();
                 var sf = st.GetFrame(1);
-                var cn = sf.GetMethod().ReflectedType.Name;
-                var mn = sf.GetMethod().Name;
+                var cn = sf?.GetMethod()?.ReflectedType?.Name ?? "";
+                var mn = sf?.GetMethod()?.Name ?? "";
                 var s = String.Format(format, opts);
                 Console.WriteLine("[{0}::{1}] {2}", cn, mn, s);
             }

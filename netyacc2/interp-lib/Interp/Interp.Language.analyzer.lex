@@ -12,6 +12,9 @@
 %x STR
 %x COMMENT
 
+/* types */
+Int             int
+String          string
 /* keywords */
 If              if
 Else            else
@@ -48,6 +51,9 @@ Eol             (\r\n?|\n)
 
 /* Scanner body */
 
+<INITIAL>{Int}       { return(int)Token.INT; }
+<INITIAL>{String}    { return(int)Token.STRING; }
+
 <INITIAL>{If}        { return(int)Token.IF; }
 <INITIAL>{Else}      { return(int)Token.ELSE; }
 <INITIAL>{While}     { return(int)Token.WHILE; }
@@ -65,8 +71,8 @@ Eol             (\r\n?|\n)
 <INITIAL>{Symbol}    { return(yytext[0]); }
 <INITIAL>{Number}    {
                     // Console.WriteLine("number: {0}", yytext);
-                    yylval.node = new Node(Token.NUMBER, int.Parse(yytext));
-                    return (int)Token.NUMBER; }
+                    yylval.node = new Node(Token.NUMBER_LITERAL, int.Parse(yytext));
+                    return (int)Token.NUMBER_LITERAL; }
 <INITIAL>{Ident}     {
                     // Console.WriteLine("ident: {0}", yytext);
                     yylval.node = new Node(Token.IDENT, yytext);
@@ -77,9 +83,9 @@ Eol             (\r\n?|\n)
 /* string */
 <INITIAL>{Dq}       { sb.Clear(); BEGIN(STR); }
 <STR>{Dq}           {
-                    yylval.node = new Node(Token.STRING, sb.ToString());
+                    yylval.node = new Node(Token.STRING_LITERAL, sb.ToString());
                     BEGIN(INITIAL);
-                    return (int)Token.STRING; }
+                    return (int)Token.STRING_LITERAL; }
 <STR>\\\"           { sb.Append("\""); }
 <STR>\\n            { sb.Append("\n"); }
 <STR>\n             { throw new Exception("string not closed"); }

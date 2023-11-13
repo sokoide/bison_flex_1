@@ -1,10 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace interp_lib.Interp
 {
     public partial class InterpParser
     {
         public List<Instr> Code = new List<Instr>();
+        // string literal -> index
         public Dictionary<string, int> StoI = new Dictionary<string, int>();
+        // index -> string literal
         public Dictionary<int, string> ItoS = new Dictionary<int, string>();
+        // variable -> ident id
+        public Dictionary<Variable, int> VtoI = new Dictionary<Variable, int>();
+        // ident id -> variable
+        public Dictionary<int, Variable> ItoV = new Dictionary<int, Variable>();
 
         internal int labelno = FIRST_LABEL;
 
@@ -16,6 +24,8 @@ namespace interp_lib.Interp
             Code = new List<Instr>();
             StoI = new Dictionary<string, int>();
             ItoS = new Dictionary<int, string>();
+            VtoI = new Dictionary<Variable, int>();
+            ItoV = new Dictionary<int, Variable>();
         }
 
         public void Parse(string s)
@@ -56,8 +66,11 @@ namespace interp_lib.Interp
                 case Token.IDENT:
                     GenCode(Op.PushI, n);
                     break;
-                case Token.NUMBER:
+                case Token.NUMBER_LITERAL:
                     GenCode(Op.PushN, n);
+                    break;
+                case Token.STRING_LITERAL:
+                    GenCode(Op.PushS, n);
                     break;
                 default:
                     GenCode(Op.Calc, n);
@@ -72,6 +85,9 @@ namespace interp_lib.Interp
             {
                 case Op.PushI:
                     instr = new Instr(op, IdentId(n.S));
+                    break;
+                case Op.PushS:
+                    instr = new Instr(op, StringLiteralId(n.S));
                     break;
                 case Op.Pop:
                     instr = new Instr(op, IdentId(n.S));
@@ -109,20 +125,12 @@ namespace interp_lib.Interp
             return labelno++;
         }
 
-        public int IdentId(string? s)
+        public int StringLiteralId(string s)
         {
-            // TODO: currently, only 'a' to 'z' are supported
-            if (s != null)
-            {
-                return s.ToLower()[0] - 'a';
-            }
-            else
-            {
-                return int.MinValue;
-            }
+            return PoolStringLiteral(s);
         }
 
-        public int Pool(string s)
+        public int PoolStringLiteral(string s)
         {
             if (StoI.ContainsKey(s))
             {
@@ -131,6 +139,54 @@ namespace interp_lib.Interp
             int n = StoI.Count + 1;
             StoI[s] = n;
             ItoS[n] = s;
+            return n;
+        }
+
+        public int IdentId(string s)
+        {
+            return PoolIdent(s);
+        }
+
+        public int PoolIdent(string s, VariableType vt = VariableType.INT)
+        {
+            Variable v = new Variable(vt, s);
+            if (VtoI.ContainsKey(v))
+            {
+                return VtoI[v];
+            }
+            int n = VtoI.Count + 1;
+            VtoI[v] = n;
+            ItoV[n] = v;
+            return n;
+        }
+
+        public int UpdateIdent(string s, Token token)
+        {
+            int n;
+            VariableType vt;
+            switch (token)
+            {
+                case Token.INT:
+                    vt = VariableType.INT;
+                    break;
+                case Token.STRING:
+                    vt = VariableType.STRING;
+                    break;
+                default:
+                    throw new Exception($"Token {token} not implemented yet");
+            }
+            if (token == Token.STRING) vt = VariableType.STRING;
+
+            Variable v = new Variable(vt, s);
+            if (VtoI.ContainsKey(v))
+            {
+                n = VtoI[v];
+                ItoV[n] = v;
+                return VtoI[v];
+            }
+            n = VtoI.Count + 1;
+            VtoI[v] = n;
+            ItoV[n] = v;
             return n;
         }
     }

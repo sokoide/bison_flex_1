@@ -7,16 +7,18 @@
 %union {
        public Node node;    // node
        public int labelno;  // label number
-       public int addr;     // string address
+       public int addr;     // string literal address
+       public Token token;  // token
 }
 
 %left '+' '-'
 %left '*' '/'
 %right MINUS
 
-%token<node> NUMBER
+%token<node> NUMBER_LITERAL
 %token<node> IDENT
-%token<node> STRING
+%token<node> STRING_LITERAL
+%token INT STRING
 %token IF ELSE WHILE RETURN
 %token EQOP GTOP GEOP LTOP LEOP NEOP
 %token ADD SUB MUL DIV
@@ -40,6 +42,7 @@ stmt:  IDENT '=' expr ';' {
               GenNode($3);
               GenCode(Op.Pop, $1);
        }
+       | declaration ';'
        | if_prefix stmt {
               GenCode(Op.Label, $1);
        }
@@ -61,16 +64,23 @@ stmt:  IDENT '=' expr ';' {
        }
        | PUT '(' put_list ')' ';' {
               // print \n after put_list
-              GenCode(Op.PutS, Pool("\n"));
+              GenCode(Op.PutS, PoolStringLiteral("\n"));
        }
        | RETURN IDENT ';' {
               GenCode(Op.ReturnI, $2);
        }
-       | RETURN NUMBER ';' {
+       | RETURN NUMBER_LITERAL ';' {
               GenCode(Op.ReturnN, $2);
        }
        | '{' stmts '}'
        | ';'
+       ;
+
+declaration: type IDENT { UpdateIdent($2.S, $1.token); }
+       ;
+
+type:    INT { $$.token = Token.INT; }
+       | STRING { $$.token = Token.STRING;}
        ;
 
 put_list: put_id_num_str
@@ -78,9 +88,9 @@ put_list: put_id_num_str
        ;
 
 put_id_num_str: IDENT { GenCode(Op.PutI, $1); }
-       | NUMBER { GenCode(Op.PutN, $1); }
-       | STRING {
-              GenCode(Op.PutS, Pool($1.S));
+       | NUMBER_LITERAL { GenCode(Op.PutN, $1); }
+       | STRING_LITERAL {
+              GenCode(Op.PutS, PoolStringLiteral($1.S));
        }
        ;
 
@@ -114,8 +124,9 @@ expr:  expr '+' expr { $$ = MakeNode(Token.ADD, $1, $3); }
        | expr '*' expr { $$ = MakeNode(Token.MUL, $1, $3); }
        | expr '/' expr { $$ = MakeNode(Token.DIV, $1, $3); }
        | '(' expr ')' { $$ = $2; }
-       | IDENT { $$ = $1; }
-       | NUMBER { $$ = $1; }
+       | IDENT { PoolIdent($1.S); $$ = $1; }
+       | STRING_LITERAL { PoolStringLiteral($1.S); $$ = $1; }
+       | NUMBER_LITERAL { $$ = $1; }
        ;
 
 %%

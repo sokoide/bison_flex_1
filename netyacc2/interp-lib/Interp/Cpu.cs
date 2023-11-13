@@ -5,6 +5,7 @@ namespace interp_lib.Interp
         Pop,
         PushI,
         PushN,
+        PushS,
         Calc,
         Label,
         Jump,

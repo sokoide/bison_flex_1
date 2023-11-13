@@ -1,0 +1,6 @@
+int i;
+string s;
+
+i=42;
+s="hello";
+put("s=", s, ", i=", i);

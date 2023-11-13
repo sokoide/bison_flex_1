@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace interp_lib.Interp
 {
     public class VM
@@ -6,16 +8,16 @@ namespace interp_lib.Interp
 
         private int pc;
         private int sp;
-        private int[] stack;
-        private int[] g;
-        private List<int> labels;
+        private int[] stack = { };
+        private int[] g = { };
+        private List<int> labels = new List<int>();
 
         public VM()
         {
             Reset();
         }
 
-        public int Execute(List<Instr> code, Dictionary<int, string> ItoS)
+        public int Execute(List<Instr> code, Dictionary<int, string> ItoS, Dictionary<int, Variable> ItoV)
         {
             Op op;
             int sub;
@@ -37,6 +39,7 @@ namespace interp_lib.Interp
                         stack[sp] = g[sub];
                         break;
                     case Op.PushN:
+                    case Op.PushS:
                         if (++sp >= STACK_SIZE)
                         {
                             throw new Exception("stack overflow");
@@ -106,7 +109,19 @@ namespace interp_lib.Interp
                         }
                         break;
                     case Op.PutI:
-                        Console.Write("{0}", g[sub]);
+                        Variable v = ItoV[sub];
+                        if (v.Vt == VariableType.INT)
+                        {
+                            Console.Write("{0}", g[sub]);
+                        }
+                        else if (v.Vt == VariableType.STRING)
+                        {
+                            Console.Write("{0}", ItoS[g[sub]]);
+                        }
+                        else
+                        {
+                            throw new Exception($"VariableType {v.Vt} not supported");
+                        }
                         break;
                     case Op.PutN:
                         Console.Write("{0}", sub);
@@ -174,6 +189,14 @@ namespace interp_lib.Interp
             foreach (var item in ItoS)
             {
                 Console.WriteLine("[{0:D4}] {1}", item.Key, item.Value.Replace("\n", "\\n"));
+            }
+        }
+
+        public void DumpVariableTable(Dictionary<Variable, int> VtoI)
+        {
+            foreach (var item in VtoI)
+            {
+                Console.WriteLine("{0}, Index: {1}", item.Key, item.Value);
             }
         }
 

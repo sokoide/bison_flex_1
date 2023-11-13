@@ -81,10 +81,12 @@ while (e > 0)
             vm.Dump(resolvedCode);
             Console.WriteLine("* String table");
             vm.DumpStringTable(parser.ItoS);
+            Console.WriteLine("* Variable table");
+            vm.DumpVariableTable(parser.VtoI);
             Console.WriteLine();
         }
 
-        ret = vm.Execute(resolvedCode, parser.ItoS);
+        ret = vm.Execute(resolvedCode, parser.ItoS, parser.ItoV);
 
         return ret;
     }

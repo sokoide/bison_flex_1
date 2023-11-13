@@ -27,22 +27,9 @@ public class ParserTest : IDisposable
         tgt.Parse(input);
     }
 
-    [Fact]
-    public void Parser_Exception()
-    {
-        string input = @"a if then;";
-
-        var exc = Assert.Throws<Exception>(() =>
-        tgt.Parse(input));
-
-        // "1:2" means line 1, col 2
-        string want = "1:2 Syntax error, unexpected IF";
-        string got = exc.Message.Substring(0, want.Length);
-        // test if got starts with want
-        Assert.Equal(want, got);
-    }
-
     [Theory]
+    // "1:2" means line 1, col 2
+    [InlineData("a if then;", "1:2 Syntax error, unexpected IF")]
     [InlineData("a then", "1:2 Syntax error, unexpected IDENT")]
     [InlineData("a=1;\nb hoge", "2:2 Syntax error, unexpected IDENT")]
     [InlineData("a=1;\nb=1;\nc hoge", "3:2 Syntax error, unexpected IDENT")]
@@ -52,7 +39,7 @@ public class ParserTest : IDisposable
         tgt.Parse(input));
 
         string got = exc.Message.Substring(0, want.Length);
-        // test if got starts with want
+        // test if `got` starts with `want`
         Assert.Equal(want, got);
     }
 
@@ -65,11 +52,10 @@ public class ParserTest : IDisposable
         Assert.Equal(Op.PushN, tgt.Code[0].Op);
         Assert.Equal(42, tgt.Code[0].Sub);
         Assert.Equal(Op.Pop, tgt.Code[1].Op);
-        Assert.Equal('f' - 'a', tgt.Code[1].Sub);
     }
 
     [Theory]
-    [InlineData(Op.PushN, Token.NUMBER, 42, 42)]
+    [InlineData(Op.PushN, Token.NUMBER_LITERAL, 42, 42)]
     [InlineData(Op.Calc, Token.ADD, (int)Token.ADD, (int)Token.ADD)]
     [InlineData(Op.Calc, Token.SUB, (int)Token.SUB, (int)Token.SUB)]
     [InlineData(Op.Calc, Token.MUL, (int)Token.MUL, (int)Token.MUL)]
@@ -84,11 +70,11 @@ public class ParserTest : IDisposable
     }
 
     [Theory]
-    [InlineData(Op.PushI, Token.IDENT, "a", 0)]
-    [InlineData(Op.PushI, Token.IDENT, "foo", 5)]
-    [InlineData(Op.PushI, Token.IDENT, "zoo", 25)]
+    [InlineData(Op.PushI, Token.IDENT, "a", 1)]
+    [InlineData(Op.PushI, Token.IDENT, "foo", 1)]
+    [InlineData(Op.PushI, Token.IDENT, "zoo", 1)]
     [InlineData(Op.Pop, Token.IDENT, "b", 1)]
-    [InlineData(Op.PutI, Token.IDENT, "c", 2)]
+    [InlineData(Op.PutI, Token.IDENT, "c", 1)]
     public void Parser_GenCodeS(Op op, Token token, string s, int wantSub)
     {
         tgt.GenCode(op, new Node(token, s));
@@ -98,26 +84,61 @@ public class ParserTest : IDisposable
     }
 
     [Fact]
-    public void Parser_Pool()
+    public void Parser_PoolStringLiteral()
     {
         int got;
         int want;
 
         want = 1;
-        got = tgt.Pool("hoge");
+        got = tgt.PoolStringLiteral("hoge");
         Assert.Equal(want, got);
 
         want = 2;
-        got = tgt.Pool("page");
+        got = tgt.PoolStringLiteral("page");
         Assert.Equal(want, got);
 
         want = 3;
-        got = tgt.Pool("foo");
+        got = tgt.PoolStringLiteral("foo");
         Assert.Equal(want, got);
 
         want = 1;
-        got = tgt.Pool("hoge");
+        got = tgt.PoolStringLiteral("hoge");
         Assert.Equal(want, got);
     }
 
+    [Fact]
+    public void Parser_PoolIdent()
+    {
+        int got;
+        int want;
+        Variable gotV;
+
+        want = 1;
+        got = tgt.PoolIdent("hoge");
+        Assert.Equal(want, got);
+        gotV = tgt.ItoV[want];
+        Assert.Equal(VariableType.INT, gotV.Vt);
+
+        want = 2;
+        got = tgt.PoolIdent("page");
+        Assert.Equal(want, got);
+        gotV = tgt.ItoV[want];
+        Assert.Equal(VariableType.INT, gotV.Vt);
+
+        want = 1;
+        got = tgt.UpdateIdent("hoge", Token.STRING);
+        Assert.Equal(want, got);
+        gotV = tgt.ItoV[want];
+        Assert.Equal(VariableType.STRING, gotV.Vt);
+    }
+
+    [Fact]
+    public void Parser_Declaration()
+    {
+        string input = "int a; string b;";
+        tgt.Parse(input);
+
+        Assert.Equal(VariableType.INT, tgt.ItoV[tgt.IdentId("a")].Vt);
+        Assert.Equal(VariableType.STRING, tgt.ItoV[tgt.IdentId("b")].Vt);
+    }
 }
