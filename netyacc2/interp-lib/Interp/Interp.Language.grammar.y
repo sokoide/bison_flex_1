@@ -53,7 +53,7 @@ stmt:  IDENT '=' expr ';' {
               GenCode(Op.Label, $<labelno>4);
        }
        | while_prefix {
-              // $<labelno>$ means a value of this scope which means $2 usied by the following `stmt``
+              // $<labelno>$ means a value of this scope which means $2 used by the following `stmt`
               GenCode(Op.JumpF, $<labelno>$=NewLabel());
        } stmt {
               // $1 means a value of `while_prefix`

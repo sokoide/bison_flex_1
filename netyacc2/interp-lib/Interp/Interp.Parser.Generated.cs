@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 11/13/2023 10:38:46PM
-// Input file <Interp/Interp.Language.grammar.y - 11/13/2023 10:38:13PM>
+// DateTime: 11/14/2023 9:41:17PM
+// Input file <Interp/Interp.Language.grammar.y - 11/14/2023 9:41:04PM>
 
 // options: no-lines gplex
 
@@ -230,7 +230,7 @@ public partial class InterpParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 10: // Anon@2 -> /* empty */
 {
-              // $<labelno>$ means a value of this scope which means $2 usied by the following `stmt``
+              // $<labelno>$ means a value of this scope which means $2 used by the following `stmt`
               GenCode(Op.JumpF, CurrentSemanticValue.labelno=NewLabel());
        }
         break;

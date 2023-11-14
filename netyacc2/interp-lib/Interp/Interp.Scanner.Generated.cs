@@ -5,7 +5,7 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/13/2023 11:00:11PM
+//  DateTime: 11/14/2023 9:41:17PM
 //  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/13/2023 11:00:08PM>
 //  GPLEX frame file <embedded resource>
 //
