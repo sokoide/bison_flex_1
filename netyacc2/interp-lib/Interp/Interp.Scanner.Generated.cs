@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 11/15/2023 10:28:23PM
-//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/15/2023 10:32:00AM>
+//  DateTime: 11/19/2023 9:30:25 AM
+//  GPLEX input file <Interp/Interp.Language.analyzer.lex - 11/15/2023 10:32:00 AM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize

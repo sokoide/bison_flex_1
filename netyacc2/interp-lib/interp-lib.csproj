@@ -1,31 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>interp_lib</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <DefineConstants>EXPORT_GPPG</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup Label="Interp">
-    <YaccFile Include="Interp\Interp.Language.grammar.y">
-      <OutputFile>Interp\Interp.Parser.Generated.cs</OutputFile>
-      <Arguments>/gplex /nolines</Arguments>
-    </YaccFile>
-    <None Include="Interp\Interp.Parser.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Interp.Language.grammar.y</DependentUpon>
-    </None>
-    <LexFile Include="Interp\Interp.Language.analyzer.lex">
-      <OutputFile>Interp\Interp.Scanner.Generated.cs</OutputFile>
-    </LexFile>
-    <None Include="Interp\Interp.Scanner.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Interp.Language.analyzer.lex</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="YaccLexTools" Version="1.2.1" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>interp_lib</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <DefineConstants>EXPORT_GPPG</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup Label="Interp">
+        <YaccFile Include="Interp\Interp.Language.grammar.y">
+            <OutputFile>Interp\Interp.Parser.Generated.cs</OutputFile>
+            <Arguments>/gplex /nolines</Arguments>
+        </YaccFile>
+        <None Include="Interp\Interp.Parser.Generated.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>Interp.Language.grammar.y</DependentUpon>
+        </None>
+        <LexFile Include="Interp\Interp.Language.analyzer.lex">
+            <OutputFile>Interp\Interp.Scanner.Generated.cs</OutputFile>
+        </LexFile>
+        <None Include="Interp\Interp.Scanner.Generated.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>Interp.Language.analyzer.lex</DependentUpon>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="YaccLexTools" Version="1.2.2" />
+    </ItemGroup>
 </Project>
