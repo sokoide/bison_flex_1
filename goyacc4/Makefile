@@ -2,21 +2,28 @@ TARGET=./mini-compiler
 SRCS=main.go lexer.go eval.go ast.go
 LL=DEBUG
 
+.PHONY: all clean generate run test testcli
+
 all: $(TARGET)
 
-$(TARGET): y.go $(SRCS)
+$(TARGET): grammer.go $(SRCS)
 	go build -o $(TARGET)
 
-y.go: *.go.y
-	goyacc $<
+generate: grammer.go
+
+grammer.go: grammer.go.y
+	go generate ./
 
 clean:
-	rm $(TARGET) y.go y.output
+	rm $(TARGET) y.output grammer.go
 
 run: $(TARGET)
 	$(TARGET)
 
 test: $(TARGET)
+	go test -v ./...
+
+testcli: $(TARGET)
 	echo 'put("ans=",1*2);' | $(TARGET) -logLevel $(LL)
 	@echo 'did you see ans=2?'
 	echo 'put("ans=",(1*2)+10/3);' | $(TARGET) -logLevel $(LL)
