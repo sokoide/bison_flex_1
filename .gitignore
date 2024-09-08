@@ -4,9 +4,11 @@
 y.go
 tags
 *.lst
+.vscode/
 
 # binaries
 hoge
+calc
 **/bin/*
 **/obj/*
 **/YaccLexTools*/*
