@@ -1,14 +1,20 @@
 %{
 package main
+
+import (
+	log "github.com/sirupsen/logrus"
+)
 %}
 
 %union{
+    stmts   []statement
     stmt    statement
     expr    expression
     tok     token
 }
 
-%type<stmt> program stmts stmt
+%type<stmts> program stmts
+%type<stmt> stmt
 %type<expr> expr
 %token<tok> NUMBER IDENT
 
@@ -26,18 +32,32 @@ program:
     ;
 
 stmts:
-    stmt { $$ = $1; }
-    | stmts stmt { $$ = $2; }
+    /* empty */ {
+        log.Info("stmts: empty");
+        $$ = nil
+    }
+    | stmts stmt {
+        log.Infof("stmts: stmt %v", $2);
+        $$ = append($$, $2)
+    }
     ;
 
 stmt:
-    expr ';' { $$ = &exprStatement{Expr: $1} }
+    IDENT '=' expr ';' {
+        $$ = &assignStatement{Name: $1.lit, Expr: $3}
+    }
+    | expr ';' {
+        $$ = &exprStatement{Expr: $1}
+    }
     ;
 
 expr:
     NUMBER {
         $$ = &numberExpression{Lit: $1.lit}
 	}
+    | IDENT {
+         $$ = &variableExpression{Lit: $1.lit}
+    }
     | expr '+' expr {
         $$ = &binOpExpression{LHS: $1, Operator: int('+'), RHS: $3}
 	}
@@ -53,8 +73,8 @@ expr:
     | '(' expr ')' {
         $$ = &parenExpression{SubExpr: $2}
     }
-    | IDENT '=' expr {
-        $$ = &assignExpression{}
-    }
+    ;
 
 %%
+// global vars
+var vars = map[string]int{}

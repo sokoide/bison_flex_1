@@ -18,8 +18,8 @@ func main() {
 
 	scanner.Init(strings.Join(source, "\n"))
 
-	var program statement = parse(scanner)
-	_, err := evaluateStmt(program)
+	var prog []statement = parse(scanner)
+	_, err := evaluateStmts(prog)
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ type lexer struct {
 	s         *scanner
 	recentLit string
 	recentPos position
-	program   statement
+	program   []statement
 }
 
 // Lex Called by goyacc
@@ -50,7 +50,7 @@ func (l *lexer) Error(e string) {
 		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
 }
 
-func parse(s *scanner) statement {
+func parse(s *scanner) []statement {
 	l := lexer{s: s}
 	if yyParse(&l) != 0 {
 		panic("Parse error")

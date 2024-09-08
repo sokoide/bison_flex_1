@@ -22,5 +22,6 @@ test: $(TARGET)
 	@echo "did you see 5?"
 	echo "(40+1)+2/2;" | $(TARGET)
 	@echo "did you see 42?"
-	# TODO:
 	# echo "a=40;b=2;a+b;" | $(TARGET)
+	echo "a=40;b=2;c=a+b;" | $(TARGET)
+	@echo "did you see c = 42?"

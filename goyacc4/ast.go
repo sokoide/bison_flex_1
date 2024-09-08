@@ -21,14 +21,15 @@ type (
 		RHS      expression
 	}
 
-	assignExpression struct {
+	variableExpression struct {
+		Lit string
 	}
 )
 
-func (x *numberExpression) expression() {}
-func (x *parenExpression) expression()  {}
-func (x *binOpExpression) expression()  {}
-func (x *assignExpression) expression() {}
+func (x *numberExpression) expression()   {}
+func (x *parenExpression) expression()    {}
+func (x *binOpExpression) expression()    {}
+func (x *variableExpression) expression() {}
 
 type (
 	statement interface {
@@ -42,8 +43,15 @@ type (
 	exprStatement struct {
 		Expr expression
 	}
+
+	assignStatement struct {
+		Name string
+		Expr expression
+	}
 )
 
 func (x *nullStatement) statement() {}
 
 func (x *exprStatement) statement() {}
+
+func (x *assignStatement) statement() {}
