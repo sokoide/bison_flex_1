@@ -40,6 +40,7 @@ type (
 type (
 	nullStatement struct {
 	}
+
 	exprStatement struct {
 		Expr expression
 	}
@@ -48,6 +49,10 @@ type (
 		Name string
 		Expr expression
 	}
+
+	putStatement struct {
+		Exprs []expression
+	}
 )
 
 func (x *nullStatement) statement() {}
@@ -55,3 +60,5 @@ func (x *nullStatement) statement() {}
 func (x *exprStatement) statement() {}
 
 func (x *assignStatement) statement() {}
+
+func (x *putStatement) statement() {}

@@ -34,11 +34,11 @@ type lexer struct {
 
 // Lex Called by goyacc
 func (l *lexer) Lex(lval *yySymType) int {
-	tok, lit, pos := l.s.Scan()
+	tok, lit, pos, tt := l.s.Scan()
 	if tok == EOF {
 		return 0
 	}
-	lval.tok = token{tok: tok, lit: lit, pos: pos}
+	lval.tok = token{tok: tok, lit: lit, pos: pos, tt: tt}
 	l.recentLit = lit
 	l.recentPos = pos
 	return tok

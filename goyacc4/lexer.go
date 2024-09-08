@@ -7,12 +7,27 @@ const (
 	UNKNOWN = 0 * iota
 )
 
-var keywords = map[string]int{}
+var keywords = map[string]int{
+	"put": PUT,
+}
+
+// tokenType enum
+type tokenType int
+
+const (
+	tokenTypeNone tokenType = iota
+	tokenTypeNumberLiteral
+	tokenTypeStringLiteral
+	tokenTypeIdent
+	tokenTypeKeyword
+	tokenTypeOp
+)
 
 type token struct {
 	tok int
 	lit string
 	pos position
+	tt  tokenType
 }
 
 type position struct {
@@ -31,16 +46,19 @@ func (s *scanner) Init(src string) {
 	s.src = []rune(src)
 }
 
-func (s *scanner) Scan() (tok int, lit string, pos position) {
+func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
 	s.skipWhiteSpace()
 	pos = s.position()
 	switch ch := s.peek(); {
 	case isDigit(ch):
-		tok, lit = NUMBER, s.scanNumber()
+		tt = tokenTypeNumberLiteral
+		tok, lit = NUMBER_LITERAL, s.scanNumber()
 	case isLetter(ch):
+		tt = tokenTypeIdent
 		tok, lit = IDENT, s.scanIdentifier()
 		if t, ok := keywords[lit]; ok {
 			tok = t
+			tt = tokenTypeKeyword
 		}
 	default:
 		switch ch {
@@ -49,6 +67,7 @@ func (s *scanner) Scan() (tok int, lit string, pos position) {
 		case '.', '[', ']', '(', ')', ';', '+', '-', '*', '/', '%', '=':
 			tok = int(ch)
 			lit = string(ch)
+			tt = tokenTypeOp
 		}
 		s.next()
 	}

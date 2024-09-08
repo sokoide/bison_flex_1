@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
@@ -42,13 +43,40 @@ func evaluateStmt(stmt statement) (int, error) {
 			return 0, nil
 		}
 		return 0, err
+	case *putStatement:
+		for _, expr := range s.Exprs {
+			printExpr(expr)
+		}
+		fmt.Println()
+		return 0, err
 	default:
-		return 0, fmt.Errorf("%s not supported yet")
+		return 0, fmt.Errorf("%s not supported yet", reflect.TypeOf(stmt))
+	}
+}
+
+func printExpr(expr expression) {
+	log.Debugf("printExpr %+v\n", expr)
+
+	var ret int
+	var err error
+
+	switch e := expr.(type) {
+	case *numberExpression:
+		fmt.Printf("n:%s", e.Lit)
+	case *variableExpression:
+		fmt.Printf("%d", vars[e.Lit])
+	default:
+		ret, err = evaluateExpr(expr)
+		if err == nil {
+			fmt.Printf("%d", ret)
+			return
+		}
+		log.Errorf("expr: %v failed to print", expr)
 	}
 }
 
 func evaluateExpr(expr expression) (int, error) {
-	log.Debugf("expr %+v\n", expr)
+	log.Debugf("evaluateExpr %+v\n", expr)
 	switch e := expr.(type) {
 
 	case *numberExpression:
