@@ -24,12 +24,17 @@ type (
 	variableExpression struct {
 		Lit string
 	}
+
+	stringExpression struct {
+		Lit string
+	}
 )
 
 func (x *numberExpression) expression()   {}
 func (x *parenExpression) expression()    {}
 func (x *binOpExpression) expression()    {}
 func (x *variableExpression) expression() {}
+func (x *stringExpression) expression()   {}
 
 type (
 	statement interface {

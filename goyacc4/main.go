@@ -2,13 +2,40 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
 
+type options struct {
+	logLevel string
+	ll       log.Level
+}
+
+var o options
+
+func parseFlags() {
+	var err error
+	var ll log.Level
+	flag.StringVar(&o.logLevel, "logLevel", "debug", "TRACE | DEBUG | INFO | WARN | ERROR")
+	flag.Parse()
+
+	ll, err = log.ParseLevel(o.logLevel)
+	if err == nil {
+		o.ll = ll
+	} else {
+		o.ll = log.InfoLevel
+		log.Warnf("logLevel: %s is not supported. falling back to INFO", o.logLevel)
+	}
+}
+
 func main() {
+	log.SetFormatter(&log.TextFormatter{})
+	parseFlags()
+	log.SetLevel(o.ll)
+
 	s := bufio.NewScanner(os.Stdin)
 	scanner := new(scanner)
 	source := []string{}
@@ -23,31 +50,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-type lexer struct {
-	s         *scanner
-	recentLit string
-	recentPos position
-	program   []statement
-}
-
-// Lex Called by goyacc
-func (l *lexer) Lex(lval *yySymType) int {
-	tok, lit, pos, tt := l.s.Scan()
-	if tok == EOF {
-		return 0
-	}
-	lval.tok = token{tok: tok, lit: lit, pos: pos, tt: tt}
-	l.recentLit = lit
-	l.recentPos = pos
-	return tok
-}
-
-// Error Called by goyacc
-func (l *lexer) Error(e string) {
-	log.Fatalf("Line %d, Column %d: %q %s",
-		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
 }
 
 func parse(s *scanner) []statement {

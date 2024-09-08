@@ -36,11 +36,11 @@ program:
 
 stmts:
 	/* empty */ {
-		log.Info("stmts: empty");
+		log.Debug("stmts: empty");
 		$$ = nil
 	}
 	| stmts stmt {
-		log.Infof("stmts: stmt %v", $2);
+		log.Debugf("stmts: stmt %v", $2);
 		$$ = append($$, $2)
 	}
 	;
@@ -71,6 +71,9 @@ expr:
 	}
 	| IDENT {
 		 $$ = &variableExpression{Lit: $1.lit}
+	}
+	| STRING_LITERAL {
+		$$ = &stringExpression{Lit: $1.lit}
 	}
 	| expr '+' expr {
 		$$ = &binOpExpression{LHS: $1, Operator: int('+'), RHS: $3}

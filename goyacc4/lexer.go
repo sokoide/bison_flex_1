@@ -1,5 +1,33 @@
 package main
 
+import "log"
+
+type lexer struct {
+	s         *scanner
+	recentLit string
+	recentPos position
+	program   []statement
+}
+
+// Lex Called by goyacc
+func (l *lexer) Lex(lval *yySymType) int {
+	tok, lit, pos, tt := l.s.Scan()
+	if tok == EOF {
+		return 0
+	}
+	lval.tok = token{tok: tok, lit: lit, pos: pos, tt: tt}
+	l.recentLit = lit
+	l.recentPos = pos
+	return tok
+}
+
+// Error Called by goyacc
+func (l *lexer) Error(e string) {
+	log.Fatalf("Line %d, Column %d: %q %s",
+		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
+}
+
+// ========================================
 const (
 	// EOF end of file
 	EOF = -1
@@ -60,11 +88,23 @@ func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
 			tok = t
 			tt = tokenTypeKeyword
 		}
+	case ch == '"':
+		s.next() // skip the double quote
+		lit = s.scanString('"')
+		tok = STRING_LITERAL
+		tt = tokenTypeStringLiteral
+		s.next() // skip the double quote
+	case ch == '\'':
+		s.next() // skip the double quote
+		lit = s.scanString('\'')
+		tok = STRING_LITERAL
+		tt = tokenTypeStringLiteral
+		s.next() // skip the double quote
 	default:
 		switch ch {
 		case -1:
 			tok = EOF
-		case '.', '[', ']', '(', ')', ';', '+', '-', '*', '/', '%', '=':
+		case ',', '.', '[', ']', '(', ')', ';', '+', '-', '*', '/', '%', '=':
 			tok = int(ch)
 			lit = string(ch)
 			tt = tokenTypeOp
@@ -131,6 +171,15 @@ func (s *scanner) scanIdentifier() string {
 func (s *scanner) scanNumber() string {
 	var ret []rune
 	for isDigit(s.peek()) {
+		ret = append(ret, s.peek())
+		s.next()
+	}
+	return string(ret)
+}
+
+func (s *scanner) scanString(endingChar rune) string {
+	var ret []rune
+	for s.peek() != endingChar {
 		ret = append(ret, s.peek())
 		s.next()
 	}

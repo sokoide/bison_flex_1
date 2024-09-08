@@ -30,15 +30,15 @@ func evaluateStmt(stmt statement) (int, error) {
 	case *exprStatement:
 		ret, err = evaluateExpr(s.Expr)
 		if err == nil {
-			log.Printf("expr result: %d\n", ret)
+			log.Debugf("expr result: %d\n", ret)
 			return 0, nil
 		}
 		return 0, err
 	case *assignStatement:
-		log.Printf("assgin %s = %d\n", s.Name, ret)
+		log.Debugf("assgin %s = %d\n", s.Name, ret)
 		ret, err = evaluateExpr(s.Expr)
 		if err == nil {
-			log.Printf("%s = %d\n", s.Name, ret)
+			log.Debugf("%s = %d\n", s.Name, ret)
 			vars[s.Name] = ret
 			return 0, nil
 		}
@@ -62,9 +62,11 @@ func printExpr(expr expression) {
 
 	switch e := expr.(type) {
 	case *numberExpression:
-		fmt.Printf("n:%s", e.Lit)
+		fmt.Printf("%s", e.Lit)
 	case *variableExpression:
 		fmt.Printf("%d", vars[e.Lit])
+	case *stringExpression:
+		fmt.Printf("%s", e.Lit)
 	default:
 		ret, err = evaluateExpr(expr)
 		if err == nil {
@@ -125,8 +127,12 @@ func evaluateExpr(expr expression) (int, error) {
 		vars[e.Lit] = 0
 		log.Warnf("err: variable %s not found", e.Lit)
 		return 0, nil
+
+	case *stringExpression:
+		return 0, nil
+
 	default:
-		panic(fmt.Sprintf("Unknown Expression type +%v", e))
+		panic(fmt.Sprintf("Unknown Expression type %s for %+v", reflect.TypeOf(e), e))
 	}
 
 }

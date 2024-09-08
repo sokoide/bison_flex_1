@@ -1,5 +1,6 @@
 TARGET=./mini-compiler
 SRCS=main.go lexer.go eval.go ast.go
+LL=DEBUG
 
 all: $(TARGET)
 
@@ -16,11 +17,11 @@ run: $(TARGET)
 	$(TARGET)
 
 test: $(TARGET)
-	echo "put(1*2);" | $(TARGET)
-	@echo "did you see 2?"
-	echo "put((1*2)+10/3);" | $(TARGET)
-	@echo "did you see 5?"
-	echo "put((40+1)+2/2);" | $(TARGET)
-	@echo "did you see 42?"
-	echo "a=40;b=2;c=a+b;put(c);" | $(TARGET)
-	@echo "did you see c = 42?"
+	echo 'put("ans=",1*2);' | $(TARGET) -logLevel $(LL)
+	@echo 'did you see ans=2?'
+	echo 'put("ans=",(1*2)+10/3);' | $(TARGET) -logLevel $(LL)
+	@echo 'did you see ans=5?'
+	echo 'put("ans=",(40+1)+2/2);' | $(TARGET) -logLevel $(LL)
+	@echo 'did you see ans=42?'
+	echo 'a=40;b=2;c=a+b;put("c=",c);' | $(TARGET) -logLevel $(LL)
+	@echo 'did you see c=42?'
