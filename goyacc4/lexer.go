@@ -23,7 +23,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 
 // Error Called by goyacc
 func (l *lexer) Error(e string) {
-	log.Fatalf("Line %d, Column %d: %q %s",
+	log.Fatalf("[Line:%d Column:%d] Lexer error: recentLit:%q err:%s",
 		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
 }
 
@@ -36,7 +36,14 @@ const (
 )
 
 var keywords = map[string]int{
-	"put": PUT,
+	"put":   PUT,
+	"while": WHILE,
+	"==":    EQOP,
+	"!=":    NEOP,
+	">=":    GEOP,
+	">":     GTOP,
+	"<=":    LEOP,
+	"<":     LTOP,
 }
 
 // tokenType enum
@@ -100,11 +107,22 @@ func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
 		tok = STRING_LITERAL
 		tt = tokenTypeStringLiteral
 		s.next() // skip the double quote
+	case ch == '<':
+		s.next()
+		if s.peek() == '=' {
+			s.next()
+			lit = "<="
+		} else {
+			lit = "<"
+		}
+		tok = keywords[lit]
+		tt = tokenTypeOp
+	// TODO >, >=, ==, !=
 	default:
 		switch ch {
 		case -1:
 			tok = EOF
-		case ',', '.', '[', ']', '(', ')', ';', '+', '-', '*', '/', '%', '=':
+		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
 			tok = int(ch)
 			lit = string(ch)
 			tt = tokenTypeOp

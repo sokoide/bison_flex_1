@@ -7,19 +7,22 @@ import (
 %}
 
 %union{
-	stmts   []statement
-	stmt	statement
-	exprs	[]expression
-	expr	expression
-	tok	 	token
+	stmts		[]statement
+	stmt		statement
+	exprs		[]expression
+	expr		expression
+	tok	 		token
 }
 
 %type<stmts> program stmts
 %type<stmt> stmt
 %type<exprs> put_list
-%type<expr> expr
-%token<tok> PUT
+%type<expr> expr cond while_prefix
+
+%token<tok> PUT WHILE
+%token<tok> EQOP, NEOP, GEOP, GTOP, LEOP, LTOP
 %token<tok> NUMBER_LITERAL IDENT STRING_LITERAL
+
 
 %left '+' '-'
 %left '*' '/'
@@ -49,11 +52,22 @@ stmt:
 	IDENT '=' expr ';' {
 		$$ = &assignStatement{Name: $1.lit, Expr: $3}
 	}
+	| while_prefix {
+	} '{' stmts '}' {
+		$$ = &whileStatement{
+			Cond: $1,
+			// $4 is `stmts`
+			Body: $4,
+		}
+	}
 	| PUT '(' put_list ')' ';' {
 		$$ = &putStatement{Exprs: $3}
 	}
-	| expr ';' {
-		$$ = &exprStatement{Expr: $1}
+	/* | '{' stmts '}' {
+		$$ = &nullStatement{}
+	} */
+	| ';' {
+		$$ = &nullStatement{}
 	}
 	;
 
@@ -65,6 +79,33 @@ put_list: expr {
 	}
 	;
 
+while_prefix: WHILE '(' cond ')' {
+		$$ = $3
+	}
+	;
+
+cond: expr EQOP expr {
+		$$ = &condExpression{LHS: $1, RHS: $3, Operator: EQOP}
+	}
+	| expr NEOP expr {
+		$$ = &condExpression{LHS: $1, RHS: $3, Operator: NEOP}
+	}
+	| expr GEOP expr {
+		$$ = &condExpression{LHS: $1, RHS: $3, Operator: GEOP}
+	}
+	| expr GTOP expr {
+		$$ = &condExpression{LHS: $1, RHS: $3, Operator: GTOP}
+	}
+	| expr LEOP expr {
+		$$ = &condExpression{LHS: $1, RHS: $3, Operator: LEOP}
+	}
+	| expr LTOP expr {
+		$$ = &condExpression{LHS: $1, RHS: $3, Operator: LTOP}
+	}
+	| expr {
+		$$ = $1;
+	}
+	;
 expr:
 	NUMBER_LITERAL {
 		$$ = &numberExpression{Lit: $1.lit}

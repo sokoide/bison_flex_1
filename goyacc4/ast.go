@@ -28,6 +28,11 @@ type (
 	stringExpression struct {
 		Lit string
 	}
+	condExpression struct {
+		LHS      expression
+		Operator int
+		RHS      expression
+	}
 )
 
 func (x *numberExpression) expression()   {}
@@ -35,6 +40,7 @@ func (x *parenExpression) expression()    {}
 func (x *binOpExpression) expression()    {}
 func (x *variableExpression) expression() {}
 func (x *stringExpression) expression()   {}
+func (x *condExpression) expression()     {}
 
 type (
 	statement interface {
@@ -58,6 +64,11 @@ type (
 	putStatement struct {
 		Exprs []expression
 	}
+
+	whileStatement struct {
+		Cond expression
+		Body []statement
+	}
 )
 
 func (x *nullStatement) statement() {}
@@ -67,3 +78,5 @@ func (x *exprStatement) statement() {}
 func (x *assignStatement) statement() {}
 
 func (x *putStatement) statement() {}
+
+func (x *whileStatement) statement() {}

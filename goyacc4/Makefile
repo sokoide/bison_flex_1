@@ -32,3 +32,4 @@ testcli: $(TARGET)
 	@echo 'did you see ans=42?'
 	echo 'a=40;b=2;c=a+b;put("c=",c);' | $(TARGET) -logLevel $(LL)
 	@echo 'did you see c=42?'
+	echo 'a=0;while(a<5){a=a+1;};put(a);' | $(TARGET) -logLevel $(LL)

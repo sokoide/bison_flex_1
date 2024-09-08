@@ -15,7 +15,7 @@ func evaluateStmts(stmts []statement) (int, error) {
 	for line, stmt := range stmts {
 		ret, err = evaluateStmt(stmt)
 		if err != nil {
-			log.Errorf("[line: %d] syntax error %v", line, err)
+			log.Errorf("[line: %d] Parser error: syntax error %v", line, err)
 			return 0, err
 		}
 	}
@@ -49,6 +49,26 @@ func evaluateStmt(stmt statement) (int, error) {
 		}
 		fmt.Println()
 		return 0, err
+	case *whileStatement:
+		log.Debug("whileStatement")
+		for {
+			ret, err = evaluateExpr(s.Cond)
+			if err != nil {
+				return 0, err
+			}
+			if ret > 0 {
+				_, err = evaluateStmts(s.Body)
+				if err != nil {
+					return 0, err
+				}
+			} else {
+				break
+			}
+		}
+		return 0, err
+	case *nullStatement:
+		log.Debug("nullStatement")
+		return 0, nil
 	default:
 		return 0, fmt.Errorf("%s not supported yet", reflect.TypeOf(stmt))
 	}
@@ -127,12 +147,61 @@ func evaluateExpr(expr expression) (int, error) {
 		vars[e.Lit] = 0
 		log.Warnf("err: variable %s not found", e.Lit)
 		return 0, nil
-
 	case *stringExpression:
 		return 0, nil
-
+	case *condExpression:
+		// TODO: redundant
+		lhsV, err := evaluateExpr(e.LHS)
+		if err != nil {
+			log.Warnf("err: %v", err)
+			return 0, err
+		}
+		rhsV, err := evaluateExpr(e.RHS)
+		if err != nil {
+			log.Warnf("err: %v", err)
+			return 0, err
+		}
+		switch e.Operator {
+		case EQOP:
+			if lhsV == rhsV {
+				return 1, nil
+			} else {
+				return 0, nil
+			}
+		case NEOP:
+			if lhsV != rhsV {
+				return 1, nil
+			} else {
+				return 0, nil
+			}
+		case GEOP:
+			if lhsV >= rhsV {
+				return 1, nil
+			} else {
+				return 0, nil
+			}
+		case GTOP:
+			if lhsV > rhsV {
+				return 1, nil
+			} else {
+				return 0, nil
+			}
+		case LEOP:
+			if lhsV <= rhsV {
+				return 1, nil
+			} else {
+				return 0, nil
+			}
+		case LTOP:
+			if lhsV < rhsV {
+				return 1, nil
+			} else {
+				return 0, nil
+			}
+		default:
+			return 0, fmt.Errorf("invalid Operator %v", e.Operator)
+		}
 	default:
 		panic(fmt.Sprintf("Unknown Expression type %s for %+v", reflect.TypeOf(e), e))
 	}
-
 }
