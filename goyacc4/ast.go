@@ -1,5 +1,6 @@
 package main
 
+// expressions
 type (
 	expression interface {
 		expression()
@@ -42,14 +43,9 @@ func (x *variableExpression) expression() {}
 func (x *stringExpression) expression()   {}
 func (x *condExpression) expression()     {}
 
+// statements
 type (
-	statement interface {
-		statement()
-	}
-)
-
-type (
-	nullStatement struct {
+	emptyStatement struct {
 	}
 
 	exprStatement struct {
@@ -67,16 +63,12 @@ type (
 
 	whileStatement struct {
 		Cond expression
-		Body []statement
+		Body []expression
 	}
 )
 
-func (x *nullStatement) statement() {}
-
-func (x *exprStatement) statement() {}
-
-func (x *assignStatement) statement() {}
-
-func (x *putStatement) statement() {}
-
-func (x *whileStatement) statement() {}
+func (x *emptyStatement) expression()  {}
+func (x *exprStatement) expression()   {}
+func (x *assignStatement) expression() {}
+func (x *putStatement) expression()    {}
+func (x *whileStatement) expression()  {}

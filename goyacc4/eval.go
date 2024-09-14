@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func evaluateStmts(stmts []statement) (int, error) {
+func evaluateStmts(stmts []expression) (int, error) {
 	var ret int
 	var err error
 
@@ -22,7 +22,7 @@ func evaluateStmts(stmts []statement) (int, error) {
 	return ret, err
 }
 
-func evaluateStmt(stmt statement) (int, error) {
+func evaluateStmt(stmt expression) (int, error) {
 	var ret int
 	var err error
 
@@ -66,8 +66,8 @@ func evaluateStmt(stmt statement) (int, error) {
 			}
 		}
 		return 0, err
-	case *nullStatement:
-		log.Debug("nullStatement")
+	case *emptyStatement:
+		log.Debug("emptyStatement")
 		return 0, nil
 	default:
 		return 0, fmt.Errorf("%s not supported yet", reflect.TypeOf(stmt))

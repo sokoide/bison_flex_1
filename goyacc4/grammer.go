@@ -14,8 +14,6 @@ import (
 //line grammer.go.y:9
 type yySymType struct {
 	yys   int
-	stmts []statement
-	stmt  statement
 	exprs []expression
 	expr  expression
 	tok   token
@@ -67,7 +65,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line grammer.go.y:136
+//line grammer.go.y:132
 
 // global vars
 var vars = map[string]int{}
@@ -90,7 +88,7 @@ var yyAct = [...]int8{
 	27, 10, 46, 9, 47, 48, 49, 50, 51, 52,
 	33, 34, 35, 36, 37, 38, 6, 8, 2, 24,
 	25, 26, 27, 5, 21, 4, 6, 8, 24, 25,
-	26, 27, 7, 19, 44, 4, 3, 29, 1, 0,
+	26, 27, 7, 3, 44, 4, 19, 29, 1, 0,
 	0, 0, 7,
 }
 
@@ -108,8 +106,8 @@ var yyPgo = [...]int8{
 }
 
 var yyR1 = [...]int8{
-	0, 1, 2, 2, 3, 8, 3, 3, 3, 4,
-	4, 7, 6, 6, 6, 6, 6, 6, 6, 5,
+	0, 1, 2, 2, 4, 8, 4, 4, 4, 3,
+	3, 7, 6, 6, 6, 6, 6, 6, 6, 5,
 	5, 5, 5, 5, 5, 5, 5,
 }
 
@@ -120,8 +118,8 @@ var yyR2 = [...]int8{
 }
 
 var yyChk = [...]int16{
-	-1000, -1, -2, -3, 13, -7, 4, 20, 5, 19,
-	-8, 23, 23, -5, 12, 13, 14, 23, 21, -4,
+	-1000, -1, -2, -4, 13, -7, 4, 20, 5, 19,
+	-8, 23, 23, -5, 12, 13, 14, 23, 21, -3,
 	-5, -6, -5, 20, 15, 16, 17, 18, -5, -2,
 	24, 25, 24, 6, 7, 8, 9, 10, 11, -5,
 	-5, -5, -5, 24, 22, 20, -5, -5, -5, -5,
@@ -501,163 +499,163 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:34
+//line grammer.go.y:30
 		{
-			yyVAL.stmts = yyDollar[1].stmts
-			yylex.(*lexer).program = yyVAL.stmts
+			yyVAL.exprs = yyDollar[1].exprs
+			yylex.(*lexer).program = yyVAL.exprs
 		}
 	case 2:
 		yyDollar = yyS[yypt-0 : yypt+1]
-//line grammer.go.y:41
+//line grammer.go.y:37
 		{
 			log.Debug("stmts: empty")
-			yyVAL.stmts = nil
+			yyVAL.exprs = nil
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line grammer.go.y:45
+//line grammer.go.y:41
 		{
-			log.Debugf("stmts: stmt %v", yyDollar[2].stmt)
-			yyVAL.stmts = append(yyVAL.stmts, yyDollar[2].stmt)
+			log.Debugf("stmts: stmt %v", yyDollar[2].expr)
+			yyVAL.exprs = append(yyVAL.exprs, yyDollar[2].expr)
 		}
 	case 4:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line grammer.go.y:52
+//line grammer.go.y:48
 		{
-			yyVAL.stmt = &assignStatement{Name: yyDollar[1].tok.lit, Expr: yyDollar[3].expr}
+			yyVAL.expr = &assignStatement{Name: yyDollar[1].tok.lit, Expr: yyDollar[3].expr}
 		}
 	case 5:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:55
+//line grammer.go.y:51
 		{
 		}
 	case 6:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line grammer.go.y:56
+//line grammer.go.y:52
 		{
-			yyVAL.stmt = &whileStatement{
+			yyVAL.expr = &whileStatement{
 				Cond: yyDollar[1].expr,
 				// $4 is `stmts`
-				Body: yyDollar[4].stmts,
+				Body: yyDollar[4].exprs,
 			}
 		}
 	case 7:
 		yyDollar = yyS[yypt-5 : yypt+1]
-//line grammer.go.y:63
+//line grammer.go.y:59
 		{
-			yyVAL.stmt = &putStatement{Exprs: yyDollar[3].exprs}
+			yyVAL.expr = &putStatement{Exprs: yyDollar[3].exprs}
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:69
+//line grammer.go.y:65
 		{
-			yyVAL.stmt = &nullStatement{}
+			yyVAL.expr = &emptyStatement{}
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:74
+//line grammer.go.y:70
 		{
 			yyVAL.exprs = append(yyVAL.exprs, yyDollar[1].expr)
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:77
+//line grammer.go.y:73
 		{
 			yyVAL.exprs = append(yyVAL.exprs, yyDollar[3].expr)
 		}
 	case 11:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line grammer.go.y:82
+//line grammer.go.y:78
 		{
 			yyVAL.expr = yyDollar[3].expr
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:87
+//line grammer.go.y:83
 		{
 			yyVAL.expr = &condExpression{LHS: yyDollar[1].expr, RHS: yyDollar[3].expr, Operator: EQOP}
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:90
+//line grammer.go.y:86
 		{
 			yyVAL.expr = &condExpression{LHS: yyDollar[1].expr, RHS: yyDollar[3].expr, Operator: NEOP}
 		}
 	case 14:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:93
+//line grammer.go.y:89
 		{
 			yyVAL.expr = &condExpression{LHS: yyDollar[1].expr, RHS: yyDollar[3].expr, Operator: GEOP}
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:96
+//line grammer.go.y:92
 		{
 			yyVAL.expr = &condExpression{LHS: yyDollar[1].expr, RHS: yyDollar[3].expr, Operator: GTOP}
 		}
 	case 16:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:99
+//line grammer.go.y:95
 		{
 			yyVAL.expr = &condExpression{LHS: yyDollar[1].expr, RHS: yyDollar[3].expr, Operator: LEOP}
 		}
 	case 17:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:102
+//line grammer.go.y:98
 		{
 			yyVAL.expr = &condExpression{LHS: yyDollar[1].expr, RHS: yyDollar[3].expr, Operator: LTOP}
 		}
 	case 18:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:105
+//line grammer.go.y:101
 		{
 			yyVAL.expr = yyDollar[1].expr
 		}
 	case 19:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:110
+//line grammer.go.y:106
 		{
 			yyVAL.expr = &numberExpression{Lit: yyDollar[1].tok.lit}
 		}
 	case 20:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:113
+//line grammer.go.y:109
 		{
 			yyVAL.expr = &variableExpression{Lit: yyDollar[1].tok.lit}
 		}
 	case 21:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammer.go.y:116
+//line grammer.go.y:112
 		{
 			yyVAL.expr = &stringExpression{Lit: yyDollar[1].tok.lit}
 		}
 	case 22:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:119
+//line grammer.go.y:115
 		{
 			yyVAL.expr = &binOpExpression{LHS: yyDollar[1].expr, Operator: int('+'), RHS: yyDollar[3].expr}
 		}
 	case 23:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:122
+//line grammer.go.y:118
 		{
 			yyVAL.expr = &binOpExpression{LHS: yyDollar[1].expr, Operator: int('-'), RHS: yyDollar[3].expr}
 		}
 	case 24:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:125
+//line grammer.go.y:121
 		{
 			yyVAL.expr = &binOpExpression{LHS: yyDollar[1].expr, Operator: int('*'), RHS: yyDollar[3].expr}
 		}
 	case 25:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:128
+//line grammer.go.y:124
 		{
 			yyVAL.expr = &binOpExpression{LHS: yyDollar[1].expr, Operator: int('/'), RHS: yyDollar[3].expr}
 		}
 	case 26:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammer.go.y:131
+//line grammer.go.y:127
 		{
 			yyVAL.expr = &parenExpression{SubExpr: yyDollar[2].expr}
 		}

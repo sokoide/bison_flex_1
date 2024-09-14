@@ -6,7 +6,7 @@ type lexer struct {
 	s         *scanner
 	recentLit string
 	recentPos position
-	program   []statement
+	program   []expression
 }
 
 // Lex Called by goyacc

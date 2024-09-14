@@ -45,14 +45,14 @@ func main() {
 
 	scanner.Init(strings.Join(source, "\n"))
 
-	var prog []statement = parse(scanner)
+	var prog []expression = parse(scanner)
 	_, err := evaluateStmts(prog)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func parse(s *scanner) []statement {
+func parse(s *scanner) []expression {
 	l := lexer{s: s}
 	if yyParse(&l) != 0 {
 		panic("Parse error")

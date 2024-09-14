@@ -7,17 +7,13 @@ import (
 %}
 
 %union{
-	stmts		[]statement
-	stmt		statement
 	exprs		[]expression
 	expr		expression
 	tok	 		token
 }
 
-%type<stmts> program stmts
-%type<stmt> stmt
-%type<exprs> put_list
-%type<expr> expr cond while_prefix
+%type<exprs> program stmts put_list
+%type<expr> stmt expr cond while_prefix
 
 %token<tok> PUT WHILE
 %token<tok> EQOP, NEOP, GEOP, GTOP, LEOP, LTOP
@@ -67,7 +63,7 @@ stmt:
 		$$ = &nullStatement{}
 	} */
 	| ';' {
-		$$ = &nullStatement{}
+		$$ = &emptyStatement{}
 	}
 	;
 

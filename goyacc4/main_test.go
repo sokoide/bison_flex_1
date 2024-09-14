@@ -11,7 +11,7 @@ func TestParse(t *testing.T) {
 	scanner := new(scanner)
 	scanner.Init(source)
 
-	var prog []statement = parse(scanner)
+	var prog []expression = parse(scanner)
 	_, err := evaluateStmts(prog)
 	if err != nil {
 		panic(err)
@@ -26,7 +26,7 @@ func TestWhile(t *testing.T) {
 	scanner := new(scanner)
 	scanner.Init(source)
 
-	var prog []statement = parse(scanner)
+	var prog []expression = parse(scanner)
 	_, err := evaluateStmts(prog)
 	if err != nil {
 		panic(err)
