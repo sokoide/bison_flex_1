@@ -2,6 +2,7 @@ package prolog
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 	"unicode"
@@ -40,7 +41,12 @@ func (l *Lexer) Close() error {
 // Lex Called by goyacc
 func (l *Lexer) Lex(lval *yySymType) int {
 	var id int
-	id, lval.tok = l.NextToken()
+	var err error
+
+	id, lval.tok, err = l.NextToken()
+	if err != nil {
+		panic(err)
+	}
 	log.Debugf("Lexer: Lex: %d: Token: %+v", id, lval.tok)
 	return id
 }
@@ -59,6 +65,7 @@ const (
 	tokenTypeNumberLiteral
 	tokenTypeStringLiteral
 	tokenTypeIdent
+	tokenTypeVariable
 	tokenTypeKeyword
 	tokenTypeOp
 )
@@ -76,8 +83,9 @@ func (l *Lexer) readChar() {
 	}
 }
 
-func (l *Lexer) NextToken() (int, token) {
+func (l *Lexer) NextToken() (int, token, error) {
 	l.skipWhitespace()
+	l.skipComment()
 
 	var id int
 	var tok token
@@ -86,28 +94,36 @@ func (l *Lexer) NextToken() (int, token) {
 	case l.ch == 0:
 		id = 0
 		tok = token{Type: tokenTypeEOF, Value: ""}
-	case unicode.IsLetter(l.ch):
+	case l.ch >= 'a' && l.ch <= 'z':
 		id = IDENT
 		tok = token{Type: tokenTypeIdent, Value: l.readIdentifier()}
+	case l.ch >= 'A' && l.ch <= 'Z':
+		id = VAR
+		tok = token{Type: tokenTypeVariable, Value: l.readIdentifier()}
+	case l.ch == ':':
+		l.readChar()
+		if l.ch == '-' {
+			id = COLON_DASH
+			tok = token{Type: tokenTypeOp, Value: ":="}
+			l.readChar()
+		} else {
+			return 0, tok, fmt.Errorf("Unexpected token -%c", l.ch)
+		}
 	case unicode.IsNumber(l.ch):
 		id = NUMBER
 		tok = token{Type: tokenTypeNumberLiteral, Value: l.readNumber()}
 	default:
 		switch l.ch {
-		case -1:
-			id = 0
-			tok = token{Type: tokenTypeEOF, Value: ""}
 		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
 			id = int(l.ch)
 			tok = token{Type: tokenTypeOp, Value: string(l.ch)}
 			l.readChar()
 		default:
-			// TODO:
-			panic("unexpected token")
+			return 0, tok, fmt.Errorf("Unexpected token %c", l.ch)
 		}
 	}
 
-	return id, tok
+	return id, tok, nil
 }
 
 func (l *Lexer) readIdentifier() string {
@@ -131,5 +147,21 @@ func (l *Lexer) readNumber() string {
 func (l *Lexer) skipWhitespace() {
 	for unicode.IsSpace(l.ch) {
 		l.readChar()
+	}
+}
+
+func (l *Lexer) skipComment() {
+	if l.ch == '%' {
+		// skip until the end of line
+		for {
+			l.readChar()
+			if l.ch == '\n' {
+				l.readChar()
+				return
+			}
+			if l.ch == 0 {
+				return
+			}
+		}
 	}
 }

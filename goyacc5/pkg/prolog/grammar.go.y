@@ -27,7 +27,7 @@ import (
 %type<terms> term_list
 
 // Tokens
-%token<tok> IDENT NUMBER OP VAR COLON_DASH
+%token<tok> IDENT NUMBER VAR OP COLON_DASH
 
 // Operator precedence rules
 %left '+' '-'
@@ -52,15 +52,22 @@ input: /* empty */
 
 clause_list:
     clause {
-        $$ = append($$, $1)
+        if $1 != nil {
+            $$ = append($$, $1)
+        }
     }
     | clause_list clause {
-        $$ = append($1, $2)
+        if $1 != nil {
+            $$ = append($1, $2)
+        }
     }
     ;
 
 clause:
-    fact_clause {
+    /* empty */ {
+        $$ = nil
+    }
+    | fact_clause {
         $$ = $1
     }
     | rule_clause {
@@ -91,6 +98,9 @@ term_list:
 
 term:
     IDENT {
+        $$ = &constantTerm{Lit: $1.Value}
+    }
+    | VAR {
         $$ = &constantTerm{Lit: $1.Value}
     }
     | IDENT '(' term_list ')' {

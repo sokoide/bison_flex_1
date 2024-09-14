@@ -47,6 +47,6 @@ func main() {
 	}
 	defer lexer.Close()
 
-	log.Printf("lexer: %+v", lexer)
+	log.Debugf("lexer: %+v", lexer)
 	prolog.YyParse(lexer)
 }

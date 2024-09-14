@@ -1,0 +1,2 @@
+authorize(taro).
+authorize(jiro).
