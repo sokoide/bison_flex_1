@@ -54,6 +54,7 @@ func main() {
 
 func parse(s *scanner) []expression {
 	l := lexer{s: s}
+	yyErrorVerbose = true
 	if yyParse(&l) != 0 {
 		panic("Parse error")
 	}
