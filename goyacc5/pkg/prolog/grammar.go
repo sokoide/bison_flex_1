@@ -26,10 +26,9 @@ type yySymType struct {
 const IDENT = 57346
 const NUMBER = 57347
 const STRING = 57348
-const VAR = 57349
-const PERIOD = 57350
-const COMMA = 57351
-const COLON_DASH = 57352
+const OP = 57349
+const VAR = 57350
+const COLON_DASH = 57351
 
 var yyToknames = [...]string{
 	"$end",
@@ -38,14 +37,15 @@ var yyToknames = [...]string{
 	"IDENT",
 	"NUMBER",
 	"STRING",
+	"OP",
 	"VAR",
-	"PERIOD",
-	"COMMA",
 	"COLON_DASH",
 	"'+'",
 	"'-'",
 	"'*'",
 	"'/'",
+	"'.'",
+	"','",
 	"'('",
 	"')'",
 }
@@ -56,7 +56,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line grammar.go.y:104
+//line grammar.go.y:107
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -67,44 +67,44 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 28
+const yyLast = 23
 
 var yyAct = [...]int8{
-	6, 20, 16, 15, 13, 1, 14, 5, 21, 7,
-	9, 10, 8, 11, 3, 17, 17, 12, 18, 19,
-	20, 22, 7, 9, 10, 8, 4, 2,
+	6, 19, 15, 20, 18, 19, 13, 14, 7, 9,
+	10, 12, 8, 3, 16, 16, 11, 17, 1, 5,
+	21, 4, 2,
 }
 
 var yyPact = [...]int16{
-	18, -1000, 5, -1000, -1000, -1000, -4, -12, -1000, -1000,
-	-1000, -1000, -1000, -1000, 18, 18, 11, -1000, -8, -1000,
-	18, -1000, -1000,
+	4, -1000, 4, -1000, -1000, -1000, -3, -9, -1000, -1000,
+	-1000, -1000, -1000, 4, 4, -10, -1000, -14, -1000, 4,
+	-1000, -1000,
 }
 
 var yyPgo = [...]int8{
-	0, 27, 14, 26, 7, 0, 2, 5,
+	0, 22, 13, 21, 19, 0, 2, 18,
 }
 
 var yyR1 = [...]int8{
-	0, 7, 1, 1, 2, 2, 3, 4, 6, 6,
-	5, 5, 5, 5, 5,
+	0, 7, 7, 1, 1, 2, 2, 3, 4, 6,
+	6, 5, 5, 5, 5, 5,
 }
 
 var yyR2 = [...]int8{
-	0, 2, 1, 2, 1, 1, 2, 4, 1, 3,
-	1, 4, 1, 1, 1,
+	0, 0, 1, 1, 2, 1, 1, 2, 4, 1,
+	3, 1, 4, 1, 1, 1,
 }
 
 var yyChk = [...]int16{
-	-1000, -7, -1, -2, -3, -4, -5, 4, 7, 5,
-	6, 8, -2, 8, 10, 15, -6, -5, -6, 8,
-	9, 16, -5,
+	-1000, -7, -1, -2, -3, -4, -5, 4, 8, 5,
+	6, -2, 14, 9, 16, -6, -5, -6, 14, 15,
+	17, -5,
 }
 
 var yyDef = [...]int8{
-	0, -2, 0, 2, 4, 5, 0, 10, 12, 13,
-	14, 1, 3, 6, 0, 0, 0, 8, 0, 7,
-	0, 11, 9,
+	1, -2, 2, 3, 5, 6, 0, 11, 13, 14,
+	15, 4, 7, 0, 0, 0, 9, 0, 8, 0,
+	12, 10,
 }
 
 var yyTok1 = [...]int8{
@@ -112,11 +112,11 @@ var yyTok1 = [...]int8{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	15, 16, 13, 11, 3, 12, 3, 14,
+	16, 17, 12, 10, 15, 11, 14, 13,
 }
 
 var yyTok2 = [...]int8{
-	2, 3, 4, 5, 6, 7, 8, 9, 10,
+	2, 3, 4, 5, 6, 7, 8, 9,
 }
 
 var yyTok3 = [...]int8{
@@ -461,86 +461,92 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-0 : yypt+1]
 //line grammar.go.y:42
 		{
-			log.Debugf("Parsed clauses: %v", yyDollar[1].clauses)
+			log.Debug("empty input")
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:48
+//line grammar.go.y:45
+		{
+			log.Debugf("Parsed clauses: %+v", yyDollar[1].clauses)
+		}
+	case 3:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line grammar.go.y:51
 		{
 			yyVAL.clauses = append(yyVAL.clauses, yyDollar[1].clause)
 		}
-	case 3:
+	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line grammar.go.y:51
+//line grammar.go.y:54
 		{
 			yyVAL.clauses = append(yyDollar[1].clauses, yyDollar[2].clause)
-		}
-	case 4:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:57
-		{
-			yyVAL.clause = yyDollar[1].fact
 		}
 	case 5:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:60
 		{
-			yyVAL.clause = yyDollar[1].rule
+			yyVAL.clause = yyDollar[1].fact
 		}
 	case 6:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line grammar.go.y:63
+		{
+			yyVAL.clause = yyDollar[1].rule
+		}
+	case 7:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line grammar.go.y:66
+//line grammar.go.y:69
 		{
 			yyVAL.fact = &factClause{Fact: yyDollar[1].term}
 		}
-	case 7:
+	case 8:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line grammar.go.y:72
+//line grammar.go.y:75
 		{
 			yyVAL.rule = &ruleClause{HeadTerm: yyDollar[1].term, BodyTerms: yyDollar[3].terms}
 		}
-	case 8:
+	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:78
+//line grammar.go.y:81
 		{
 			yyVAL.terms = append(yyVAL.terms, yyDollar[1].term)
 		}
-	case 9:
+	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammar.go.y:81
+//line grammar.go.y:84
 		{
 			yyVAL.terms = append(yyDollar[1].terms, yyDollar[3].term)
 		}
-	case 10:
+	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:87
+//line grammar.go.y:90
 		{
 			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: nil}
 		}
-	case 11:
-		yyDollar = yyS[yypt-4 : yypt+1]
-//line grammar.go.y:90
-		{
-			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: yyDollar[3].terms}
-		}
 	case 12:
-		yyDollar = yyS[yypt-1 : yypt+1]
+		yyDollar = yyS[yypt-4 : yypt+1]
 //line grammar.go.y:93
 		{
-			yyVAL.term = &variableTerm{Name: yyDollar[1].tok.Value}
+			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: yyDollar[3].terms}
 		}
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:96
 		{
-			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
+			yyVAL.term = &variableTerm{Name: yyDollar[1].tok.Value}
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:99
+		{
+			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
+		}
+	case 15:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line grammar.go.y:102
 		{
 			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
 		}

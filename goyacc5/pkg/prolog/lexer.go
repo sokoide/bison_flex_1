@@ -1,215 +1,134 @@
 package prolog
 
 import (
+	"bufio"
 	"io"
+	"os"
+	"unicode"
 
 	log "github.com/sirupsen/logrus"
 )
 
 type Lexer struct {
-	Reader io.Reader
-	// recentLit string
-	// recentPos position
-	// program   []statement
+	reader *bufio.Reader
+	ch     rune
+	file   *os.File
+}
+
+func NewLexer(filename string) (*Lexer, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bufio.NewReader(file)
+	lexer := &Lexer{
+		reader: reader,
+		file:   file,
+	}
+	lexer.readChar()
+	return lexer, nil
+}
+
+func (l *Lexer) Close() error {
+	if l.file != nil {
+		return l.file.Close()
+	}
+	return nil
 }
 
 // Lex Called by goyacc
 func (l *Lexer) Lex(lval *yySymType) int {
-	log.Debug("Lexer: Lex")
-	return 0
-	// tok, lit, pos, tt := l.s.Scan()
-	//
-	//	if tok == EOF {
-	//		return 0
-	//	}
-	//
-	// lval.tok = token{tok: tok, lit: lit, pos: pos, tt: tt}
-	// l.recentLit = lit
-	// l.recentPos = pos
-	// return tok
+	id, tok := l.NextToken()
+	log.Debugf("Lexer: Lex: %d: Token: %+v", id, tok)
+	return id
 }
 
 // Error Called by goyacc
 func (l *Lexer) Error(e string) {
 	log.Fatalf("Lexer: Error: %s", e)
-	// log.Fatalf("[Line:%d Column:%d] Lexer error: recentLit:%q err:%s",
-	//
-	//	l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
 }
 
-// // ========================================
-// const (
-// 	// EOF end of file
-// 	EOF = -1
-// 	// UNKNOWN unknown token
-// 	UNKNOWN = 0 * iota
-// )
+// ========================================
+type tokenType int
 
-// var keywords = map[string]int{
-// 	"put":   PUT,
-// 	"while": WHILE,
-// 	"==":    EQOP,
-// 	"!=":    NEOP,
-// 	">=":    GEOP,
-// 	">":     GTOP,
-// 	"<=":    LEOP,
-// 	"<":     LTOP,
-// }
+const (
+	tokenTypeNone tokenType = iota
+	tokenTypeEOF
+	tokenTypeNumberLiteral
+	tokenTypeStringLiteral
+	tokenTypeIdent
+	tokenTypeKeyword
+	tokenTypeOp
+)
 
-// // tokenType enum
-// type tokenType int
+func (l *Lexer) readChar() {
+	ch, _, err := l.reader.ReadRune()
+	if err != nil {
+		if err == io.EOF {
+			l.ch = 0
+		} else {
+			panic(err)
+		}
+	} else {
+		l.ch = ch
+	}
+}
 
-// const (
-// 	tokenTypeNone tokenType = iota
-// 	tokenTypeNumberLiteral
-// 	tokenTypeStringLiteral
-// 	tokenTypeIdent
-// 	tokenTypeKeyword
-// 	tokenTypeOp
-// )
+func (l *Lexer) NextToken() (int, token) {
+	l.skipWhitespace()
 
-// type token struct {
-// 	tok int
-// 	lit string
-// 	pos position
-// 	tt  tokenType
-// }
+	var id int
+	var tok token
 
-// type position struct {
-// 	Line   int
-// 	Column int
-// }
+	switch {
+	case l.ch == 0:
+		id = 0
+		tok = token{Type: tokenTypeEOF, Value: ""}
+	case unicode.IsLetter(l.ch):
+		id = IDENT
+		tok = token{Type: tokenTypeIdent, Value: l.readIdentifier()}
+	case unicode.IsNumber(l.ch):
+		id = NUMBER
+		tok = token{Type: tokenTypeNumberLiteral, Value: l.readNumber()}
+	default:
+		switch l.ch {
+		case -1:
+			id = 0
+			tok = token{Type: tokenTypeEOF, Value: ""}
+		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
+			id = int(l.ch)
+			tok = token{Type: tokenTypeOp, Value: string(l.ch)}
+			l.readChar()
+		default:
+			// TODO:
+			panic("unexpected token")
+		}
+	}
 
-// type scanner struct {
-// 	src      []rune
-// 	offset   int
-// 	lineHead int
-// 	line     int
-// }
+	return id, tok
+}
 
-// func (s *scanner) Init(src string) {
-// 	s.src = []rune(src)
-// }
+func (l *Lexer) readIdentifier() string {
+	var result []rune
+	for unicode.IsLetter(l.ch) || unicode.IsDigit(l.ch) {
+		result = append(result, l.ch)
+		l.readChar()
+	}
+	return string(result)
+}
 
-// func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
-// 	s.skipWhiteSpace()
-// 	pos = s.position()
-// 	switch ch := s.peek(); {
-// 	case isDigit(ch):
-// 		tt = tokenTypeNumberLiteral
-// 		tok, lit = NUMBER_LITERAL, s.scanNumber()
-// 	case isLetter(ch):
-// 		tt = tokenTypeIdent
-// 		tok, lit = IDENT, s.scanIdentifier()
-// 		if t, ok := keywords[lit]; ok {
-// 			tok = t
-// 			tt = tokenTypeKeyword
-// 		}
-// 	case ch == '"':
-// 		s.next() // skip the double quote
-// 		lit = s.scanString('"')
-// 		tok = STRING_LITERAL
-// 		tt = tokenTypeStringLiteral
-// 		s.next() // skip the double quote
-// 	case ch == '\'':
-// 		s.next() // skip the double quote
-// 		lit = s.scanString('\'')
-// 		tok = STRING_LITERAL
-// 		tt = tokenTypeStringLiteral
-// 		s.next() // skip the double quote
-// 	case ch == '<':
-// 		s.next()
-// 		if s.peek() == '=' {
-// 			s.next()
-// 			lit = "<="
-// 		} else {
-// 			lit = "<"
-// 		}
-// 		tok = keywords[lit]
-// 		tt = tokenTypeOp
-// 	// TODO >, >=, ==, !=
-// 	default:
-// 		switch ch {
-// 		case -1:
-// 			tok = EOF
-// 		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
-// 			tok = int(ch)
-// 			lit = string(ch)
-// 			tt = tokenTypeOp
-// 		}
-// 		s.next()
-// 	}
-// 	return
-// }
+func (l *Lexer) readNumber() string {
+	var result []rune
+	for unicode.IsDigit(l.ch) {
+		result = append(result, l.ch)
+		l.readChar()
+	}
+	return string(result)
+}
 
-// // ========================================
-
-// func isLetter(ch rune) bool {
-// 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-// }
-
-// func isDigit(ch rune) bool {
-// 	return '0' <= ch && ch <= '9'
-// }
-
-// func isWhiteSpace(ch rune) bool {
-// 	return ch == ' ' || ch == '\t' || ch == '\n'
-// }
-
-// func (s *scanner) peek() rune {
-// 	if !s.reachEOF() {
-// 		return s.src[s.offset]
-// 	}
-// 	return -1
-// }
-
-// func (s *scanner) next() {
-// 	if !s.reachEOF() {
-// 		if s.peek() == '\n' {
-// 			s.lineHead = s.offset + 1
-// 			s.line++
-// 		}
-// 		s.offset++
-// 	}
-// }
-
-// func (s *scanner) reachEOF() bool {
-// 	return len(s.src) <= s.offset
-// }
-
-// func (s *scanner) position() position {
-// 	return position{Line: s.line + 1, Column: s.offset - s.lineHead + 1}
-// }
-
-// func (s *scanner) skipWhiteSpace() {
-// 	for isWhiteSpace(s.peek()) {
-// 		s.next()
-// 	}
-// }
-
-// func (s *scanner) scanIdentifier() string {
-// 	var ret []rune
-// 	for isLetter(s.peek()) || isDigit(s.peek()) {
-// 		ret = append(ret, s.peek())
-// 		s.next()
-// 	}
-// 	return string(ret)
-// }
-
-// func (s *scanner) scanNumber() string {
-// 	var ret []rune
-// 	for isDigit(s.peek()) {
-// 		ret = append(ret, s.peek())
-// 		s.next()
-// 	}
-// 	return string(ret)
-// }
-
-// func (s *scanner) scanString(endingChar rune) string {
-// 	var ret []rune
-// 	for s.peek() != endingChar {
-// 		ret = append(ret, s.peek())
-// 		s.next()
-// 	}
-// 	return string(ret)
-// }
+func (l *Lexer) skipWhitespace() {
+	for unicode.IsSpace(l.ch) {
+		l.readChar()
+	}
+}

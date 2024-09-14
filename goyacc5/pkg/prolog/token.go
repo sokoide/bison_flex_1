@@ -5,10 +5,10 @@ import (
 )
 
 type token struct {
-	Type  string // Token type (e.g., IDENT, NUMBER,...)
+	Type  tokenType
 	Value string // The literal value of the token
 }
 
 func (t *token) String() string {
-	return fmt.Sprintf("%s(%s)", t.Type, t.Value)
+	return fmt.Sprintf("%d(%s)", t.Type, t.Value)
 }

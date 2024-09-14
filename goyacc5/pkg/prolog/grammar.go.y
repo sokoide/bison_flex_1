@@ -27,7 +27,7 @@ import (
 %type<terms> term_list
 
 // Tokens
-%token<tok> IDENT NUMBER STRING VAR PERIOD COMMA COLON_DASH
+%token<tok> IDENT NUMBER STRING OP VAR COLON_DASH
 
 // Operator precedence rules
 %left '+' '-'
@@ -38,9 +38,12 @@ import (
 %%
 
 // Grammar rules
-input:
-    clause_list PERIOD {
-        log.Debugf("Parsed clauses: %v", $1)
+input: /* empty */
+    {
+        log.Debug("empty input")
+    }
+    | clause_list {
+        log.Debugf("Parsed clauses: %+v", $1)
     }
     ;
 
@@ -63,13 +66,13 @@ clause:
     ;
 
 fact_clause:
-    term PERIOD {
+    term '.' {
         $$ = &factClause{Fact: $1}
     }
     ;
 
 rule_clause:
-    term COLON_DASH term_list PERIOD {
+    term COLON_DASH term_list '.' {
         $$ = &ruleClause{HeadTerm: $1, BodyTerms: $3}
     }
     ;
@@ -78,7 +81,7 @@ term_list:
     term {
         $$ = append($$, $1)
     }
-    | term_list COMMA term {
+    | term_list ',' term {
         $$ = append($1, $3)
     }
     ;

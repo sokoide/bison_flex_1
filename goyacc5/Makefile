@@ -24,7 +24,7 @@ test: $(TARGET)
 	go test -v ./...
 
 testcli: $(TARGET)
-	@echo 'authorize(taro).' > $(TESTSRC)
+	@echo 'authorize(taro).\nauthorize(jiro).' > $(TESTSRC)
 	$(TARGET) -logLevel $(LL) $(TESTSRC)
 	@echo 'did you see true?'
 	@rm $(TESTSRC)

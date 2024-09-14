@@ -31,27 +31,22 @@ func parseFlags() {
 	}
 }
 
-// func yyError(msg string) {
-// 	fmt.Fprintf(os.Stderr, "Error: %s\n", msg)
-// }
-
 func main() {
 	parseFlags()
+	log.SetLevel(o.ll)
+	log.SetFormatter(&log.TextFormatter{})
 
 	if flag.NArg() < 1 {
 		fmt.Println("Usage: prolog <input>")
 		os.Exit(1)
 	}
 
-	file, err := os.Open(flag.Arg(0))
+	lexer, err := prolog.NewLexer(flag.Arg(0))
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		os.Exit(1)
+		log.Fatalf("Error opening file: %v", err)
 	}
-	defer file.Close()
+	defer lexer.Close()
 
-	//yyErrorVerbose = true
-	lexer := &prolog.Lexer{Reader: file}
-	log.Println("lexer: %+v", lexer)
+	log.Printf("lexer: %+v", lexer)
 	prolog.YyParse(lexer)
 }
