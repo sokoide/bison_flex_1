@@ -6,16 +6,16 @@ LL=DEBUG
 
 all: $(TARGET)
 
-$(TARGET): grammer.go $(SRCS)
+$(TARGET): grammar.go $(SRCS)
 	go build -o $(TARGET)
 
-generate: grammer.go
+generate: grammar.go
 
-grammer.go: grammer.go.y
+grammar.go: grammar.go.y
 	go generate ./
 
 clean:
-	rm $(TARGET) y.output grammer.go
+	rm $(TARGET) y.output grammar.go
 
 run: $(TARGET)
 	$(TARGET)
