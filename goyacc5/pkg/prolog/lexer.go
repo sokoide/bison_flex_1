@@ -11,9 +11,10 @@ import (
 )
 
 type Lexer struct {
-	reader *bufio.Reader
-	ch     rune
-	file   *os.File
+	reader  *bufio.Reader
+	ch      rune
+	file    *os.File
+	program []clause
 }
 
 func NewLexer(filename string) (*Lexer, error) {

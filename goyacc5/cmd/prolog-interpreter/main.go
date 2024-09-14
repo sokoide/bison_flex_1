@@ -49,4 +49,5 @@ func main() {
 
 	log.Debugf("lexer: %+v", lexer)
 	prolog.YyParse(lexer)
+	prolog.Evaluate(lexer)
 }

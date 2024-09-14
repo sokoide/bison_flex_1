@@ -7,11 +7,7 @@ import __yyfmt__ "fmt"
 
 //line grammar.go.y:2
 
-import (
-	log "github.com/sirupsen/logrus"
-)
-
-//line grammar.go.y:11
+//line grammar.go.y:6
 type yySymType struct {
 	yys     int
 	clauses []clause
@@ -54,7 +50,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line grammar.go.y:114
+//line grammar.go.y:96
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -84,13 +80,13 @@ var yyPgo = [...]int8{
 }
 
 var yyR1 = [...]int8{
-	0, 7, 7, 1, 1, 2, 2, 2, 3, 4,
-	6, 6, 5, 5, 5, 5,
+	0, 7, 1, 1, 2, 2, 3, 4, 6, 6,
+	5, 5, 5, 5,
 }
 
 var yyR2 = [...]int8{
-	0, 0, 1, 1, 2, 0, 1, 1, 2, 4,
-	1, 3, 1, 1, 4, 1,
+	0, 1, 1, 2, 1, 1, 2, 4, 1, 3,
+	1, 1, 4, 1,
 }
 
 var yyChk = [...]int16{
@@ -100,9 +96,9 @@ var yyChk = [...]int16{
 }
 
 var yyDef = [...]int8{
-	1, -2, 2, 3, 6, 7, 0, 12, 13, 15,
-	4, 8, 0, 0, 0, 10, 0, 9, 0, 14,
-	11,
+	0, -2, 1, 2, 4, 5, 0, 10, 11, 13,
+	3, 6, 0, 0, 0, 8, 0, 7, 0, 12,
+	9,
 }
 
 var yyTok1 = [...]int8{
@@ -459,99 +455,80 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		yyDollar = yyS[yypt-0 : yypt+1]
-//line grammar.go.y:42
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line grammar.go.y:37
 		{
-			log.Debug("empty input")
+			yylex.(*Lexer).program = yyDollar[1].clauses
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:45
+//line grammar.go.y:43
 		{
-			log.Debugf("Parsed clauses: %+v", yyDollar[1].clauses)
-			for idx, c := range yyDollar[1].clauses {
-				log.Debugf(" %d: %s", idx, c.String())
-			}
+			yyVAL.clauses = append(yyVAL.clauses, yyDollar[1].clause)
 		}
 	case 3:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:54
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line grammar.go.y:46
 		{
-			if yyDollar[1].clause != nil {
-				yyVAL.clauses = append(yyVAL.clauses, yyDollar[1].clause)
-			}
+			yyVAL.clauses = append(yyDollar[1].clauses, yyDollar[2].clause)
 		}
 	case 4:
-		yyDollar = yyS[yypt-2 : yypt+1]
-//line grammar.go.y:59
-		{
-			if yyDollar[1].clauses != nil {
-				yyVAL.clauses = append(yyDollar[1].clauses, yyDollar[2].clause)
-			}
-		}
-	case 5:
-		yyDollar = yyS[yypt-0 : yypt+1]
-//line grammar.go.y:67
-		{
-			yyVAL.clause = nil
-		}
-	case 6:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:70
+//line grammar.go.y:52
 		{
 			yyVAL.clause = yyDollar[1].fact
 		}
-	case 7:
+	case 5:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:73
+//line grammar.go.y:55
 		{
 			yyVAL.clause = yyDollar[1].rule
 		}
-	case 8:
+	case 6:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line grammar.go.y:79
+//line grammar.go.y:61
 		{
 			yyVAL.fact = &factClause{Fact: yyDollar[1].term}
 		}
-	case 9:
+	case 7:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line grammar.go.y:85
+//line grammar.go.y:67
 		{
 			yyVAL.rule = &ruleClause{HeadTerm: yyDollar[1].term, BodyTerms: yyDollar[3].terms}
 		}
-	case 10:
+	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:91
+//line grammar.go.y:73
 		{
 			yyVAL.terms = append(yyVAL.terms, yyDollar[1].term)
 		}
-	case 11:
+	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammar.go.y:94
+//line grammar.go.y:76
 		{
 			yyVAL.terms = append(yyDollar[1].terms, yyDollar[3].term)
 		}
+	case 10:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line grammar.go.y:82
+		{
+			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
+		}
+	case 11:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line grammar.go.y:85
+		{
+			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
+		}
 	case 12:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:100
-		{
-			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
-		}
-	case 13:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:103
-		{
-			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
-		}
-	case 14:
 		yyDollar = yyS[yypt-4 : yypt+1]
-//line grammar.go.y:106
+//line grammar.go.y:88
 		{
 			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: yyDollar[3].terms}
 		}
-	case 15:
+	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:109
+//line grammar.go.y:91
 		{
 			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
 		}

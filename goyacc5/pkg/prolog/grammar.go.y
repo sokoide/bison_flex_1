@@ -1,10 +1,5 @@
 %{
 package prolog
-
-import (
-    log "github.com/sirupsen/logrus"
-)
-
 %}
 
 // yySymType
@@ -38,36 +33,23 @@ import (
 %%
 
 // Grammar rules
-input: /* empty */
-    {
-        log.Debug("empty input")
-    }
-    | clause_list {
-        log.Debugf("Parsed clauses: %+v", $1)
-        for idx, c := range $1 {
-            log.Debugf(" %d: %s", idx, c.String())
-        }
+input:
+    clause_list {
+        yylex.(*Lexer).program = $1
     }
     ;
 
 clause_list:
     clause {
-        if $1 != nil {
-            $$ = append($$, $1)
-        }
+        $$ = append($$, $1)
     }
     | clause_list clause {
-        if $1 != nil {
-            $$ = append($1, $2)
-        }
+        $$ = append($1, $2)
     }
     ;
 
 clause:
-    /* empty */ {
-        $$ = nil
-    }
-    | fact_clause {
+    fact_clause {
         $$ = $1
     }
     | rule_clause {
