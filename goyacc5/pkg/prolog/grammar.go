@@ -25,10 +25,9 @@ type yySymType struct {
 
 const IDENT = 57346
 const NUMBER = 57347
-const STRING = 57348
-const OP = 57349
-const VAR = 57350
-const COLON_DASH = 57351
+const OP = 57348
+const VAR = 57349
+const COLON_DASH = 57350
 
 var yyToknames = [...]string{
 	"$end",
@@ -36,7 +35,6 @@ var yyToknames = [...]string{
 	"$unk",
 	"IDENT",
 	"NUMBER",
-	"STRING",
 	"OP",
 	"VAR",
 	"COLON_DASH",
@@ -56,7 +54,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line grammar.go.y:110
+//line grammar.go.y:104
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -67,44 +65,41 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 23
+const yyLast = 21
 
 var yyAct = [...]int8{
-	6, 19, 15, 20, 18, 19, 13, 14, 7, 9,
-	10, 12, 8, 3, 16, 16, 11, 17, 1, 5,
-	21, 4, 2,
+	6, 17, 13, 18, 16, 17, 11, 12, 7, 8,
+	1, 10, 14, 14, 3, 15, 5, 9, 19, 4,
+	2,
 }
 
 var yyPact = [...]int16{
-	4, -1000, 4, -1000, -1000, -1000, -3, -9, -1000, -1000,
-	-1000, -1000, -1000, 4, 4, -10, -1000, -14, -1000, 4,
-	-1000, -1000,
+	4, -1000, 4, -1000, -1000, -1000, -2, -8, -1000, -1000,
+	-1000, 4, 4, -9, -1000, -13, -1000, 4, -1000, -1000,
 }
 
 var yyPgo = [...]int8{
-	0, 22, 13, 21, 19, 0, 2, 18,
+	0, 20, 14, 19, 16, 0, 2, 10,
 }
 
 var yyR1 = [...]int8{
 	0, 7, 7, 1, 1, 2, 2, 3, 4, 6,
-	6, 5, 5, 5, 5, 5,
+	6, 5, 5, 5,
 }
 
 var yyR2 = [...]int8{
 	0, 0, 1, 1, 2, 1, 1, 2, 4, 1,
-	3, 1, 4, 1, 1, 1,
+	3, 1, 4, 1,
 }
 
 var yyChk = [...]int16{
-	-1000, -7, -1, -2, -3, -4, -5, 4, 8, 5,
-	6, -2, 14, 9, 16, -6, -5, -6, 14, 15,
-	17, -5,
+	-1000, -7, -1, -2, -3, -4, -5, 4, 5, -2,
+	13, 8, 15, -6, -5, -6, 13, 14, 16, -5,
 }
 
 var yyDef = [...]int8{
-	1, -2, 2, 3, 5, 6, 0, 11, 13, 14,
-	15, 4, 7, 0, 0, 0, 9, 0, 8, 0,
-	12, 10,
+	1, -2, 2, 3, 5, 6, 0, 11, 13, 4,
+	7, 0, 0, 0, 9, 0, 8, 0, 12, 10,
 }
 
 var yyTok1 = [...]int8{
@@ -112,11 +107,11 @@ var yyTok1 = [...]int8{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	16, 17, 12, 10, 15, 11, 14, 13,
+	15, 16, 11, 9, 14, 10, 13, 12,
 }
 
 var yyTok2 = [...]int8{
-	2, 3, 4, 5, 6, 7, 8, 9,
+	2, 3, 4, 5, 6, 7, 8,
 }
 
 var yyTok3 = [...]int8{
@@ -472,7 +467,7 @@ yydefault:
 		{
 			log.Debugf("Parsed clauses: %+v", yyDollar[1].clauses)
 			for idx, c := range yyDollar[1].clauses {
-				log.Infof("%d: %s", idx, c.String())
+				log.Debugf(" %d: %s", idx, c.String())
 			}
 		}
 	case 3:
@@ -527,7 +522,7 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:93
 		{
-			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: nil}
+			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
 		}
 	case 12:
 		yyDollar = yyS[yypt-4 : yypt+1]
@@ -538,18 +533,6 @@ yydefault:
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:99
-		{
-			yyVAL.term = &variableTerm{Name: yyDollar[1].tok.Value}
-		}
-	case 14:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:102
-		{
-			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
-		}
-	case 15:
-		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:105
 		{
 			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
 		}

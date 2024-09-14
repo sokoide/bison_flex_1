@@ -27,7 +27,7 @@ import (
 %type<terms> term_list
 
 // Tokens
-%token<tok> IDENT NUMBER STRING OP VAR COLON_DASH
+%token<tok> IDENT NUMBER OP VAR COLON_DASH
 
 // Operator precedence rules
 %left '+' '-'
@@ -45,7 +45,7 @@ input: /* empty */
     | clause_list {
         log.Debugf("Parsed clauses: %+v", $1)
         for idx, c := range $1 {
-            log.Infof("%d: %s", idx, c.String())
+            log.Debugf(" %d: %s", idx, c.String())
         }
     }
     ;
@@ -91,18 +91,12 @@ term_list:
 
 term:
     IDENT {
-        $$ = &compoundTerm{Functor: $1.Value, Args: nil}
+        $$ = &constantTerm{Lit: $1.Value}
     }
     | IDENT '(' term_list ')' {
         $$ = &compoundTerm{Functor: $1.Value, Args: $3}
     }
-    | VAR {
-        $$ = &variableTerm{Name: $1.Value}
-    }
     | NUMBER {
-        $$ = &constantTerm{Lit: $1.Value}
-    }
-    | STRING {
         $$ = &constantTerm{Lit: $1.Value}
     }
     ;

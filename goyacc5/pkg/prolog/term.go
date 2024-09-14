@@ -11,7 +11,7 @@ type term interface {
 	Evaluate(context map[string]term) term
 }
 
-// constantTerm: represents a constant (like "mary" or "pizza").
+// constantTerm: represents a constant (like "scott" or "taro").
 type constantTerm struct {
 	Lit string // Literal value of the constant
 }
@@ -43,7 +43,7 @@ func (v *variableTerm) Evaluate(context map[string]term) term {
 	return v
 }
 
-// compoundTerm (from previous code): represents compound terms like functors with arguments.
+// compoundTerm: represents compound terms like functors with arguments.
 type compoundTerm struct {
 	Functor string
 	Args    []term

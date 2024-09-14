@@ -39,8 +39,9 @@ func (l *Lexer) Close() error {
 
 // Lex Called by goyacc
 func (l *Lexer) Lex(lval *yySymType) int {
-	id, tok := l.NextToken()
-	log.Debugf("Lexer: Lex: %d: Token: %+v", id, tok)
+	var id int
+	id, lval.tok = l.NextToken()
+	log.Debugf("Lexer: Lex: %d: Token: %+v", id, lval.tok)
 	return id
 }
 
