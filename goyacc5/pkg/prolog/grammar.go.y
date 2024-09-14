@@ -44,6 +44,9 @@ input: /* empty */
     }
     | clause_list {
         log.Debugf("Parsed clauses: %+v", $1)
+        for idx, c := range $1 {
+            log.Infof("%d: %s", idx, c.String())
+        }
     }
     ;
 

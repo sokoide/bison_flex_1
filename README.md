@@ -19,7 +19,7 @@
 * C
   * Binson & Flex
 * Go
-  * go get -u golang.org/x/tools/cmd/goyacc
+  * go install golang.org/x/tools/cmd/goyacc@latest
 * .NET <https://github.com/ernstc/YaccLexTools>
   * dotnet tool install dotnet-ylt --global
 
