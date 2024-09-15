@@ -11,6 +11,7 @@ type clause interface {
 	Head() term
 	Body() []term // Facts have no body (empty)
 	Evaluate(context map[string]term) clause
+	Dump()
 }
 
 // factClause: represents a fact, which is just a single compound term.
@@ -33,6 +34,10 @@ func (fc *factClause) Body() []term {
 func (fc *factClause) Evaluate(context map[string]term) clause {
 	// A fact evaluates by evaluating its single term
 	return &factClause{Fact: fc.Fact.Evaluate(context)}
+}
+
+func (fc *factClause) Dump() {
+	fmt.Printf("fact) %s: %v\n", fc.Head().GetFunctor(), fc.Fact.GetArgs())
 }
 
 // ruleClause: represents a rule, which has a head and a body (conditions).
@@ -68,4 +73,13 @@ func (rc *ruleClause) Evaluate(context map[string]term) clause {
 		HeadTerm:  evaluatedHead,
 		BodyTerms: evaluatedBody,
 	}
+}
+
+func (rc *ruleClause) Dump() {
+	fmt.Printf("rule) %s/%d\n", rc.Head().GetFunctor(), len(rc.BodyTerms))
+	// args := []string{}
+	// for _, t := range rc.BodyTerms {
+	// 	args = append(args, t.GetArgs()...)
+	// }
+	// fmt.Printf("rule) %s/%s\n", rc.Head().GetFunctor(), args)
 }

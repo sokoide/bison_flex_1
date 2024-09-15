@@ -105,7 +105,7 @@ func (l *Lexer) NextToken() (int, token, error) {
 		l.readChar()
 		if l.ch == '-' {
 			id = COLON_DASH
-			tok = token{Type: tokenTypeOp, Value: ":="}
+			tok = token{Type: tokenTypeOp, Value: ":-"}
 			l.readChar()
 		} else {
 			return 0, tok, fmt.Errorf("Unexpected token -%c", l.ch)

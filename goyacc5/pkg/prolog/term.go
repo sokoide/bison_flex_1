@@ -9,6 +9,8 @@ import (
 type term interface {
 	String() string
 	Evaluate(context map[string]term) term
+	GetFunctor() string
+	GetArgs() []string
 }
 
 // constantTerm: represents a constant (like "scott" or "taro").
@@ -23,6 +25,14 @@ func (c *constantTerm) String() string {
 func (c *constantTerm) Evaluate(context map[string]term) term {
 	// Constant terms evaluate to themselves
 	return c
+}
+
+func (c *constantTerm) GetFunctor() string {
+	return c.Lit
+}
+
+func (c *constantTerm) GetArgs() []string {
+	return []string{}
 }
 
 // variableTerm: represents a variable (like "X" or "Y").
@@ -41,6 +51,14 @@ func (v *variableTerm) Evaluate(context map[string]term) term {
 	}
 	// If variable is unbound, it evaluates to itself
 	return v
+}
+
+func (v *variableTerm) GetFunctor() string {
+	return v.Name
+}
+
+func (v *variableTerm) GetArgs() []string {
+	return []string{}
 }
 
 // compoundTerm: represents compound terms like functors with arguments.
@@ -67,4 +85,16 @@ func (ct *compoundTerm) Evaluate(context map[string]term) term {
 		Functor: ct.Functor,
 		Args:    evaluatedArgs,
 	}
+}
+
+func (ct *compoundTerm) GetFunctor() string {
+	return ct.Functor
+}
+
+func (ct *compoundTerm) GetArgs() []string {
+	args := []string{}
+	for _, arg := range ct.Args {
+		args = append(args, arg.GetFunctor())
+	}
+	return args
 }
