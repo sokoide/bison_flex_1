@@ -27,8 +27,16 @@ func Query(program *Program, queryProgram *Program) error {
 		switch cl := c.(type) {
 		case *factClause:
 			log.Debugf("evaluating: %s/%d, %v", cl.Fact.GetFunctor(), len(cl.Fact.GetArgs()), cl.String())
-			ret := evaluate(program, cl)
-			log.Infof("result: %s => %v", cl.String(), ret)
+			solutions := evaluateQuery(program, cl.Fact)
+			result := false
+			if len(solutions) > 0 {
+				result = true
+			}
+			log.Infof("%v -> %v", cl.String(), result)
+			log.Debugf("results for %s:", cl.String())
+			for _, solution := range solutions {
+				log.Debugf("  solution: %v", solution)
+			}
 		default:
 			log.Debugf("skipping %v", cl.String())
 		}
@@ -37,25 +45,40 @@ func Query(program *Program, queryProgram *Program) error {
 	return nil
 }
 
-func evaluate(program *Program, fc *factClause) bool {
-	for _, c := range program.Clauses {
-		switch cl := c.(type) {
+func evaluateQuery(program *Program, query term) []map[string]term {
+	var solutions []map[string]term
+
+	for _, clause := range program.Clauses {
+		switch cl := clause.(type) {
 		case *factClause:
-			log.Debugf("evaluating factClause: %s/%d, %v", cl.Fact.GetFunctor(), len(cl.Fact.GetArgs()), cl.String())
-			if fc.String() == cl.String() {
-				return true
-			} else {
-				log.Debugf("%s != %s", fc.String(), cl.String())
+			if unification, ok := unify(query, cl.Fact); ok {
+				solutions = append(solutions, unification)
 			}
 		case *ruleClause:
-			log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.GetFunctor(), len(cl.HeadTerm.GetArgs()), cl.String())
-			log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.String(), len(cl.HeadTerm.GetArgs()), cl.String())
-			if evaluateRuleClause(program, cl, fc.Head()) {
-				return true
-			}
-		default:
-			continue
+			ruleSolutions := evaluateRuleClause(program, cl, query)
+			solutions = append(solutions, ruleSolutions...)
 		}
 	}
-	return false
+
+	return solutions
+	// for _, c := range program.Clauses {
+	// 	switch cl := c.(type) {
+	// 	case *factClause:
+	// 		log.Debugf("evaluating factClause: %s/%d, %v", cl.Fact.GetFunctor(), len(cl.Fact.GetArgs()), cl.String())
+	// 		if fc.String() == cl.String() {
+	// 			return true
+	// 		} else {
+	// 			log.Debugf("%s != %s", fc.String(), cl.String())
+	// 		}
+	// 	case *ruleClause:
+	// 		log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.GetFunctor(), len(cl.HeadTerm.GetArgs()), cl.String())
+	// 		log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.String(), len(cl.HeadTerm.GetArgs()), cl.String())
+	// 		if evaluateRuleClause(program, cl, fc.Head()) {
+	// 			return true
+	// 		}
+	// 	default:
+	// 		continue
+	// 	}
+	// }
+	// return false
 }

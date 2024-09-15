@@ -1,6 +1,6 @@
 TARGET=./prolog-interpreter
 TESTSRC=./tmp.pro
-LL=DEBUG
+LL=INFO
 SRCS=./cmd/prolog-interpreter/*.go ./pkg/prolog/*.go
 .PHONY: all clean generate run test testparser testquery
 
@@ -30,3 +30,5 @@ testparser: $(TARGET)
 
 testquery: $(TARGET)
 	$(TARGET) -logLevel $(LL) ./test/test1.pro ./query/query1.pro
+	$(TARGET) -logLevel $(LL) ./test/test2.pro ./query/query2.pro
+	$(TARGET) -logLevel $(LL) ./test/test3.pro ./query/query3.pro

@@ -1,5 +1,44 @@
 package prolog
 
+func evaluateRuleClause(program *Program, ruleClause *ruleClause, query term) []map[string]term {
+	headUnification, ok := unify(ruleClause.HeadTerm, query)
+	if !ok {
+		return nil
+	}
+
+	return evaluateBodyTerms(program, ruleClause.BodyTerms, headUnification)
+}
+
+func evaluateBodyTerms(program *Program, bodyTerms []term, currentSubstitution map[string]term) []map[string]term {
+	if len(bodyTerms) == 0 {
+		return []map[string]term{currentSubstitution}
+	}
+
+	var solutions []map[string]term
+
+	firstTerm := applySubstitution(bodyTerms[0], currentSubstitution)
+	firstTermSolutions := evaluateQuery(program, firstTerm)
+
+	for _, solution := range firstTermSolutions {
+		combinedSubstitution := combineSubstitutions(currentSubstitution, solution)
+		subSolutions := evaluateBodyTerms(program, bodyTerms[1:], combinedSubstitution)
+		solutions = append(solutions, subSolutions...)
+	}
+
+	return solutions
+}
+
+func combineSubstitutions(sub1, sub2 map[string]term) map[string]term {
+	result := make(map[string]term)
+	for k, v := range sub1 {
+		result[k] = v
+	}
+	for k, v := range sub2 {
+		result[k] = v
+	}
+	return result
+}
+
 func unify(term1, term2 term) (map[string]term, bool) {
 	substitution := make(map[string]term)
 	if unifyHelper(term1, term2, substitution) {
@@ -50,25 +89,6 @@ func deref(t term, substitution map[string]term) term {
 		}
 	}
 	return t
-}
-
-func evaluateRuleClause(program *Program, ruleClause *ruleClause, query term) bool {
-	// Check if the head of the rule unifies with the query
-	headUnification, ok := unify(ruleClause.HeadTerm, query)
-	if !ok {
-		return false
-	}
-
-	// Evaluate each term in the body of the rule
-	for _, bodyTerm := range ruleClause.BodyTerms {
-		substitutedBodyTerm := applySubstitution(bodyTerm, headUnification)
-
-		if !evaluate(program, &factClause{Fact: substitutedBodyTerm}) {
-			return false
-		}
-	}
-
-	return true
 }
 
 func applySubstitution(t term, substitution map[string]term) term {
