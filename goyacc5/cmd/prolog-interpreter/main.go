@@ -12,6 +12,7 @@ import (
 type options struct {
 	logLevel string
 	ll       log.Level
+	dump     bool
 }
 
 var o options
@@ -19,7 +20,8 @@ var o options
 func parseFlags() {
 	var err error
 	var ll log.Level
-	flag.StringVar(&o.logLevel, "logLevel", "debug", "TRACE | DEBUG | INFO | WARN | ERROR")
+	flag.StringVar(&o.logLevel, "logLevel", "INFO", "TRACE | DEBUG | INFO | WARN | ERROR")
+	flag.BoolVar(&o.dump, "dump", false, "dump the parser")
 	flag.Parse()
 
 	ll, err = log.ParseLevel(o.logLevel)
@@ -49,7 +51,9 @@ func main() {
 
 	log.Debugf("lexer: %+v", lexer)
 	program, _ := prolog.Load(lexer)
-	prolog.Dump(program)
+	if o.dump {
+		prolog.Dump(program)
+	}
 
 	if flag.NArg() >= 2 {
 		queryLexer, err := prolog.NewLexer(flag.Arg(1))
@@ -58,7 +62,10 @@ func main() {
 		}
 		defer queryLexer.Close()
 		queryProgram, _ := prolog.Load(queryLexer)
-		prolog.Dump(queryProgram)
+
+		if o.dump {
+			prolog.Dump(queryProgram)
+		}
 
 		prolog.Query(program, queryProgram)
 	}
