@@ -1,6 +1,4 @@
-authorize(taro).
-authorize(jiro).
-meal(burger).
+food(orange).
+food(apple).
 
-authorize(taro, read).
-authorize(taro, write).
+meal(X) :- food(X).
