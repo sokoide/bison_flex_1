@@ -10,6 +10,20 @@ make testparser
 make testqquery
 ```
 
+## Grammar
+
+* [Please look at the grammar file](<./pkg/prolog/grammar.go.y>)
+
+## TODO
+
+* Many items are not implemented including...
+  * single and double quote handling
+  * list
+  * comparison (> >= < =< =:= =\= or etc) operators
+  * arithmetic (+ - * / ** // mod) operators
+  * cut (!) operator
+  * built-in predicate such as `write`, `writeln`,
+
 ## Examples
 
 ### Simple fact / rule evaluation

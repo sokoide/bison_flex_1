@@ -98,3 +98,35 @@ func (ct *compoundTerm) GetArgs() []string {
 	}
 	return args
 }
+
+// listTerm: represents Lists of terms
+type listTerm struct {
+	Args []term
+}
+
+func (l *listTerm) String() string {
+	argsStr := []string{}
+	for _, arg := range l.Args {
+		argsStr = append(argsStr, arg.String())
+	}
+	return strings.Join(argsStr, ", ")
+}
+
+func (l *listTerm) Evaluate(context map[string]term) term {
+	// TODO
+	// List evaluates to itself
+	return l
+}
+
+func (l *listTerm) GetFunctor() string {
+	// TODO
+	return ""
+}
+
+func (l *listTerm) GetArgs() []string {
+	argsStr := []string{}
+	for _, arg := range l.Args {
+		argsStr = append(argsStr, arg.String())
+	}
+	return argsStr
+}

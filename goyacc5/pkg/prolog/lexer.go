@@ -48,7 +48,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	if err != nil {
 		panic(err)
 	}
-	log.Debugf("Lexer: Lex: %d: Token: %+v", id, lval.tok)
+	log.Debugf("Lexer: %d %s '%s'", id, tokenTypeToString[lval.tok.Type], lval.tok.Value)
 	return id
 }
 
@@ -70,6 +70,17 @@ const (
 	tokenTypeKeyword
 	tokenTypeOp
 )
+
+var tokenTypeToString = map[tokenType]string{
+	tokenTypeNone:          "None",
+	tokenTypeEOF:           "EOF",
+	tokenTypeNumberLiteral: "NumberLiteral",
+	tokenTypeStringLiteral: "StringLiteral",
+	tokenTypeIdent:         "Ident",
+	tokenTypeVariable:      "Variable",
+	tokenTypeKeyword:       "Keyword",
+	tokenTypeOp:            "Op",
+}
 
 func (l *Lexer) readChar() {
 	ch, _, err := l.reader.ReadRune()
@@ -115,7 +126,7 @@ func (l *Lexer) NextToken() (int, token, error) {
 		tok = token{Type: tokenTypeNumberLiteral, Value: l.readNumber()}
 	default:
 		switch l.ch {
-		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
+		case ',', '.', '[', ']', '|', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
 			id = int(l.ch)
 			tok = token{Type: tokenTypeOp, Value: string(l.ch)}
 			l.readChar()
@@ -127,9 +138,24 @@ func (l *Lexer) NextToken() (int, token, error) {
 	return id, tok, nil
 }
 
+func (l *Lexer) indentifierSupportedChar(r rune) bool {
+	if unicode.IsLetter(l.ch) || unicode.IsDigit(l.ch) {
+		return true
+	}
+
+	supportedChars := []rune{'_', '|', '-'}
+	for _, c := range supportedChars {
+		if r == c {
+			return true
+		}
+	}
+	return false
+}
+
 func (l *Lexer) readIdentifier() string {
 	var result []rune
-	for unicode.IsLetter(l.ch) || unicode.IsDigit(l.ch) {
+
+	for l.indentifierSupportedChar(l.ch) {
 		result = append(result, l.ch)
 		l.readChar()
 	}

@@ -91,6 +91,12 @@ term:
     | NUMBER {
         $$ = &constantTerm{Lit: $1.Value}
     }
+    | '[' term_list ']' {
+        $$ = &listTerm{Args: $2}
+    }
+    | '[' ']' {
+        $$ = &listTerm{Args: []term{}}
+    }
     ;
 
 %%

@@ -61,24 +61,4 @@ func evaluateQuery(program *Program, query term) []map[string]term {
 	}
 
 	return solutions
-	// for _, c := range program.Clauses {
-	// 	switch cl := c.(type) {
-	// 	case *factClause:
-	// 		log.Debugf("evaluating factClause: %s/%d, %v", cl.Fact.GetFunctor(), len(cl.Fact.GetArgs()), cl.String())
-	// 		if fc.String() == cl.String() {
-	// 			return true
-	// 		} else {
-	// 			log.Debugf("%s != %s", fc.String(), cl.String())
-	// 		}
-	// 	case *ruleClause:
-	// 		log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.GetFunctor(), len(cl.HeadTerm.GetArgs()), cl.String())
-	// 		log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.String(), len(cl.HeadTerm.GetArgs()), cl.String())
-	// 		if evaluateRuleClause(program, cl, fc.Head()) {
-	// 			return true
-	// 		}
-	// 	default:
-	// 		continue
-	// 	}
-	// }
-	// return false
 }

@@ -77,6 +77,20 @@ func unifyHelper(term1, term2 term, substitution map[string]term) bool {
 			}
 		}
 		return true
+	case *listTerm:
+		t2, ok := term2.(*listTerm)
+		if !ok {
+			return false
+		}
+		if len(t1.Args) != len(t2.Args) {
+			return false
+		}
+		for i := range t1.Args {
+			if !unifyHelper(t1.Args[i], t2.Args[i], substitution) {
+				return false
+			}
+		}
+		return true
 	}
 	return false
 }
