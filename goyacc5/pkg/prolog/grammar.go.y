@@ -83,7 +83,7 @@ term:
         $$ = &constantTerm{Lit: $1.Value}
     }
     | VAR {
-        $$ = &constantTerm{Lit: $1.Value}
+        $$ = &variableTerm{Name: $1.Value}
     }
     | IDENT '(' term_list ')' {
         $$ = &compoundTerm{Functor: $1.Value, Args: $3}

@@ -37,7 +37,6 @@ func (fc *factClause) Evaluate(context map[string]term) clause {
 }
 
 func (fc *factClause) Dump() {
-	// fmt.Printf("fact) %s: %v\n", fc.Head().GetFunctor(), fc.Fact.GetArgs())
 	fmt.Printf("fact) %s/%d\n", fc.Head().GetFunctor(), len(fc.Fact.GetArgs()))
 	fmt.Println(" " + fc.String())
 }
@@ -78,11 +77,6 @@ func (rc *ruleClause) Evaluate(context map[string]term) clause {
 }
 
 func (rc *ruleClause) Dump() {
-	// args := []string{}
-	// for _, t := range rc.BodyTerms {
-	// 	args = append(args, t.GetArgs()...)
-	// }
-	// fmt.Printf("rule) %s/%s\n", rc.Head().GetFunctor(), args)
 	fmt.Printf("rule) %s/%d\n", rc.Head().GetFunctor(), len(rc.BodyTerms))
 	fmt.Println(" " + rc.String())
 }

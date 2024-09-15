@@ -6,35 +6,12 @@ import (
 
 type Program struct {
 	Clauses []clause
-	// Facts   []*factClause
-	// Rules   []*ruleClause
 }
 
 func Load(lexer *Lexer) (*Program, error) {
 	yyErrorVerbose = true
 	parseResult := yyNewParser().Parse(lexer)
 	log.Debugf("parseResult: %d", parseResult)
-
-	// rules := make([]*ruleClause, 0)
-	// facts := make([]*factClause, 0)
-
-	// for _, c := range lexer.program {
-	// 	switch cl := c.(type) {
-	// 	case *factClause:
-	// 		facts = append(facts, cl)
-	// 	case *ruleClause:
-	// 		rules = append(rules, cl)
-	// 	default:
-	// 		err := fmt.Errorf("Only fact or rule clause is expected. %+v given", cl)
-	// 		log.Error(err)
-	// 		return nil, err
-	// 	}
-	// }
-
-	// return &Program{
-	// 	Facts: facts,
-	// 	Rules: rules,
-	// }, nil
 	return &Program{Clauses: lexer.program}, nil
 }
 
@@ -44,6 +21,41 @@ func Dump(program *Program) {
 	}
 }
 
-func Evaluate(program *Program) error {
+func Query(program *Program, queryProgram *Program) error {
+	log.Info("querying...")
+	for _, c := range queryProgram.Clauses {
+		switch cl := c.(type) {
+		case *factClause:
+			log.Debugf("evaluating: %s/%d, %v", cl.Fact.GetFunctor(), len(cl.Fact.GetArgs()), cl.String())
+			ret := evaluate(program, cl)
+			log.Infof("result: %s => %v", cl.String(), ret)
+		default:
+			log.Debugf("skipping %v", cl.String())
+		}
+	}
+	log.Info("query completed.")
 	return nil
+}
+
+func evaluate(program *Program, fc *factClause) bool {
+	for _, c := range program.Clauses {
+		switch cl := c.(type) {
+		case *factClause:
+			log.Debugf("evaluating factClause: %s/%d, %v", cl.Fact.GetFunctor(), len(cl.Fact.GetArgs()), cl.String())
+			if fc.String() == cl.String() {
+				return true
+			} else {
+				log.Debugf("%s != %s", fc.String(), cl.String())
+			}
+		case *ruleClause:
+			log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.GetFunctor(), len(cl.HeadTerm.GetArgs()), cl.String())
+			log.Debugf("evaluating ruleClause: %s/%d, %v", cl.HeadTerm.String(), len(cl.HeadTerm.GetArgs()), cl.String())
+			if evaluateRuleClause(program, cl, fc.Head()) {
+				return true
+			}
+		default:
+			continue
+		}
+	}
+	return false
 }

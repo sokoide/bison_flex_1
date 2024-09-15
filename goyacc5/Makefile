@@ -2,7 +2,7 @@ TARGET=./prolog-interpreter
 TESTSRC=./tmp.pro
 LL=DEBUG
 SRCS=./cmd/prolog-interpreter/*.go ./pkg/prolog/*.go
-.PHONY: all clean generate run test testcli
+.PHONY: all clean generate run test testparser testquery
 
 all: $(TARGET)
 
@@ -23,7 +23,10 @@ run: $(TARGET)
 test: $(TARGET)
 	go test -v ./...
 
-testcli: $(TARGET)
+testparser: $(TARGET)
 	for file in ./test/*.pro; do \
 	$(TARGET) -logLevel $(LL) $$file; \
 	done
+
+testquery: $(TARGET)
+	$(TARGET) -logLevel $(LL) ./test/test1.pro ./query/query1.pro

@@ -518,7 +518,7 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:85
 		{
-			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
+			yyVAL.term = &variableTerm{Name: yyDollar[1].tok.Value}
 		}
 	case 12:
 		yyDollar = yyS[yypt-4 : yypt+1]

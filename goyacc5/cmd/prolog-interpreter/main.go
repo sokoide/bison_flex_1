@@ -37,7 +37,7 @@ func main() {
 	log.SetFormatter(&log.TextFormatter{})
 
 	if flag.NArg() < 1 {
-		fmt.Println("Usage: prolog <input>")
+		fmt.Println("Usage: prolog <source-file> <query-file>")
 		os.Exit(1)
 	}
 
@@ -50,4 +50,16 @@ func main() {
 	log.Debugf("lexer: %+v", lexer)
 	program, _ := prolog.Load(lexer)
 	prolog.Dump(program)
+
+	if flag.NArg() >= 2 {
+		queryLexer, err := prolog.NewLexer(flag.Arg(1))
+		if err != nil {
+			log.Fatalf("Error opening file: %v", err)
+		}
+		defer queryLexer.Close()
+		queryProgram, _ := prolog.Load(queryLexer)
+		prolog.Dump(queryProgram)
+
+		prolog.Query(program, queryProgram)
+	}
 }
