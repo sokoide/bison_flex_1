@@ -29,6 +29,7 @@ const VAR = 57348
 const OP = 57349
 const COLON_DASH = 57350
 const BUILTIN_WRITE = 57351
+const BUILTIN_NL = 57352
 
 var yyToknames = [...]string{
 	"$end",
@@ -40,6 +41,7 @@ var yyToknames = [...]string{
 	"OP",
 	"COLON_DASH",
 	"BUILTIN_WRITE",
+	"BUILTIN_NL",
 	"'+'",
 	"'-'",
 	"'*'",
@@ -58,7 +60,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line grammar.go.y:114
+//line grammar.go.y:117
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -69,45 +71,45 @@ var yyExca = [...]int8{
 
 const yyPrivate = 57344
 
-const yyLast = 37
+const yyLast = 39
 
 var yyAct = [...]int8{
-	19, 6, 16, 6, 8, 10, 9, 25, 23, 7,
-	23, 8, 10, 9, 24, 17, 7, 15, 11, 18,
-	23, 23, 27, 26, 28, 11, 3, 14, 1, 12,
-	20, 21, 22, 13, 5, 4, 2,
+	20, 6, 17, 6, 9, 11, 10, 26, 24, 7,
+	8, 9, 11, 10, 24, 18, 7, 8, 25, 12,
+	19, 24, 24, 28, 27, 29, 12, 16, 15, 1,
+	5, 21, 22, 23, 3, 14, 4, 13, 2,
 }
 
 var yyPact = [...]int16{
-	7, -1000, 7, -1000, -1000, -1000, 19, 1, -14, -1000,
-	-1000, 0, -1000, -1000, 7, 7, 7, -5, -1000, -1000,
-	-7, 6, 5, 7, -1000, -1000, -1000, -1000, -1000,
+	7, -1000, 7, -1000, -1000, -1000, 20, 10, -1000, -15,
+	-1000, -1000, 0, -1000, -1000, 7, 7, 7, -2, -1000,
+	-1000, -8, 6, 5, 7, -1000, -1000, -1000, -1000, -1000,
 }
 
 var yyPgo = [...]int8{
-	0, 36, 26, 35, 34, 0, 15, 28,
+	0, 38, 34, 36, 30, 0, 15, 29,
 }
 
 var yyR1 = [...]int8{
 	0, 7, 7, 1, 1, 2, 2, 3, 4, 6,
-	6, 5, 5, 5, 5, 5, 5, 5,
+	6, 5, 5, 5, 5, 5, 5, 5, 5,
 }
 
 var yyR2 = [...]int8{
 	0, 0, 1, 1, 2, 1, 1, 2, 4, 1,
-	3, 4, 1, 1, 4, 1, 3, 2,
+	3, 4, 1, 1, 1, 4, 1, 3, 2,
 }
 
 var yyChk = [...]int16{
-	-1000, -7, -1, -2, -3, -4, -5, 9, 4, 6,
-	5, 18, -2, 14, 8, 16, 16, -6, 19, -5,
-	-6, -6, -6, 15, 19, 14, 17, 17, -5,
+	-1000, -7, -1, -2, -3, -4, -5, 9, 10, 4,
+	6, 5, 19, -2, 15, 8, 17, 17, -6, 20,
+	-5, -6, -6, -6, 16, 20, 15, 18, 18, -5,
 }
 
 var yyDef = [...]int8{
 	1, -2, 2, 3, 5, 6, 0, 0, 12, 13,
-	15, 0, 4, 7, 0, 0, 0, 0, 17, 9,
-	0, 0, 0, 0, 16, 8, 11, 14, 10,
+	14, 16, 0, 4, 7, 0, 0, 0, 0, 18,
+	9, 0, 0, 0, 0, 17, 8, 11, 15, 10,
 }
 
 var yyTok1 = [...]int8{
@@ -115,16 +117,16 @@ var yyTok1 = [...]int8{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	16, 17, 12, 10, 15, 11, 14, 13, 3, 3,
+	17, 18, 13, 11, 16, 12, 15, 14, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 18, 3, 19,
+	3, 19, 3, 20,
 }
 
 var yyTok2 = [...]int8{
-	2, 3, 4, 5, 6, 7, 8, 9,
+	2, 3, 4, 5, 6, 7, 8, 9, 10,
 }
 
 var yyTok3 = [...]int8{
@@ -538,35 +540,41 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:94
 		{
-			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
+			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: []term{}}
 		}
 	case 13:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:97
 		{
-			yyVAL.term = &variableTerm{Name: yyDollar[1].tok.Value}
+			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
 		}
 	case 14:
-		yyDollar = yyS[yypt-4 : yypt+1]
+		yyDollar = yyS[yypt-1 : yypt+1]
 //line grammar.go.y:100
+		{
+			yyVAL.term = &variableTerm{Name: yyDollar[1].tok.Value}
+		}
+	case 15:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line grammar.go.y:103
 		{
 			yyVAL.term = &compoundTerm{Functor: yyDollar[1].tok.Value, Args: yyDollar[3].terms}
 		}
-	case 15:
+	case 16:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line grammar.go.y:103
+//line grammar.go.y:106
 		{
 			yyVAL.term = &constantTerm{Lit: yyDollar[1].tok.Value}
 		}
-	case 16:
+	case 17:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line grammar.go.y:106
+//line grammar.go.y:109
 		{
 			yyVAL.term = &listTerm{Args: yyDollar[2].terms}
 		}
-	case 17:
+	case 18:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line grammar.go.y:109
+//line grammar.go.y:112
 		{
 			yyVAL.term = &listTerm{Args: []term{}}
 		}

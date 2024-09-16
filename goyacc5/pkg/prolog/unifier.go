@@ -6,11 +6,6 @@ import (
 )
 
 func evaluateRuleClause(program *Program, ruleClause *ruleClause, query term) []map[string]term {
-	if query.GetFunctor() == "builtin_write" {
-		fmt.Print(strings.Join(query.GetArgs(), ""))
-		return []map[string]term{{}}
-	}
-
 	// when ````
 	// write(X) :- builtin_write(X).
 	// write(hello).```
@@ -32,7 +27,9 @@ func evaluateBodyTerms(program *Program, bodyTerms []term, currentSubstitution m
 	var solutions []map[string]term
 
 	firstTerm := applySubstitution(bodyTerms[0], currentSubstitution)
-	firstTermSolutions := evaluateQuery(program, firstTerm)
+
+	// builtin function handling
+	firstTermSolutions := evaluateBuiltIns(program, firstTerm)
 
 	for _, solution := range firstTermSolutions {
 		combinedSubstitution := combineSubstitutions(currentSubstitution, solution)
@@ -40,6 +37,22 @@ func evaluateBodyTerms(program *Program, bodyTerms []term, currentSubstitution m
 		solutions = append(solutions, subSolutions...)
 	}
 
+	return solutions
+}
+
+func evaluateBuiltIns(program *Program, term1 term) []map[string]term {
+	var solutions []map[string]term
+
+	switch term1.GetFunctor() {
+	case "builtin_write":
+		fmt.Print(strings.Join(term1.GetArgs(), ""))
+		solutions = []map[string]term{{}}
+	case "builtin_nl":
+		fmt.Println("")
+		solutions = []map[string]term{{}}
+	default:
+		solutions = evaluateQuery(program, term1)
+	}
 	return solutions
 }
 
@@ -54,7 +67,7 @@ func combineSubstitutions(sub1, sub2 map[string]term) map[string]term {
 	return result
 }
 
-func unify(term1 term, term2 term) (map[string]term, bool) {
+func unify(term1, term2 term) (map[string]term, bool) {
 	substitution := make(map[string]term)
 	if unifyHelper(term1, term2, substitution) {
 		return substitution, true

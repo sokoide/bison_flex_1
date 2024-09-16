@@ -1,3 +1,3 @@
 write(hello).
-write(world).
+writeln(world).
 % print_list([1,2,3]).

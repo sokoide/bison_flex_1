@@ -28,7 +28,7 @@ import(
 // Tokens
 %token<tok> IDENT NUMBER VAR OP COLON_DASH
 // built-in
-%token<tok> BUILTIN_WRITE
+%token<tok> BUILTIN_WRITE BUILTIN_NL
 
 // Operator precedence rules
 %left '+' '-'
@@ -90,6 +90,9 @@ term_list:
 term:
     BUILTIN_WRITE '(' term_list ')' {
         $$ = &compoundTerm{Functor: $1.Value, Args: $3}
+    }
+    | BUILTIN_NL {
+        $$ = &compoundTerm{Functor: $1.Value, Args: []term{}}
     }
     | IDENT {
         $$ = &constantTerm{Lit: $1.Value}

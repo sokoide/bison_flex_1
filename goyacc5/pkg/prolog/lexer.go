@@ -60,6 +60,7 @@ func (l *Lexer) Error(e string) {
 // ========================================
 var keywords = map[string]int{
 	"builtin_write": BUILTIN_WRITE,
+	"builtin_nl":    BUILTIN_NL,
 }
 
 type tokenType int
