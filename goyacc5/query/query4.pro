@@ -1,3 +1,10 @@
 write(hello).
+
 writeln(world).
-% print_list([1,2,3]).
+
+% print_list([]).
+%
+% print_list([H|T]) :-
+%     writeln(H),
+%     print_list(T).
+%

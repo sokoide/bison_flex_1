@@ -1,6 +1,6 @@
 TARGET=./prolog-interpreter
 TESTSRC=./tmp.pro
-LL := $(or $(shell echo $$LOGLEVEL), "INFO")
+LL := $(or $(shell echo $$LOGLEVEL), "DEBUG")
 
 SRCS=./cmd/prolog-interpreter/*.go ./pkg/prolog/*.go
 .PHONY: all clean generate run test testparser testquery

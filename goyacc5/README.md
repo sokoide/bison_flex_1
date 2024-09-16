@@ -13,16 +13,18 @@ make testqquery
 ## Grammar
 
 * [Please look at the grammar file](<./pkg/prolog/grammar.go.y>)
+* Supported built-in predicates
+  * write/1
+  * writeln/1
 
 ## TODO
 
 * Many items are not implemented including...
-  * single and double quote handling
   * list
   * comparison (> >= < =< =:= =\= or etc) operators
   * arithmetic (+ - * / ** // mod) operators
   * cut (!) operator
-  * built-in predicate such as `write`, `writeln`,
+  * other built-in predicates
 
 ## Examples
 
@@ -64,6 +66,11 @@ fish(mackerel).
 animal(X) :- mammal(X).
 animal(X) :- fish(X).
 
+print_if_mammal(X) :-
+    mammal(X),
+    write(X),
+    writeln(" is mammal").
+
 % end of file
 
 $ cat query/query2.pro
@@ -75,14 +82,20 @@ mammal(cod).
 fish(cod).
 animal(cod).
 
+print_if_mammal(dog).
+print_if_mammal(cod).
+
 $ ./prolog-interpreter -logLevel INFO  test/test2.pro  query/query2.pro
 INFO[0000] querying...
-INFO[0000] result: mammal(dog). -> true
-INFO[0000] result: fish(dog). -> false
-INFO[0000] result: animal(dog). -> true
-INFO[0000] result: mammal(cod). -> false
-INFO[0000] result: fish(cod). -> true
-INFO[0000] result: animal(cod). -> true
+INFO[0000] mammal(dog). -> true
+INFO[0000] fish(dog). -> false
+INFO[0000] animal(dog). -> true
+INFO[0000] mammal(cod). -> false
+INFO[0000] fish(cod). -> true
+INFO[0000] animal(cod). -> true
+dog is mammal
+INFO[0000] print_if_mammal(dog). -> true
+INFO[0000] print_if_mammal(cod). -> false
 INFO[0000] query completed.
 ```
 

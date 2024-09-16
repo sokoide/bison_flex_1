@@ -136,6 +136,18 @@ func (l *Lexer) NextToken() (int, token, error) {
 		} else {
 			return 0, tok, fmt.Errorf("Unexpected token %c(%d)", l.ch, l.ch)
 		}
+	case l.ch == '"':
+		l.readChar() // skip double quote
+		lit := l.readString('"')
+		id = STRING_LITERAL
+		tok = token{Type: tokenTypeStringLiteral, Value: lit}
+		l.readChar() // skip double quote
+	case l.ch == '\'':
+		l.readChar() // skip single quote
+		lit := l.readString('\'')
+		id = STRING_LITERAL
+		tok = token{Type: tokenTypeStringLiteral, Value: lit}
+		l.readChar() // skip single quote
 	case unicode.IsNumber(l.ch):
 		id = NUMBER
 		tok = token{Type: tokenTypeNumberLiteral, Value: l.readNumber()}
@@ -184,6 +196,15 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return string(result)
+}
+
+func (l *Lexer) readString(endingChar rune) string {
+	var ret []rune
+	for l.ch != endingChar {
+		ret = append(ret, l.ch)
+		l.readChar()
+	}
+	return string(ret)
 }
 
 func (l *Lexer) skipWhitespace() {

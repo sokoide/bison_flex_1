@@ -10,4 +10,9 @@ fish(mackerel).
 animal(X) :- mammal(X).
 animal(X) :- fish(X).
 
+print_if_mammal(X) :-
+    mammal(X),
+    write(X),
+    writeln(" is mammal").
+
 % end of file
