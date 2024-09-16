@@ -6,8 +6,12 @@
 * Please look at the 2 test scripts
 
 ```sh
+# DEBUG logging
 make testparser
 make testqquery
+# INFO logging
+LOGLEVEL=INFO make testparser
+LOGLEVEL=INFO make testqquery
 ```
 
 ## Grammar

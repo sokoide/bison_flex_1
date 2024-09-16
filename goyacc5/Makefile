@@ -26,11 +26,13 @@ test: $(TARGET)
 
 testparser: $(TARGET)
 	for file in ./test/*.pro; do \
+	echo "* Testing $$file"; \
 	$(TARGET) -logLevel $(LL) $$file; \
 	done
 
 testquery: $(TARGET)
-	$(TARGET) -logLevel $(LL) ./test/test1.pro ./query/query1.pro
-	$(TARGET) -logLevel $(LL) ./test/test2.pro ./query/query2.pro
-	$(TARGET) -logLevel $(LL) ./test/test3.pro ./query/query3.pro
-	$(TARGET) -logLevel $(LL) ./test/test4.pro ./query/query4.pro
+	num=`ls query/*.pro |wc -l`; \
+	for i in `seq $$num`; do \
+	echo "* Testing query$$i.pro"; \
+	$(TARGET) -logLevel $(LL) ./test/test$$i.pro ./query/query$$i.pro; \
+	done

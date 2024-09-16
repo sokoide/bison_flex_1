@@ -149,7 +149,7 @@ func (l *Lexer) NextToken() (int, token, error) {
 		tok = token{Type: tokenTypeStringLiteral, Value: lit}
 		l.readChar() // skip single quote
 	case unicode.IsNumber(l.ch):
-		id = NUMBER
+		id = NUMBER_LITERAL
 		tok = token{Type: tokenTypeNumberLiteral, Value: l.readNumber()}
 	default:
 		switch l.ch {

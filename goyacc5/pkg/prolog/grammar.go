@@ -24,7 +24,7 @@ type yySymType struct {
 }
 
 const IDENT = 57346
-const NUMBER = 57347
+const NUMBER_LITERAL = 57347
 const STRING_LITERAL = 57348
 const VAR = 57349
 const OP = 57350
@@ -37,7 +37,7 @@ var yyToknames = [...]string{
 	"error",
 	"$unk",
 	"IDENT",
-	"NUMBER",
+	"NUMBER_LITERAL",
 	"STRING_LITERAL",
 	"VAR",
 	"OP",

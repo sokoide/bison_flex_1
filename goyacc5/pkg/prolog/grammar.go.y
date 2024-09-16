@@ -26,7 +26,7 @@ import(
 %type<terms> term_list
 
 // Tokens
-%token<tok> IDENT NUMBER STRING_LITERAL VAR OP COLON_DASH
+%token<tok> IDENT NUMBER_LITERAL STRING_LITERAL VAR OP COLON_DASH
 // built-in
 %token<tok> BUILTIN_WRITE BUILTIN_NL
 
@@ -106,7 +106,7 @@ term:
     | IDENT '(' term_list ')' {
         $$ = &compoundTerm{Functor: $1.Value, Args: $3}
     }
-    | NUMBER {
+    | NUMBER_LITERAL {
         $$ = &constantTerm{Lit: $1.Value}
     }
     | '[' term_list ']' {
