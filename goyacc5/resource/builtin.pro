@@ -1,0 +1,1 @@
+write(X) :- builtin_write(X).

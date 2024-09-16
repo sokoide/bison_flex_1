@@ -58,6 +58,10 @@ func (l *Lexer) Error(e string) {
 }
 
 // ========================================
+var keywords = map[string]int{
+	"builtin_write": BUILTIN_WRITE,
+}
+
 type tokenType int
 
 const (
@@ -96,9 +100,13 @@ func (l *Lexer) readChar() {
 }
 
 func (l *Lexer) NextToken() (int, token, error) {
-	l.skipWhitespace()
-	l.skipComment()
-
+	for {
+		l.skipComment()
+		l.skipWhitespace()
+		if l.ch != '%' {
+			break
+		}
+	}
 	var id int
 	var tok token
 
@@ -107,8 +115,14 @@ func (l *Lexer) NextToken() (int, token, error) {
 		id = 0
 		tok = token{Type: tokenTypeEOF, Value: ""}
 	case l.ch >= 'a' && l.ch <= 'z':
-		id = IDENT
-		tok = token{Type: tokenTypeIdent, Value: l.readIdentifier()}
+		literal := l.readIdentifier()
+		if val, ok := keywords[literal]; ok {
+			id = val
+			tok = token{Type: tokenTypeKeyword, Value: literal}
+		} else {
+			id = IDENT
+			tok = token{Type: tokenTypeIdent, Value: literal}
+		}
 	case l.ch >= 'A' && l.ch <= 'Z':
 		id = VAR
 		tok = token{Type: tokenTypeVariable, Value: l.readIdentifier()}
@@ -119,7 +133,7 @@ func (l *Lexer) NextToken() (int, token, error) {
 			tok = token{Type: tokenTypeOp, Value: ":-"}
 			l.readChar()
 		} else {
-			return 0, tok, fmt.Errorf("Unexpected token -%c", l.ch)
+			return 0, tok, fmt.Errorf("Unexpected token %c(%d)", l.ch, l.ch)
 		}
 	case unicode.IsNumber(l.ch):
 		id = NUMBER
@@ -131,7 +145,7 @@ func (l *Lexer) NextToken() (int, token, error) {
 			tok = token{Type: tokenTypeOp, Value: string(l.ch)}
 			l.readChar()
 		default:
-			return 0, tok, fmt.Errorf("Unexpected token %c", l.ch)
+			return 0, tok, fmt.Errorf("Unexpected token %c(%d)", l.ch, l.ch)
 		}
 	}
 
@@ -179,9 +193,9 @@ func (l *Lexer) skipWhitespace() {
 
 func (l *Lexer) skipComment() {
 	if l.ch == '%' {
+		l.readChar()
 		// skip until the end of line
 		for {
-			l.readChar()
 			if l.ch == '\n' {
 				l.readChar()
 				return
@@ -189,6 +203,7 @@ func (l *Lexer) skipComment() {
 			if l.ch == 0 {
 				return
 			}
+			l.readChar()
 		}
 	}
 }

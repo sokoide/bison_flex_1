@@ -1,6 +1,8 @@
 package prolog
 
 import (
+	"reflect"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -10,9 +12,23 @@ type Program struct {
 
 func Load(lexer *Lexer) (*Program, error) {
 	yyErrorVerbose = true
-	parseResult := yyNewParser().Parse(lexer)
-	log.Debugf("parseResult: %d", parseResult)
-	return &Program{Clauses: lexer.program}, nil
+
+	// parse builtin program
+	builtinLexer, err := NewLexer("resource/builtin.pro")
+	if err != nil {
+		log.Errorf("failed to load builtin.pro, err: %s", err)
+		return &Program{}, err
+	}
+	parseResult := yyNewParser().Parse(builtinLexer)
+	log.Debugf("builtin parseResult: %d", parseResult)
+
+	// parse user program
+	parseResult = yyNewParser().Parse(lexer)
+	log.Debugf("user parseResult: %d", parseResult)
+
+	// combine the 2
+	clauses := append(builtinLexer.program, lexer.program...)
+	return &Program{Clauses: clauses}, nil
 }
 
 func Dump(program *Program) {
@@ -38,7 +54,7 @@ func Query(program *Program, queryProgram *Program) error {
 				log.Debugf("  solution: %v", solution)
 			}
 		default:
-			log.Debugf("skipping %v", cl.String())
+			log.Debugf("skipping %v, %v", reflect.TypeOf(cl), cl.String())
 		}
 	}
 	log.Info("query completed.")

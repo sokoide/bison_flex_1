@@ -1,6 +1,21 @@
 package prolog
 
+import (
+	"fmt"
+	"strings"
+)
+
 func evaluateRuleClause(program *Program, ruleClause *ruleClause, query term) []map[string]term {
+	if query.GetFunctor() == "builtin_write" {
+		fmt.Print(strings.Join(query.GetArgs(), ""))
+		return []map[string]term{{}}
+	}
+
+	// when ````
+	// write(X) :- builtin_write(X).
+	// write(hello).```
+	// is given, headUnification will have
+	// map[string]term{"X": "hello"}.
 	headUnification, ok := unify(ruleClause.HeadTerm, query)
 	if !ok {
 		return nil
@@ -39,7 +54,7 @@ func combineSubstitutions(sub1, sub2 map[string]term) map[string]term {
 	return result
 }
 
-func unify(term1, term2 term) (map[string]term, bool) {
+func unify(term1 term, term2 term) (map[string]term, bool) {
 	substitution := make(map[string]term)
 	if unifyHelper(term1, term2, substitution) {
 		return substitution, true

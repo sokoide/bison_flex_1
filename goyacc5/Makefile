@@ -33,3 +33,4 @@ testquery: $(TARGET)
 	$(TARGET) -logLevel $(LL) ./test/test1.pro ./query/query1.pro
 	$(TARGET) -logLevel $(LL) ./test/test2.pro ./query/query2.pro
 	$(TARGET) -logLevel $(LL) ./test/test3.pro ./query/query3.pro
+	$(TARGET) -logLevel $(LL) ./test/test4.pro ./query/query4.pro

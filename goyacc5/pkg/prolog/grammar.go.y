@@ -1,5 +1,9 @@
 %{
 package prolog
+
+import(
+	log "github.com/sirupsen/logrus"
+)
 %}
 
 // yySymType
@@ -23,6 +27,8 @@ package prolog
 
 // Tokens
 %token<tok> IDENT NUMBER VAR OP COLON_DASH
+// built-in
+%token<tok> BUILTIN_WRITE
 
 // Operator precedence rules
 %left '+' '-'
@@ -33,8 +39,11 @@ package prolog
 %%
 
 // Grammar rules
-input:
-    clause_list {
+input: /* empty */
+    {
+        log.Warn("Empty input. Nothing to parse")
+    }
+    | clause_list {
         yylex.(*Lexer).program = $1
     }
     ;
@@ -79,7 +88,10 @@ term_list:
     ;
 
 term:
-    IDENT {
+    BUILTIN_WRITE '(' term_list ')' {
+        $$ = &compoundTerm{Functor: $1.Value, Args: $3}
+    }
+    | IDENT {
         $$ = &constantTerm{Lit: $1.Value}
     }
     | VAR {
