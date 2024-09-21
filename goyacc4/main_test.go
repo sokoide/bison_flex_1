@@ -7,6 +7,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	scopeStack = NewScopeStack()
 	source := `a=1;b=1+5*2+9/3;a=a+1;`
 	scanner := new(scanner)
 	scanner.Init(source)
@@ -17,11 +18,19 @@ func TestParse(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, 2, vars["a"])
-	assert.Equal(t, 14, vars["b"])
+	var got int
+	var scope *Scope
+	got, scope = scopeStack.Get("a")
+	assert.NotNil(t, scope)
+	assert.Equal(t, 2, got)
+
+	got, scope = scopeStack.Get("b")
+	assert.NotNil(t, scope)
+	assert.Equal(t, 14, got)
 }
 
 func TestWhile(t *testing.T) {
+	scopeStack = NewScopeStack()
 	source := `a=0;while(a<5){a=a+1;}`
 	scanner := new(scanner)
 	scanner.Init(source)
@@ -32,5 +41,32 @@ func TestWhile(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, 5, vars["a"])
+	var got int
+	var scope *Scope
+	got, scope = scopeStack.Get("a")
+	assert.NotNil(t, scope)
+	assert.Equal(t, 5, got)
+}
+
+func TestScope(t *testing.T) {
+	scopeStack = NewScopeStack()
+	// notice b doesn't exist outside of while
+	source := `a=0;while(a<5){a=a+1;b=b+1;}`
+	scanner := new(scanner)
+	scanner.Init(source)
+
+	var prog []expression = parse(scanner)
+	_, err := evaluateStmts(prog)
+	if err != nil {
+		panic(err)
+	}
+
+	var got int
+	var scope *Scope
+	got, scope = scopeStack.Get("a")
+	assert.NotNil(t, scope)
+	assert.Equal(t, 5, got)
+	got, scope = scopeStack.Get("b")
+	assert.Nil(t, scope)
+	assert.Equal(t, 0, got)
 }

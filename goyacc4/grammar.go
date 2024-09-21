@@ -70,6 +70,8 @@ const yyInitialStackSize = 16
 // global vars
 var vars = map[string]int{}
 
+var scopeStack = NewScopeStack()
+
 //line yacctab:1
 var yyExca = [...]int8{
 	-1, 1,

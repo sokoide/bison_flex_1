@@ -132,3 +132,5 @@ expr:
 %%
 // global vars
 var vars = map[string]int{}
+
+var scopeStack = NewScopeStack()

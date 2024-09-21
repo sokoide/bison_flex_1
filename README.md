@@ -9,7 +9,7 @@
   * goyacc1: simple goyacc example (Go)
   * goyacc2: simple goyacc example2 (Go)
   * goyacc3: another goyacc example with parser and expression (Go)
-  * goyacc4: tiny language interpreter (Go)
+  * goyacc4: tiny language interpreter with a scoped stack (Go)
   * goyacc5: Prolog like language interpreter (Go)
   * netyacc1: .net version of goyacc1 (C#)
   * netyacc2: simple compiler for a stack machine (C#)

@@ -35,11 +35,15 @@ func evaluateStmt(stmt expression) (int, error) {
 		}
 		return 0, err
 	case *assignStatement:
-		log.Debugf("assgin %s = %d\n", s.Name, ret)
 		ret, err = evaluateExpr(s.Expr)
 		if err == nil {
+			if _, scope := scopeStack.Get(s.Name); scope != nil {
+				scope.Set(s.Name, ret)
+			} else {
+				log.Debugf("%s doesn't exist in all scopeStack. Making it in the current scope", s.Name)
+				scopeStack.Set(s.Name, ret)
+			}
 			log.Debugf("%s = %d\n", s.Name, ret)
-			vars[s.Name] = ret
 			return 0, nil
 		}
 		return 0, err
@@ -50,21 +54,28 @@ func evaluateStmt(stmt expression) (int, error) {
 		fmt.Println()
 		return 0, err
 	case *whileStatement:
-		log.Debug("whileStatement")
+		log.Debug("whileStatement - scope pushed")
+		scopeStack.PushScope()
 		for {
 			ret, err = evaluateExpr(s.Cond)
 			if err != nil {
+				log.Debug("whileStatement -scope poped")
+				scopeStack.PopScope()
 				return 0, err
 			}
 			if ret > 0 {
 				_, err = evaluateStmts(s.Body)
 				if err != nil {
+					log.Debug("whileStatement -scope poped")
+					scopeStack.PopScope()
 					return 0, err
 				}
 			} else {
 				break
 			}
 		}
+		log.Debug("whileStatement -scope poped")
+		scopeStack.PopScope()
 		return 0, err
 	case *emptyStatement:
 		log.Debug("emptyStatement")
@@ -79,12 +90,17 @@ func printExpr(expr expression) {
 
 	var ret int
 	var err error
+	var scope *Scope
 
 	switch e := expr.(type) {
 	case *numberExpression:
 		fmt.Printf("%s", e.Lit)
 	case *variableExpression:
-		fmt.Printf("%d", vars[e.Lit])
+		if ret, scope = scopeStack.Get(e.Lit); scope != nil {
+			fmt.Printf("%d", ret)
+		} else {
+			log.Errorf("%s doesn't exist", e.Lit)
+		}
 	case *stringExpression:
 		fmt.Printf("%s", e.Lit)
 	default:
@@ -141,11 +157,13 @@ func evaluateExpr(expr expression) (int, error) {
 			panic("Unknown operator")
 		}
 	case *variableExpression:
-		if v, ok := vars[e.Lit]; ok {
+		var v int
+		var scope *Scope
+		if v, scope = scopeStack.Get(e.Lit); scope != nil {
 			return v, nil
 		}
-		vars[e.Lit] = 0
-		log.Warnf("err: variable %s not found", e.Lit)
+		scopeStack.Set(e.Lit, 0)
+		log.Warnf("err: variable %s not found, 0 assigned", e.Lit)
 		return 0, nil
 	case *stringExpression:
 		return 0, nil
