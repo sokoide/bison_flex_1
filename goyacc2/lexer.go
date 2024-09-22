@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type lexer struct {
 	src   string
@@ -13,11 +15,19 @@ var recentToken string
 func (l *lexer) Lex(lval *yySymType) int {
 	for l.index < len(l.src) {
 		c := l.src[l.index]
+		if isWhiteSpace(c) {
+			l.index++
+			continue
+		}
+
 		l.index++
 		switch c {
-		case '+', '-', '*', '/', '(', ')':
+		case '+', '-', '*', '/', '(', ')', '%', '=':
 			recentToken = string(c)
 			return int(c)
+		case ';', '\n':
+			recentToken = string(c)
+			return LF
 		}
 
 		switch {
@@ -26,6 +36,10 @@ func (l *lexer) Lex(lval *yySymType) int {
 			lval.val = l.getNumber()
 			recentToken = string(lval.val)
 			return NUMBER
+		case 'a' <= c && c <= 'z':
+			lval.ident = string(c)
+			recentToken = lval.ident
+			return IDENT
 		default:
 			panic(fmt.Sprintf("invalid character %s\n", string(c)))
 		}
@@ -48,4 +62,8 @@ func (l *lexer) getNumber() int {
 		l.index++
 	}
 	return n
+}
+
+func isWhiteSpace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || ch == '\n'
 }

@@ -6,13 +6,13 @@ import (
 %}
 
 %union{
-	num int
+	val int
 	ident string
 	token int
 }
 
-%type<num> program line expr let
-%token<num> NUMBER LF
+%type<val> program line expr let
+%token<val> NUMBER LF
 %token<ident> IDENT
 %token<token> '(',')','='
 
@@ -39,9 +39,10 @@ expr: NUMBER
 	| expr '-' expr { $$ = $1 - $3 }
 	| expr '*' expr { $$ =  $1 * $3 }
 	| expr '/' expr { $$ = $1 / $3 }
-	| expr '%' expr { $$ = int($1) % int($3) }
+	| expr '%' expr { $$ = $1 % $3 }
 	| '(' expr ')' { $$ = $2 }
 
+	// | expr '%' expr { $$ = int($1) % int($3) }
 %%
 
 // global vars
