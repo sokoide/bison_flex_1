@@ -20,11 +20,12 @@ LOGLEVEL=INFO make testqquery
 * Supported built-in predicates
   * write/1
   * writeln/1
+* List is partially supported. see `test5.pro` and `query5.pro`
 
 ## TODO
 
 * Many items are not implemented including...
-  * list
+  * `second([_,X|_], X).` is not yet supported
   * comparison (> >= < =< =:= =\= or etc) operators
   * arithmetic (+ - * / ** // mod) operators
   * cut (!) operator
@@ -134,5 +135,38 @@ INFO[0000] parent(becky, jiro). -> false
 INFO[0000] grandparent(ichiro, saburo). -> true
 INFO[0000] grandparent(alice, saburo). -> true
 INFO[0000] grandparent(alice, jiro). -> false
+INFO[0000] query completed.
+```
+
+### List
+
+```sh
+$ cat test/test5.pro
+first([X|_], X).
+
+print_list([]).
+
+print_list([H|T]) :-
+    writeln(H),
+    print_list(T).
+
+$ cat query/query5.pro
+first([5,6,7], X).
+first([hello,world], Y).
+print_list([5,6,7,8,9]).
+
+$ ./prolog-interpreter -logLevel INFO  test/test5.pro query/query5.pro
+INFO[0000] querying...
+X = 5
+INFO[0000] first([5, 6, 7], X). -> true
+Y = hello
+INFO[0000] first([hello, world], Y). -> true
+5
+6
+7
+8
+9
+
+INFO[0000] print_list([5, 6, 7, 8, 9]). -> true
 INFO[0000] query completed.
 ```

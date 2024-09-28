@@ -106,18 +106,37 @@ func unifyHelper(term1, term2 term, substitution map[string]term) bool {
 		}
 		return true
 	case *listTerm:
-		t2, ok := term2.(*listTerm)
-		if !ok {
+		return unifyLists(t1, term2, substitution)
+	}
+	return false
+}
+
+func unifyLists(l1 *listTerm, term2 term, substitution map[string]term) bool {
+	switch t2 := term2.(type) {
+	case *listTerm:
+		if l1.Head != nil && l1.Tail != nil {
+			if t2.Head != nil && t2.Tail != nil {
+				return unifyHelper(l1.Head, t2.Head, substitution) && unifyHelper(l1.Tail, t2.Tail, substitution)
+			}
+			if len(t2.Args) > 0 {
+				return unifyHelper(l1.Head, t2.Args[0], substitution) && unifyHelper(l1.Tail, &listTerm{Args: t2.Args[1:]}, substitution)
+			}
 			return false
 		}
-		if len(t1.Args) != len(t2.Args) {
+		if t2.Head != nil && t2.Tail != nil {
+			return unifyLists(t2, l1, substitution)
+		}
+		if len(l1.Args) != len(t2.Args) {
 			return false
 		}
-		for i := range t1.Args {
-			if !unifyHelper(t1.Args[i], t2.Args[i], substitution) {
+		for i := range l1.Args {
+			if !unifyHelper(l1.Args[i], t2.Args[i], substitution) {
 				return false
 			}
 		}
+		return true
+	case *variableTerm:
+		substitution[t2.Name] = l1
 		return true
 	}
 	return false
@@ -146,6 +165,17 @@ func applySubstitution(t term, substitution map[string]term) term {
 			newArgs[i] = applySubstitution(arg, substitution)
 		}
 		return &compoundTerm{Functor: tt.Functor, Args: newArgs}
+	case *listTerm:
+		if tt.Head != nil && tt.Tail != nil {
+			newHead := applySubstitution(tt.Head, substitution)
+			newTail := applySubstitution(tt.Tail, substitution)
+			return &listTerm{Head: newHead, Tail: newTail}
+		}
+		newArgs := make([]term, len(tt.Args))
+		for i, arg := range tt.Args {
+			newArgs[i] = applySubstitution(arg, substitution)
+		}
+		return &listTerm{Args: newArgs}
 	default:
 		return t
 	}

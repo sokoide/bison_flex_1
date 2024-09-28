@@ -1,7 +1,9 @@
 package prolog
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -48,6 +50,8 @@ func Query(program *Program, queryProgram *Program) error {
 			if len(solutions) > 0 {
 				result = true
 			}
+			PrintQueryResults(cl.Fact, solutions)
+
 			log.Infof("%v -> %v", cl.String(), result)
 			log.Debugf("results for %s:", cl.String())
 			for _, solution := range solutions {
@@ -61,20 +65,94 @@ func Query(program *Program, queryProgram *Program) error {
 	return nil
 }
 
+// func evaluateQuery(program *Program, query term) []map[string]term {
+// 	var solutions []map[string]term
+
+// 	for _, clause := range program.Clauses {
+// 		switch cl := clause.(type) {
+// 		case *factClause:
+// 			if unification, ok := unify(query, cl.Fact); ok {
+// 				solutions = append(solutions, unification)
+// 			}
+// 		case *ruleClause:
+// 			ruleSolutions := evaluateRuleClause(program, cl, query)
+// 			solutions = append(solutions, ruleSolutions...)
+// 		}
+// 	}
+
+// 	return solutions
+// }
+
 func evaluateQuery(program *Program, query term) []map[string]term {
 	var solutions []map[string]term
 
 	for _, clause := range program.Clauses {
-		switch cl := clause.(type) {
+		switch c := clause.(type) {
 		case *factClause:
-			if unification, ok := unify(query, cl.Fact); ok {
+			if unification, ok := unify(c.Fact, query); ok {
 				solutions = append(solutions, unification)
 			}
 		case *ruleClause:
-			ruleSolutions := evaluateRuleClause(program, cl, query)
-			solutions = append(solutions, ruleSolutions...)
+			solutions = append(solutions, evaluateRuleClause(program, c, query)...)
 		}
 	}
 
 	return solutions
+}
+
+// New function to print query results
+func PrintQueryResults(query term, solutions []map[string]term) {
+	if len(solutions) == 0 {
+		fmt.Println("No solutions found.")
+		return
+	}
+
+	for _, solution := range solutions {
+		printSolution(query, solution)
+	}
+}
+
+func printSolution(query term, solution map[string]term) {
+	switch q := query.(type) {
+	case *compoundTerm:
+		for i, arg := range q.Args {
+			if v, ok := arg.(*variableTerm); ok {
+				if value, exists := solution[v.Name]; exists {
+					fmt.Printf("%s = %v", v.Name, formatTerm(value))
+					if i < len(q.Args)-1 {
+						fmt.Print(", ")
+					}
+				}
+			}
+		}
+		fmt.Println()
+	default:
+		fmt.Printf("%v\n", formatTerm(applySubstitution(query, solution)))
+	}
+}
+
+func formatTerm(t term) string {
+	switch tt := t.(type) {
+	case *constantTerm:
+		return tt.Lit
+	case *variableTerm:
+		return tt.Name
+	case *compoundTerm:
+		args := make([]string, len(tt.Args))
+		for i, arg := range tt.Args {
+			args[i] = formatTerm(arg)
+		}
+		return fmt.Sprintf("%s(%s)", tt.Functor, strings.Join(args, ", "))
+	case *listTerm:
+		if tt.Head != nil && tt.Tail != nil {
+			return fmt.Sprintf("[%s|%s]", formatTerm(tt.Head), formatTerm(tt.Tail))
+		}
+		args := make([]string, len(tt.Args))
+		for i, arg := range tt.Args {
+			args[i] = formatTerm(arg)
+		}
+		return fmt.Sprintf("[%s]", strings.Join(args, ", "))
+	default:
+		return fmt.Sprintf("%v", t)
+	}
 }

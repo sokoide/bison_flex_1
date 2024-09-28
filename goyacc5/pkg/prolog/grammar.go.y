@@ -115,6 +115,12 @@ term:
     | '[' ']' {
         $$ = &listTerm{Args: []term{}}
     }
+    | '[' term '|' term ']' {
+        $$ = &listTerm{Head: $2, Tail: $4}
+    }
+    | '_' {
+        $$ = &anonymousVarTerm{}
+    }
     ;
 
 %%

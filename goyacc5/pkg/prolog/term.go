@@ -61,6 +61,28 @@ func (v *variableTerm) GetArgs() []string {
 	return []string{}
 }
 
+// anonymousVarTerm: represents '_'
+type anonymousVarTerm struct{}
+
+func (a *anonymousVarTerm) String() string {
+	return "_"
+}
+
+func (a *anonymousVarTerm) Evaluate(env map[string]term) term {
+	// Anonymous variable evaluates to itself
+	return a
+}
+
+func (a *anonymousVarTerm) GetFunctor() string {
+	//  TODO
+	return ""
+}
+
+func (a *anonymousVarTerm) GetArgs() []string {
+	// TODOk
+	return []string{}
+}
+
 // compoundTerm: represents compound terms like functors with arguments.
 type compoundTerm struct {
 	Functor string
@@ -102,6 +124,8 @@ func (ct *compoundTerm) GetArgs() []string {
 // listTerm: represents Lists of terms
 type listTerm struct {
 	Args []term
+	Head term
+	Tail term
 }
 
 func (l *listTerm) String() string {
@@ -109,12 +133,11 @@ func (l *listTerm) String() string {
 	for _, arg := range l.Args {
 		argsStr = append(argsStr, arg.String())
 	}
-	return strings.Join(argsStr, ", ")
+	return "[" + strings.Join(argsStr, ", ") + "]"
 }
 
 func (l *listTerm) Evaluate(context map[string]term) term {
-	// TODO
-	// List evaluates to itself
+	// listTerm evaluates to itself
 	return l
 }
 

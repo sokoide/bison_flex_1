@@ -74,6 +74,7 @@ const (
 	tokenTypeVariable
 	tokenTypeKeyword
 	tokenTypeOp
+	tokenTypeAnonymousVar
 )
 
 var tokenTypeToString = map[tokenType]string{
@@ -85,6 +86,7 @@ var tokenTypeToString = map[tokenType]string{
 	tokenTypeVariable:      "Variable",
 	tokenTypeKeyword:       "Keyword",
 	tokenTypeOp:            "Op",
+	tokenTypeAnonymousVar:  "AnonymousVar",
 }
 
 func (l *Lexer) readChar() {
@@ -127,6 +129,10 @@ func (l *Lexer) NextToken() (int, token, error) {
 	case l.ch >= 'A' && l.ch <= 'Z':
 		id = VAR
 		tok = token{Type: tokenTypeVariable, Value: l.readIdentifier()}
+	case l.ch == '_':
+		l.readChar()
+		id = VAR
+		tok = token{Type: tokenTypeAnonymousVar, Value: "_"}
 	case l.ch == ':':
 		l.readChar()
 		if l.ch == '-' {
@@ -170,7 +176,7 @@ func (l *Lexer) indentifierSupportedChar(r rune) bool {
 		return true
 	}
 
-	supportedChars := []rune{'_', '|', '-'}
+	supportedChars := []rune{'_', '-'}
 	for _, c := range supportedChars {
 		if r == c {
 			return true
