@@ -36,3 +36,6 @@ testquery: $(TARGET)
 	echo "* Testing query$$i.pro"; \
 	$(TARGET) -logLevel $(LL) ./test/test$$i.pro ./query/query$$i.pro; \
 	done
+
+debug: $(TARGET)
+	$(TARGET) -logLevel $(LL) ./test/test5.pro ./query/query5.pro

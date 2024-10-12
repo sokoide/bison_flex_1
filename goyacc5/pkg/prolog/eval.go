@@ -30,6 +30,12 @@ func Load(lexer *Lexer) (*Program, error) {
 
 	// combine the 2
 	clauses := append(builtinLexer.program, lexer.program...)
+
+	log.Debug("Loaded clauses:")
+	for i, c := range clauses {
+		log.Debugf("  [%d] %v", i, c)
+	}
+
 	return &Program{Clauses: clauses}, nil
 }
 
@@ -65,42 +71,59 @@ func Query(program *Program, queryProgram *Program) error {
 	return nil
 }
 
-// func evaluateQuery(program *Program, query term) []map[string]term {
-// 	var solutions []map[string]term
-
-// 	for _, clause := range program.Clauses {
-// 		switch cl := clause.(type) {
-// 		case *factClause:
-// 			if unification, ok := unify(query, cl.Fact); ok {
-// 				solutions = append(solutions, unification)
-// 			}
-// 		case *ruleClause:
-// 			ruleSolutions := evaluateRuleClause(program, cl, query)
-// 			solutions = append(solutions, ruleSolutions...)
-// 		}
-// 	}
-
-// 	return solutions
-// }
-
 func evaluateQuery(program *Program, query term) []map[string]term {
 	var solutions []map[string]term
 
+	log.Debugf("Evaluating query: %v", query)
+
+	queryPredicate, ok := query.(*compoundTerm)
+	if !ok {
+		log.Errorf("Query is not a compound term: %v", query)
+		return nil
+	}
+
 	for _, clause := range program.Clauses {
+		var clauseHead term
 		switch c := clause.(type) {
 		case *factClause:
-			if unification, ok := unify(c.Fact, query); ok {
-				solutions = append(solutions, unification)
-			}
+			clauseHead = c.Fact
 		case *ruleClause:
-			solutions = append(solutions, evaluateRuleClause(program, c, query)...)
+			clauseHead = c.HeadTerm
+		default:
+			continue
+		}
+
+		clausePredicate, ok := clauseHead.(*compoundTerm)
+		if !ok {
+			continue
+		}
+
+		// Only attempt unification if the predicates match
+		if queryPredicate.Functor == clausePredicate.Functor && len(queryPredicate.Args) == len(clausePredicate.Args) {
+			log.Debugf("Trying to unify with clause: %v", clause)
+
+			switch c := clause.(type) {
+			case *factClause:
+				log.Debugf("Attempting to unify %v with %v", query, c.Fact)
+				if unification, ok := unify(c.Fact, query); ok {
+					log.Debugf("Unification successful: %v", unification)
+					solutions = append(solutions, unification)
+				} else {
+					log.Debugf("Unification failed")
+				}
+			case *ruleClause:
+				log.Debugf("Evaluating rule: %v", c)
+				ruleSolutions := evaluateRuleClause(program, c, query)
+				log.Debugf("Rule evaluation resulted in %d solutions", len(ruleSolutions))
+				solutions = append(solutions, ruleSolutions...)
+			}
 		}
 	}
 
+	log.Debugf("Query evaluation completed with %d solutions", len(solutions))
 	return solutions
 }
 
-// New function to print query results
 func PrintQueryResults(query term, solutions []map[string]term) {
 	if len(solutions) == 0 {
 		fmt.Println("No solutions found.")
@@ -145,7 +168,11 @@ func formatTerm(t term) string {
 		return fmt.Sprintf("%s(%s)", tt.Functor, strings.Join(args, ", "))
 	case *listTerm:
 		if tt.Head != nil && tt.Tail != nil {
-			return fmt.Sprintf("[%s|%s]", formatTerm(tt.Head), formatTerm(tt.Tail))
+			headTerms := make([]string, len(tt.Head))
+			for i, h := range tt.Head {
+				headTerms[i] = formatTerm(h)
+			}
+			return fmt.Sprintf("[%s|%s]", strings.Join(headTerms, ", "), formatTerm(tt.Tail))
 		}
 		args := make([]string, len(tt.Args))
 		for i, arg := range tt.Args {

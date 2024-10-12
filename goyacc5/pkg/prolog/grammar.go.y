@@ -23,7 +23,8 @@ import(
 %type<fact> fact_clause
 %type<rule> rule_clause
 %type<term> term
-%type<terms> term_list
+%type<terms> term_list head_terms
+
 
 // Tokens
 %token<tok> IDENT NUMBER_LITERAL STRING_LITERAL VAR OP COLON_DASH
@@ -80,12 +81,20 @@ rule_clause:
 
 term_list:
     term {
-        $$ = append($$, $1)
+        $$ = []term{$1}
     }
     | term_list ',' term {
         $$ = append($1, $3)
     }
     ;
+
+head_terms:
+    term {
+        $$ = []term{$1}
+    }
+    | head_terms ',' term {
+        $$ = append($1, $3)
+    }
 
 term:
     BUILTIN_WRITE '(' term_list ')' {
@@ -112,10 +121,13 @@ term:
     | '[' term_list ']' {
         $$ = &listTerm{Args: $2}
     }
-    | '[' ']' {
-        $$ = &listTerm{Args: []term{}}
+    | '[' term_list '|' term ']' {
+        $$ = &listTerm{Head: $2, Tail: $4}
     }
-    | '[' term '|' term ']' {
+    | '[' ']' {
+        $$ = &listTerm{IsEmpty: true}
+    }
+    | '[' head_terms '|' term ']' {
         $$ = &listTerm{Head: $2, Tail: $4}
     }
     | '_' {

@@ -123,15 +123,37 @@ func (ct *compoundTerm) GetArgs() []string {
 
 // listTerm: represents Lists of terms
 type listTerm struct {
-	Args []term
-	Head term
-	Tail term
+	Args    []term
+	Head    []term
+	Tail    term
+	IsEmpty bool
+}
+
+func newListTerm(args []term) *listTerm {
+	if len(args) == 0 {
+		return &listTerm{IsEmpty: true}
+	}
+	return &listTerm{Args: args}
+}
+
+func newHeadTailListTerm(head []term, tail term) *listTerm {
+	return &listTerm{Head: head, Tail: tail}
 }
 
 func (l *listTerm) String() string {
-	argsStr := []string{}
-	for _, arg := range l.Args {
-		argsStr = append(argsStr, arg.String())
+	if l.IsEmpty {
+		return "[]"
+	}
+	if l.Head != nil && l.Tail != nil {
+		headStr := make([]string, len(l.Head))
+		for i, h := range l.Head {
+			headStr[i] = h.String()
+		}
+		return fmt.Sprintf("[%s|%s]", strings.Join(headStr, ","), l.Tail.String())
+	}
+	argsStr := make([]string, len(l.Args))
+	for i, arg := range l.Args {
+		argsStr[i] = arg.String()
 	}
 	return "[" + strings.Join(argsStr, ", ") + "]"
 }
