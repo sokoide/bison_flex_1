@@ -12,7 +12,7 @@ import (
 
 %token<val> NUMBER
 %token<ident> IDENT
-%token '(' ')' '=' '{' '}' LF
+%token '(' ')' '=' '{' '}'
 
 %left '+','-'
 %left '*','/','%'
@@ -25,10 +25,12 @@ import (
 program: stmts
 	;
 
-stmts: /* empty */ {
-	}
-	| stmts expr {
-		fmt.Printf("Result: %d\n", $2)
+stmts: /* empty */
+	| stmts stmt
+	;
+
+stmt: expr {
+		fmt.Printf("Result: %d\n", $1)
 	}
 
 expr: NUMBER
@@ -36,6 +38,5 @@ expr: NUMBER
 	| expr '-' expr { $$ = $1 - $3 }
 	| expr '*' expr { $$ =  $1 * $3 }
 	| expr '/' expr { $$ = $1 / $3 }
-	| expr '%' expr { $$ = $1 % $3 }
 	| '(' expr ')' { $$ = $2 }
 %%
