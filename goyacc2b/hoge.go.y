@@ -12,7 +12,7 @@ import (
 }
 
 %type<val> program line expr let
-%token<val> NUMBER LF
+%token<val> NUMBER LF PUT
 %token<ident> IDENT
 %token<token> '(',')','='
 
@@ -26,9 +26,11 @@ program: line
 	| program line
 
 line: let LF {$$ = $1}
-	 | expr LF {
+	| expr LF {
 		$$ = $1
-		fmt.Println("Result: ", $1)
+	}
+	| PUT '(' expr ')' LF {
+		fmt.Printf("%d\n", $3)
 	}
 
 let: IDENT '=' expr { vars[$1] = $3 }
