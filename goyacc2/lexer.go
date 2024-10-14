@@ -22,7 +22,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 
 		l.index++
 		switch c {
-		case '+', '-', '*', '/', '(', ')', '%', '=':
+		case '+', '-', '*', '/', '(', ')', '%', '=', ';', '{', '}':
 			recentToken = string(c)
 			return int(c)
 		}

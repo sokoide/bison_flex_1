@@ -8,32 +8,37 @@ import (
 %union{
 	val int
 	ident string
-	token int
 }
 
-%type<val> program line expr let
-%token<val> NUMBER LF PUT
+%token<val> NUMBER
 %token<ident> IDENT
-%token<token> '(',')','='
+%token '(' ')' '=' '{' '}' ';' PUT
 
 %left '+','-'
 %left '*','/','%'
 
+%type<val> expr
+
 %start program
 
 %%
-program: line
-	| program line
+program: stmts
+	;
 
-line: let LF {$$ = $1}
-	| expr LF {
-		$$ = $1
+stmts: /* empty */
+	| stmts stmt ';'
+	;
+
+stmt: expr {
+		fmt.Printf("Result: %d\n", $1)
 	}
-	| PUT '(' expr ')' LF {
+	| IDENT '=' expr {
+		vars[$1] = $3
+	}
+	| PUT '(' expr ')' {
 		fmt.Printf("%d\n", $3)
 	}
-
-let: IDENT '=' expr { vars[$1] = $3 }
+	;
 
 expr: NUMBER
 	| IDENT { $$ = vars[$1] }
