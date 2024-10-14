@@ -29,10 +29,7 @@ stmts: /* empty */
 	| stmts stmt ';'
 	;
 
-stmt: expr {
-		fmt.Printf("Result: %d\n", $1)
-	}
-	| IDENT '=' expr {
+stmt: IDENT '=' expr {
 		vars[$1] = $3
 	}
 	| PUT '(' expr ')' {
