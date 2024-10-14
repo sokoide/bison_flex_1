@@ -19,7 +19,6 @@ package main
 %left '+','-'
 %left '*','/','%'
 
-/* %type<val> expr */
 %type<node> expr stmt
 %type<nodes> program stmts
 
@@ -51,8 +50,8 @@ stmt: IDENT '=' expr ';' {
 	;
 
 expr: NUMBER { $$ = newNode("int", "", $1, nil, nil, nil) }
-	| IDENT { $$ = newNode("ident", $1, 0, nil, nil, nil) /* vars[$1] */ }
-	| expr '+' expr { $$ = newNode("+", "", 0, $1, $3, nil) /* $$ = $1 + $3 */ }
+	| IDENT { $$ = newNode("ident", $1, 0, nil, nil, nil) }
+	| expr '+' expr { $$ = newNode("+", "", 0, $1, $3, nil) }
 	| expr '-' expr { $$ = newNode("-", "", 0, $1, $3, nil) }
 	| expr '*' expr { $$ = newNode("*", "", 0, $1, $3, nil) }
 	| expr '/' expr { $$ = newNode("/", "", 0, $1, $3, nil) }
