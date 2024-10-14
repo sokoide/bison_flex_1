@@ -25,7 +25,6 @@ LOGLEVEL=INFO make testqquery
 ## TODO
 
 * Many items are not implemented including...
-  * `second([_,X|_], X).` is not yet supported
   * comparison (> >= < =< =:= =\= or etc) operators
   * arithmetic (+ - * / ** // mod) operators
   * cut (!) operator
@@ -143,6 +142,7 @@ INFO[0000] query completed.
 ```sh
 $ cat test/test5.pro
 first([X|_], X).
+second([_,X|_], X).
 
 print_list([]).
 
@@ -152,6 +152,7 @@ print_list([H|T]) :-
 
 $ cat query/query5.pro
 first([5,6,7], X).
+second([5,6,7], X).
 first([hello,world], Y).
 print_list([5,6,7,8,9]).
 
@@ -159,6 +160,8 @@ $ ./prolog-interpreter -logLevel INFO  test/test5.pro query/query5.pro
 INFO[0000] querying...
 X = 5
 INFO[0000] first([5, 6, 7], X). -> true
+X = 6
+INFO[0000] second([5, 6, 7], X). -> true
 Y = hello
 INFO[0000] first([hello, world], Y). -> true
 5
@@ -166,7 +169,7 @@ INFO[0000] first([hello, world], Y). -> true
 7
 8
 9
-
-INFO[0000] print_list([5, 6, 7, 8, 9]). -> true
+No solutions found.
+INFO[0000] print_list([5, 6, 7, 8, 9]). -> false
 INFO[0000] query completed.
 ```
