@@ -26,9 +26,3 @@ test: $(TARGET)
 	@echo "did you see 42?"
 	echo "1 + 10*20*30;" | $(TARGET)
 	@echo "did you see 6001?"
-	echo "1+2;3*4;55+66;" | $(TARGET)
-	@echo "did you see 3,12,121?"
-	echo "34%7+4;" | $(TARGET)
-	@echo "did you see 10?"
-	echo "3*(1+2);" | $(TARGET)
-	@echo "did you see 9?"

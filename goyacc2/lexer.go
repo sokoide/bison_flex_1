@@ -37,7 +37,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 			recentToken = string(lval.val)
 			return NUMBER
 		case 'a' <= c && c <= 'z':
-			lval.ident = string(c)
+			lval.ident = l.getString()
 			recentToken = lval.ident
 			return IDENT
 		default:
@@ -62,6 +62,15 @@ func (l *lexer) getNumber() int {
 		l.index++
 	}
 	return n
+}
+
+func (l *lexer) getString() string {
+	s := string(l.src[l.index-1])
+	for l.index < len(l.src) && 'a' <= l.src[l.index] && l.src[l.index] <= 'z' {
+		s += string(l.src[l.index])
+		l.index++
+	}
+	return s
 }
 
 func isWhiteSpace(ch byte) bool {
