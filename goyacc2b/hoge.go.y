@@ -26,13 +26,13 @@ program: stmts
 	;
 
 stmts: /* empty */
-	| stmts stmt ';'
+	| stmts stmt
 	;
 
-stmt: IDENT '=' expr {
+stmt: IDENT '=' expr ';' {
 		vars[$1] = $3
 	}
-	| PUT '(' expr ')' {
+	| PUT '(' expr ')' ';'{
 		fmt.Printf("%d\n", $3)
 	}
 	;
