@@ -23,8 +23,7 @@ import(
 %type<fact> fact_clause
 %type<rule> rule_clause
 %type<term> term
-%type<terms> term_list head_terms
-
+%type<terms> term_list
 
 // Tokens
 %token<tok> IDENT NUMBER_LITERAL STRING_LITERAL VAR OP COLON_DASH
@@ -88,14 +87,6 @@ term_list:
     }
     ;
 
-head_terms:
-    term {
-        $$ = []term{$1}
-    }
-    | head_terms ',' term {
-        $$ = append($1, $3)
-    }
-
 term:
     BUILTIN_WRITE '(' term_list ')' {
         $$ = &compoundTerm{Functor: $1.Value, Args: $3}
@@ -129,9 +120,6 @@ term:
     }
     | '[' ']' {
         $$ = &listTerm{IsEmpty: true}
-    }
-    | '[' head_terms '|' term ']' {
-        $$ = &listTerm{Head: $2, Tail: $4}
     }
     ;
 

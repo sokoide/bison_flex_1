@@ -126,7 +126,7 @@ func evaluateQuery(program *Program, query term) []map[string]term {
 
 func PrintQueryResults(query term, solutions []map[string]term) {
 	if len(solutions) == 0 {
-		fmt.Println("No solutions found.")
+		log.Debug("No solutions found.")
 		return
 	}
 
