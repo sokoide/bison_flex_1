@@ -130,9 +130,9 @@ func (l *Lexer) NextToken() (int, token, error) {
 		id = VAR
 		tok = token{Type: tokenTypeVariable, Value: l.readIdentifier()}
 	case l.ch == '_':
-		l.readChar()
-		id = VAR
+		id = '_'
 		tok = token{Type: tokenTypeAnonymousVar, Value: "_"}
+		l.readChar()
 	case l.ch == ':':
 		l.readChar()
 		if l.ch == '-' {

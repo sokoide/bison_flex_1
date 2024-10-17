@@ -112,6 +112,9 @@ term:
     | VAR {
         $$ = &variableTerm{Name: $1.Value}
     }
+    | '_' {
+        $$ = &anonymousVarTerm{}
+    }
     | IDENT '(' term_list ')' {
         $$ = &compoundTerm{Functor: $1.Value, Args: $3}
     }
@@ -129,9 +132,6 @@ term:
     }
     | '[' head_terms '|' term ']' {
         $$ = &listTerm{Head: $2, Tail: $4}
-    }
-    | '_' {
-        $$ = &anonymousVarTerm{}
     }
     ;
 
