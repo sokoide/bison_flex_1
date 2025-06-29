@@ -96,9 +96,6 @@ func unifyHelper(term1, term2 term, substitution map[string]term) bool {
 			return true
 		}
 	case *variableTerm:
-		if t1.Name == "_" {
-			return true // Anonymous variable unifies with anything
-		}
 		substitution[t1.Name] = term2
 		return true
 	case *compoundTerm:

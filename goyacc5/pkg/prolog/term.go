@@ -74,12 +74,10 @@ func (a *anonymousVarTerm) Evaluate(env map[string]term) term {
 }
 
 func (a *anonymousVarTerm) GetFunctor() string {
-	//  TODO
-	return ""
+	return "_"
 }
 
 func (a *anonymousVarTerm) GetArgs() []string {
-	// TODOk
 	return []string{}
 }
 
@@ -159,13 +157,32 @@ func (l *listTerm) String() string {
 }
 
 func (l *listTerm) Evaluate(context map[string]term) term {
-	// listTerm evaluates to itself
+	if l.IsEmpty {
+		return l
+	}
+	
+	if l.Head != nil && l.Tail != nil {
+		evaluatedHead := make([]term, len(l.Head))
+		for i, h := range l.Head {
+			evaluatedHead[i] = h.Evaluate(context)
+		}
+		evaluatedTail := l.Tail.Evaluate(context)
+		return &listTerm{Head: evaluatedHead, Tail: evaluatedTail}
+	}
+	
+	if l.Args != nil {
+		evaluatedArgs := make([]term, len(l.Args))
+		for i, arg := range l.Args {
+			evaluatedArgs[i] = arg.Evaluate(context)
+		}
+		return &listTerm{Args: evaluatedArgs}
+	}
+	
 	return l
 }
 
 func (l *listTerm) GetFunctor() string {
-	// TODO
-	return ""
+	return "[]"
 }
 
 func (l *listTerm) GetArgs() []string {

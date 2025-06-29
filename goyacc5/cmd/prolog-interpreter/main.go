@@ -50,7 +50,10 @@ func main() {
 	defer lexer.Close()
 
 	log.Debugf("lexer: %+v", lexer)
-	program, _ := prolog.Load(lexer)
+	program, err := prolog.Load(lexer)
+	if err != nil {
+		log.Fatalf("Error loading program: %v", err)
+	}
 	if o.dump {
 		prolog.Dump(program)
 	}
@@ -61,7 +64,10 @@ func main() {
 			log.Fatalf("Error opening file: %v", err)
 		}
 		defer queryLexer.Close()
-		queryProgram, _ := prolog.Load(queryLexer)
+		queryProgram, err := prolog.Load(queryLexer)
+		if err != nil {
+			log.Fatalf("Error loading query program: %v", err)
+		}
 
 		if o.dump {
 			prolog.Dump(queryProgram)

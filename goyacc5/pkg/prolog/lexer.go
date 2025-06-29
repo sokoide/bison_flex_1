@@ -10,6 +10,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	ErrUnexpectedToken = "unexpected token %c(%d)"
+	ErrUnterminatedString = "unterminated string literal"
+)
+
 type Lexer struct {
 	reader  *bufio.Reader
 	ch      rune
@@ -140,17 +145,23 @@ func (l *Lexer) NextToken() (int, token, error) {
 			tok = token{Type: tokenTypeOp, Value: ":-"}
 			l.readChar()
 		} else {
-			return 0, tok, fmt.Errorf("Unexpected token %c(%d)", l.ch, l.ch)
+			return 0, tok, fmt.Errorf(ErrUnexpectedToken, l.ch, l.ch)
 		}
 	case l.ch == '"':
 		l.readChar() // skip double quote
-		lit := l.readString('"')
+		lit, err := l.readString('"')
+		if err != nil {
+			return 0, tok, err
+		}
 		id = STRING_LITERAL
 		tok = token{Type: tokenTypeStringLiteral, Value: lit}
 		l.readChar() // skip double quote
 	case l.ch == '\'':
 		l.readChar() // skip single quote
-		lit := l.readString('\'')
+		lit, err := l.readString('\'')
+		if err != nil {
+			return 0, tok, err
+		}
 		id = STRING_LITERAL
 		tok = token{Type: tokenTypeStringLiteral, Value: lit}
 		l.readChar() // skip single quote
@@ -164,15 +175,15 @@ func (l *Lexer) NextToken() (int, token, error) {
 			tok = token{Type: tokenTypeOp, Value: string(l.ch)}
 			l.readChar()
 		default:
-			return 0, tok, fmt.Errorf("Unexpected token %c(%d)", l.ch, l.ch)
+			return 0, tok, fmt.Errorf(ErrUnexpectedToken, l.ch, l.ch)
 		}
 	}
 
 	return id, tok, nil
 }
 
-func (l *Lexer) indentifierSupportedChar(r rune) bool {
-	if unicode.IsLetter(l.ch) || unicode.IsDigit(l.ch) {
+func (l *Lexer) identifierSupportedChar(r rune) bool {
+	if unicode.IsLetter(r) || unicode.IsDigit(r) {
 		return true
 	}
 
@@ -188,7 +199,7 @@ func (l *Lexer) indentifierSupportedChar(r rune) bool {
 func (l *Lexer) readIdentifier() string {
 	var result []rune
 
-	for l.indentifierSupportedChar(l.ch) {
+	for l.identifierSupportedChar(l.ch) {
 		result = append(result, l.ch)
 		l.readChar()
 	}
@@ -204,13 +215,16 @@ func (l *Lexer) readNumber() string {
 	return string(result)
 }
 
-func (l *Lexer) readString(endingChar rune) string {
+func (l *Lexer) readString(endingChar rune) (string, error) {
 	var ret []rune
-	for l.ch != endingChar {
+	for l.ch != endingChar && l.ch != 0 {
 		ret = append(ret, l.ch)
 		l.readChar()
 	}
-	return string(ret)
+	if l.ch == 0 {
+		return "", fmt.Errorf(ErrUnterminatedString)
+	}
+	return string(ret), nil
 }
 
 func (l *Lexer) skipWhitespace() {

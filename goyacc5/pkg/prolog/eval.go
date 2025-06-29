@@ -83,45 +83,56 @@ func evaluateQuery(program *Program, query term) []map[string]term {
 	}
 
 	for _, clause := range program.Clauses {
-		var clauseHead term
-		switch c := clause.(type) {
-		case *factClause:
-			clauseHead = c.Fact
-		case *ruleClause:
-			clauseHead = c.HeadTerm
-		default:
-			continue
-		}
-
-		clausePredicate, ok := clauseHead.(*compoundTerm)
-		if !ok {
-			continue
-		}
-
-		// Only attempt unification if the predicates match
-		if queryPredicate.Functor == clausePredicate.Functor && len(queryPredicate.Args) == len(clausePredicate.Args) {
+		if predicatesMatch(queryPredicate, clause) {
 			log.Debugf("Trying to unify with clause: %v", clause)
-
-			switch c := clause.(type) {
-			case *factClause:
-				log.Debugf("Attempting to unify %v with %v", query, c.Fact)
-				if unification, ok := unify(c.Fact, query); ok {
-					log.Debugf("Unification successful: %v", unification)
-					solutions = append(solutions, unification)
-				} else {
-					log.Debugf("Unification failed")
-				}
-			case *ruleClause:
-				log.Debugf("Evaluating rule: %v", c)
-				ruleSolutions := evaluateRuleClause(program, c, query)
-				log.Debugf("Rule evaluation resulted in %d solutions", len(ruleSolutions))
-				solutions = append(solutions, ruleSolutions...)
-			}
+			clauseSolutions := evaluateClause(program, clause, query)
+			solutions = append(solutions, clauseSolutions...)
 		}
 	}
 
 	log.Debugf("Query evaluation completed with %d solutions", len(solutions))
 	return solutions
+}
+
+func predicatesMatch(queryPredicate *compoundTerm, clause clause) bool {
+	var clauseHead term
+	switch c := clause.(type) {
+	case *factClause:
+		clauseHead = c.Fact
+	case *ruleClause:
+		clauseHead = c.HeadTerm
+	default:
+		return false
+	}
+
+	clausePredicate, ok := clauseHead.(*compoundTerm)
+	if !ok {
+		return false
+	}
+
+	return queryPredicate.Functor == clausePredicate.Functor && 
+		   len(queryPredicate.Args) == len(clausePredicate.Args)
+}
+
+func evaluateClause(program *Program, clause clause, query term) []map[string]term {
+	switch c := clause.(type) {
+	case *factClause:
+		log.Debugf("Attempting to unify %v with %v", query, c.Fact)
+		if unification, ok := unify(c.Fact, query); ok {
+			log.Debugf("Unification successful: %v", unification)
+			return []map[string]term{unification}
+		} else {
+			log.Debugf("Unification failed")
+			return nil
+		}
+	case *ruleClause:
+		log.Debugf("Evaluating rule: %v", c)
+		ruleSolutions := evaluateRuleClause(program, c, query)
+		log.Debugf("Rule evaluation resulted in %d solutions", len(ruleSolutions))
+		return ruleSolutions
+	default:
+		return nil
+	}
 }
 
 func PrintQueryResults(query term, solutions []map[string]term) {
