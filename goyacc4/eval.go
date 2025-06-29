@@ -150,8 +150,14 @@ func evaluateExpr(expr expression) (int, error) {
 		case '*':
 			return lhsV * rhsV, nil
 		case '/':
+			if rhsV == 0 {
+				return 0, fmt.Errorf("division by zero")
+			}
 			return lhsV / rhsV, nil
 		case '%':
+			if rhsV == 0 {
+				return 0, fmt.Errorf("modulo by zero")
+			}
 			return lhsV % rhsV, nil
 		default:
 			panic("Unknown operator")
@@ -168,7 +174,6 @@ func evaluateExpr(expr expression) (int, error) {
 	case *stringExpression:
 		return 0, nil
 	case *condExpression:
-		// TODO: redundant
 		lhsV, err := evaluateExpr(e.LHS)
 		if err != nil {
 			log.Warnf("err: %v", err)
@@ -183,39 +188,33 @@ func evaluateExpr(expr expression) (int, error) {
 		case EQOP:
 			if lhsV == rhsV {
 				return 1, nil
-			} else {
-				return 0, nil
 			}
+			return 0, nil
 		case NEOP:
 			if lhsV != rhsV {
 				return 1, nil
-			} else {
-				return 0, nil
 			}
+			return 0, nil
 		case GEOP:
 			if lhsV >= rhsV {
 				return 1, nil
-			} else {
-				return 0, nil
 			}
+			return 0, nil
 		case GTOP:
 			if lhsV > rhsV {
 				return 1, nil
-			} else {
-				return 0, nil
 			}
+			return 0, nil
 		case LEOP:
 			if lhsV <= rhsV {
 				return 1, nil
-			} else {
-				return 0, nil
 			}
+			return 0, nil
 		case LTOP:
 			if lhsV < rhsV {
 				return 1, nil
-			} else {
-				return 0, nil
 			}
+			return 0, nil
 		default:
 			return 0, fmt.Errorf("invalid Operator %v", e.Operator)
 		}

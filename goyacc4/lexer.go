@@ -117,12 +117,45 @@ func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
 		}
 		tok = keywords[lit]
 		tt = tokenTypeOp
-	// TODO >, >=, ==, !=
+	case ch == '>':
+		s.next()
+		if s.peek() == '=' {
+			s.next()
+			lit = ">="
+		} else {
+			lit = ">"
+		}
+		tok = keywords[lit]
+		tt = tokenTypeOp
+	case ch == '=':
+		s.next()
+		if s.peek() == '=' {
+			s.next()
+			lit = "=="
+			tok = keywords[lit]
+			tt = tokenTypeOp
+		} else {
+			tok = int(ch)
+			lit = "="
+			tt = tokenTypeOp
+		}
+	case ch == '!':
+		s.next()
+		if s.peek() == '=' {
+			s.next()
+			lit = "!="
+			tok = keywords[lit]
+			tt = tokenTypeOp
+		} else {
+			tok = UNKNOWN
+			lit = "!"
+			tt = tokenTypeOp
+		}
 	default:
 		switch ch {
 		case -1:
 			tok = EOF
-		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
+		case ',', '.', '[', ']', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%':
 			tok = int(ch)
 			lit = string(ch)
 			tt = tokenTypeOp
@@ -197,7 +230,7 @@ func (s *scanner) scanNumber() string {
 
 func (s *scanner) scanString(endingChar rune) string {
 	var ret []rune
-	for s.peek() != endingChar {
+	for s.peek() != endingChar && s.peek() != -1 {
 		ret = append(ret, s.peek())
 		s.next()
 	}

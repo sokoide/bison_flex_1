@@ -70,3 +70,27 @@ func TestScope(t *testing.T) {
 	assert.Nil(t, scope)
 	assert.Equal(t, 0, got)
 }
+
+func TestDivisionByZero(t *testing.T) {
+	scopeStack = NewScopeStack()
+	source := `a=5/0;`
+	scanner := new(scanner)
+	scanner.Init(source)
+
+	var prog []expression = parse(scanner)
+	_, err := evaluateStmts(prog)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "division by zero")
+}
+
+func TestModuloByZero(t *testing.T) {
+	scopeStack = NewScopeStack()
+	source := `a=5%0;`
+	scanner := new(scanner)
+	scanner.Init(source)
+
+	var prog []expression = parse(scanner)
+	_, err := evaluateStmts(prog)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "modulo by zero")
+}

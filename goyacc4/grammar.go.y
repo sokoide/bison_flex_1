@@ -21,7 +21,7 @@ import (
 
 
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%'
 
 %start program
 
@@ -124,13 +124,14 @@ expr:
 	| expr '/' expr {
 		$$ = &binOpExpression{LHS: $1, Operator: int('/'), RHS: $3}
 	}
+	| expr '%' expr {
+		$$ = &binOpExpression{LHS: $1, Operator: int('%'), RHS: $3}
+	}
 	| '(' expr ')' {
 		$$ = &parenExpression{SubExpr: $2}
 	}
 	;
 
 %%
-// global vars
-var vars = map[string]int{}
-
+// global scope stack
 var scopeStack = NewScopeStack()
