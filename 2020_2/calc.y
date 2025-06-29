@@ -1,8 +1,14 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 
-extern int yylex (void);
-extern int yyerror (const char* str);
+/* Forward declarations */
+extern int yylex(void);
+extern int yyerror(const char* str);
+extern char* yytext;
+
+/* Global variables */
+int division_by_zero_error = 0;
 %}
 
 %union {
@@ -14,6 +20,7 @@ extern int yyerror (const char* str);
 
 %left '+' '-'
 %left '*' '/'
+%right UMINUS
 
 %type<int_value> expr
 %start program
@@ -27,20 +34,40 @@ expr : INTEGER
      | expr '+' expr { $$ = $1 + $3; }
      | expr '-' expr { $$ = $1 - $3; }
      | expr '*' expr { $$ = $1 * $3; }
-     | expr '/' expr { $$ = $1 / $3; }
+     | expr '/' expr { 
+         if ($3 == 0) {
+             division_by_zero_error = 1;
+             yyerror("division by zero");
+             YYERROR;
+         }
+         $$ = $1 / $3; 
+     }
      | '(' expr ')'  { $$ = $2;      }
+     | '-' expr %prec UMINUS { $$ = -$2; }
      ;
 
 %%
+
+/* Include the lexer implementation */
 #include "lex.yy.c"
 
 int yyerror (const char* str){
-    fprintf(stderr, "parse error near %s\n", yytext);
+    if (division_by_zero_error) {
+        fprintf(stderr, "Error: %s\n", str);
+        division_by_zero_error = 0;
+    } else {
+        fprintf(stderr, "Parse error: %s near '%s'\n", str, yytext);
+    }
     return 0;
 }
 
-int main() {
-    /* yydebug = 1; */
-    yyparse();
-    return 0;
+int main(void) {
+    printf("Simple Calculator\n");
+    printf("Enter expressions (Ctrl+D to exit):\n");
+    
+    /* Uncomment for debugging: yydebug = 1; */
+    int result = yyparse();
+    
+    printf("\nGoodbye!\n");
+    return result;
 }

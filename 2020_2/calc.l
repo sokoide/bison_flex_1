@@ -11,6 +11,6 @@ LF         [\n]
             return(INTEGER); }
 {SYMBOL}  { return(yytext[0]); }
 {LF}      { return(LF); }
-.
+. { fprintf(stderr, "Unknown character: '%c'\\n", yytext[0]); }
 %%
 
