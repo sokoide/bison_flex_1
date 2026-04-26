@@ -2,14 +2,14 @@
 TARGET = ./calc
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
-LIBS = -ly -lm
+LDFLAGS = -lm
 
 # Default target
 all: $(TARGET)
 
 # Build the calculator
 $(TARGET): calc.tab.c calc.tab.h lex.yy.c
-	$(CC) $(CFLAGS) -o $(TARGET) calc.tab.c $(LIBS)
+	$(CC) $(CFLAGS) -o $(TARGET) calc.tab.c $(LDFLAGS)
 
 # Generate parser from grammar
 calc.tab.c calc.tab.h: calc.y

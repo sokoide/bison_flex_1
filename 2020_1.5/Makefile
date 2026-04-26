@@ -1,9 +1,12 @@
 TARGET=./calc
+CC=gcc
+CFLAGS=-O2
+LDFLAGS=-lm
 
 all: $(TARGET)
 
 $(TARGET): calc.tab.c
-	gcc -O2 -o $(TARGET) calc.tab.c -ly -lm
+	$(CC) $(CFLAGS) -o $(TARGET) calc.tab.c $(LDFLAGS)
 
 calc.tab.c: calc.y lex.yy.c
 	bison -v -t calc.y
@@ -12,7 +15,7 @@ lex.yy.c: calc.l
 	flex calc.l
 
 clean:
-	rm $(TARGET) *.tab.c lex.yy.c
+	rm -f $(TARGET) *.tab.c lex.yy.c
 
 run: $(TARGET)
 	$(TARGET)
