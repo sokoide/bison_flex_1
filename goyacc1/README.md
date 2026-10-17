@@ -1,5 +1,7 @@
 # Goyacc1
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 * Simplest Goyacc example: an integer expression evaluator
 
 ## Build / Run / Test

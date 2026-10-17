@@ -1,4 +1,8 @@
 # netyacc1
+> 日本語版: [README_ja.md](README_ja.md)
+
+> **Deprecated**: this example is **not maintained anymore**.
+> It is kept for reference only.
 
 ## About
 

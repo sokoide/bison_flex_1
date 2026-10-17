@@ -1,5 +1,7 @@
 # Goyacc4
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 * Goyacc mini-compiler: statement AST, while loops and a stack of scopes
 
 ## Files

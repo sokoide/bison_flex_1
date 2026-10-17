@@ -1,5 +1,7 @@
 # Goyacc2b
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 * Third step: variables, assignment, a `put(...)` statement and `%` in the grammar
 
 Builds on [goyacc2](../goyacc2). Same three-file layout (main.go, lexer.go, y.go).

@@ -1,5 +1,7 @@
 # bison_flex_1
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 Progressive, minimal examples for learning lexer/parser generators:
 **flex + bison** (C), **goyacc** (Go), and **YaccLexTools** (C#).
 
@@ -20,8 +22,8 @@ read them in order and watch a lexer/parser pair grow into a small interpreter.
 | `goyacc3`  | goyacc           | expression AST carried through `%union` (interface type)              |
 | `goyacc4`  | goyacc           | statements, `while` loops, scoped variables, unit tests               |
 | `goyacc5`  | goyacc           | Prolog-like interpreter (unification + backtracking)                  |
-| `netyacc1` | YaccLexTools     | .NET port of `goyacc1`                                                |
-| `netyacc2` | YaccLexTools     | .NET compiler/interpreter for a small language                        |
+| `netyacc1` | YaccLexTools     | .NET port of `goyacc1` (deprecated)                                   |
+| `netyacc2` | YaccLexTools     | .NET compiler/interpreter for a small language (deprecated)           |
 
 Every example directory (C, Go, .NET) has its own `README.md` with build/run
 instructions.
@@ -37,7 +39,8 @@ Each track is meant to be read in order:
   (multiple statements) → `goyacc2b` (variables) → `goyacc2c` (AST +
   deferred evaluation) → `goyacc3` (typed AST via `%union`) → `goyacc4`
   (scopes, `while`, tests) → `goyacc5` (a real language on top of goyacc).
-* **.NET**: `netyacc1` (`goyacc1` port) → `netyacc2` (compiler + VM).
+* **.NET** (deprecated — not maintained anymore): `netyacc1` (`goyacc1`
+  port) → `netyacc2` (compiler + VM).
 
 ## Prereqs
 
@@ -63,7 +66,7 @@ Each track is meant to be read in order:
 * C
   * `cd 2020_2 && make && ./calc` (or `make run`; `2020_1` and `2020_1.5`
     also have `make run`)
-* .NET
+* .NET (both examples are deprecated and not maintained anymore)
   * Please refer to [netyacc1/README.md](netyacc1/README.md) and
     [netyacc2/README.md](netyacc2/README.md)
 

@@ -1,4 +1,5 @@
 # 2020_1 — flex-only token printer
+> 日本語版: [README_ja.md](README_ja.md)
 
 The simplest example in this repository: a **pure flex** lexer (no
 bison/yacc involved). It recognizes input tokens and prints what it

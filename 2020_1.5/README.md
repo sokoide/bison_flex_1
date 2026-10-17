@@ -1,4 +1,5 @@
 # 2020_1.5 — flex + bison "I LIKE <object>" demo
+> 日本語版: [README_ja.md](README_ja.md)
 
 The first combined flex + bison example: a tiny grammar that accepts
 sentences of the form `SUBJECT VERB OBJECT` and prints the object's

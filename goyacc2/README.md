@@ -1,5 +1,7 @@
 # Goyacc2
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 * Second step: multiple statements per run (`stmts`/`stmt`), whitespace handling, and more tokens lexed than the grammar uses
 
 Builds on [goyacc1](../goyacc1). This is the same single-file pipeline (main.go → lexer.go → y.go), plus:

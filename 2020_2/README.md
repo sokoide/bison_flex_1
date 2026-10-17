@@ -1,4 +1,5 @@
 # 2020_2 — flex + bison integer calculator
+> 日本語版: [README_ja.md](README_ja.md)
 
 A REPL calculator for integer arithmetic: `+ - * /`, parentheses, and
 unary minus, evaluated line by line.

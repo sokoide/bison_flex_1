@@ -1,5 +1,7 @@
 # goyacc5
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 ## About
 
 * A Prolog-like language on top of goyacc: facts, rules and queries with

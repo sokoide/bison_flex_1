@@ -1,5 +1,7 @@
 # Goyacc2c
 
+> 日本語版: [README_ja.md](README_ja.md)
+
 * Fourth step: build an AST during parsing, evaluate after `yyParse` returns, and add `if`
 
 Builds on [goyacc2b](../goyacc2b). Same files plus `ast.go`, and the shift of
