@@ -1,6 +1,6 @@
 # Goyacc2b
 
-* Third step: variables, assignment, a `PUT(...)` statement and `%` in the grammar
+* Third step: variables, assignment, a `put(...)` statement and `%` in the grammar
 
 Builds on [goyacc2](../goyacc2). Same three-file layout (main.go, lexer.go, y.go).
 
@@ -19,6 +19,15 @@ Builds on [goyacc2](../goyacc2). Same three-file layout (main.go, lexer.go, y.go
 * Staged tokens `'{' '}'` are still unused here — they are consumed by
   goyacc2c's `if`.
 
+## Build / Run / Test
+
+```
+make          # goyacc hoge.go.y -> y.go, then build ./hoge
+make test     # exact assertions, exits non-zero on mismatch
+make run      # read statements from stdin
+make clean    # removes ./hoge y.go y.output
+```
+
 ## Teaching point: keyword handling in a hand-written lexer
 
 Because the lexer is code you own, "keywords" need no extra machinery:
@@ -26,8 +35,17 @@ when `getString()` produced the word `put`, return `PUT`; otherwise return
 `IDENT`. Compare with real languages where keywords are usually a map.
 
 Semantic actions still run DURING parsing, exactly like goyacc1/2 —
-that is why `1/0` panics mid-parse inside the grammar action.
-goyacc2c shows the AST alternative.
+so a division by zero **panics inside `yyParse` itself**, in the grammar
+action:
+
+```
+$ printf 'put(1/0);\n' | ./hoge
+panic: runtime error: integer divide by zero
+    ... hoge.go.y:46 (the expr '/' expr action) inside (*yyParserImpl).Parse ...
+```
+
+(Note that a *bare* `1/0;` is already a syntax error here: every statement
+must be an assignment or a `put(...)`.) goyacc2c shows the AST alternative.
 
 ## Files
 

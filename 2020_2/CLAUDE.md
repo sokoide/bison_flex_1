@@ -20,6 +20,8 @@ The parser includes the lexer directly via `#include "lex.yy.c"` and implements 
 - `make` or `make all`: Build the calculator executable
 - `make clean`: Remove generated files and executable
 - `make run`: Build and run the calculator
+- `make debug`: Rebuild with `-g -DDEBUG`
+- `make help`: List the available targets
 - `make calc.tab.c`: Generate parser from grammar file
 - `make lex.yy.c`: Generate lexer from lexer specification
 
@@ -34,4 +36,5 @@ The parser includes the lexer directly via `#include "lex.yy.c"` and implements 
 
 - `calc.y`: Bison grammar with arithmetic expression rules and precedence
 - `calc.l`: Flex lexer with token definitions
-- `Makefile`: Build configuration using gcc with `-ly -lm` flags
+- `Makefile`: Build configuration using `$(CC)` (gcc), `-Wall -Wextra -O2`,
+  and `LDFLAGS=-lm` (no `-ly`: `yyerror` is defined in `calc.y` itself)

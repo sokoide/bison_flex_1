@@ -26,6 +26,9 @@ unary minus, evaluated line by line.
     make
     ./calc
 
+or `make run`. Other targets: `make debug` (rebuilds with `-g -DDEBUG`)
+and `make help` (lists the targets).
+
 ## Example
 
     $ printf '1 + 2\n(40+1)+2/2\n1/0\n' | ./calc

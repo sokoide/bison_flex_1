@@ -26,21 +26,43 @@ read them in order and watch a lexer/parser pair grow into a small interpreter.
 Every example directory (C, Go, .NET) has its own `README.md` with build/run
 instructions.
 
+## Learning path
+
+Each track is meant to be read in order:
+
+* **flex/bison (C)**: `2020_1` (lexer only, what `yytext` and default ECHO
+  mean) → `2020_1.5` (first grammar, `yylval`/`%union`) → `2020_2`
+  (precedence, unary minus, error handling, a REPL).
+* **goyacc (Go)**: `goyacc1` (grammar + lexer contract) → `goyacc2`
+  (multiple statements) → `goyacc2b` (variables) → `goyacc2c` (AST +
+  deferred evaluation) → `goyacc3` (typed AST via `%union`) → `goyacc4`
+  (scopes, `while`, tests) → `goyacc5` (a real language on top of goyacc).
+* **.NET**: `netyacc1` (`goyacc1` port) → `netyacc2` (compiler + VM).
+
 ## Prereqs
 
 * C
   * bison & flex (on macOS, the Xcode command line tools provide them)
+  * a C compiler (`clang` or `gcc`)
 * Go
   * `go install golang.org/x/tools/cmd/goyacc@latest`
 * .NET <https://github.com/ernstc/YaccLexTools>
   * `dotnet tool install dotnet-ylt --global`
+    (only needed to regenerate the `.y`/`.lex` inputs; generated sources
+    are committed)
 
 ## How to run
 
 * Go (each directory is its own module)
-  * `cd goyaccN && make test` (assertions) and `make run`
+  * `cd goyaccN && make` — generate the parser (goyacc) and build
+  * `make test` — falsifiable assertions (exit non-zero on mismatch);
+    `goyacc4`/`goyacc5` also run `go test`
+  * `make run` — feed stdin to the binary (goyacc1–4)
+  * goyacc5 needs file arguments and must run inside `goyacc5/`:
+    `cd goyacc5 && make && ./prolog-interpreter -logLevel INFO test/test1.pro query/query1.pro`
 * C
-  * `cd 2020_2 && make && ./calc`
+  * `cd 2020_2 && make && ./calc` (or `make run`; `2020_1` and `2020_1.5`
+    also have `make run`)
 * .NET
   * Please refer to [netyacc1/README.md](netyacc1/README.md) and
     [netyacc2/README.md](netyacc2/README.md)
@@ -67,7 +89,26 @@ instructions.
   you can read the generated code; the others (`y.go`, `*.tab.c`, `y.output`)
   are gitignored and regenerated on demand. `make clean` removes them.
 
+## Learning notes (flex/bison)
+
+* **The default action is ECHO**: a rule without `{...}` prints its match to
+  stdout. Give every rule an explicit action (see `2020_1`).
+* **`yylval` is the lexer→parser value channel**: the lexer stores a value in
+  `yylval.<member>` and the grammar reads it as `$1`/`$2`... (see
+  `2020_1.5`'s `%union { int int_value; }`).
+* **`%prec UMINUS`** gives unary minus its own precedence: with
+  `%right UMINUS` declared after `'*'`, `-2 + 3` evaluates as `(-2)+3 = 1`
+  instead of `-(2+3) = -5`, and the natural `expr: '-' expr` rule stays
+  conflict-free (`2020_2`).
+* **`YYERROR` aborts the current parse**: without an `error` recovery rule,
+  one division by zero ends the whole `yyparse()` — and with it the REPL
+  (`2020_2` demonstrates this behavior).
+* **`bison -v` writes `*.output`**: the C counterpart of goyacc's `y.output`,
+  with the same shift/reduce and reduce/reduce conflict report.
+
 ## Useful commands
 
+* Regenerate a parser by hand: `goyacc hoge.go.y` (the Makefiles do this
+  for you), `bison -v -t calc.y`, `flex calc.l`
 * .NET <https://github.com/ernstc/YaccLexTools>
   * `dotnet ylt add-parser -p <parserName>`

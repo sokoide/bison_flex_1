@@ -2,21 +2,123 @@
 
 ## About
 
-* Prolog like language
-* Please look at the 2 test scripts
+* A Prolog-like language on top of goyacc: facts, rules and queries with
+  unification and depth-first backtracking.
+* Same shape as the earlier steps — goyacc grammar → generated parser →
+  hand-written lexer — but this time the result is a real (small) language.
+
+## Build / Run / Test
 
 ```sh
-# INFO logging (default)
-make testparser
+make           # goyacc on pkg/prolog/grammar.go.y, build ./prolog-interpreter
+make test      # go test -v ./... (unifier + lexer unit tests)
+make testparser  # parse/evaluate each test/*.pro program on its own
+make testquery   # for each query/queryN.pro: run it against test/testN.pro
+make clean     # removes the binary, pkg/prolog/y.output and grammar.go
+               # (make regenerates grammar.go automatically)
+```
+
+Test scripts honor `LOGLEVEL` (default `INFO`):
+
+```sh
+make testparser            # INFO logging
+LOGLEVEL=DEBUG make testparser   # verbose lexer/parser traces
 make testquery
-# DEBUG logging (verbose lexer/parser traces)
-LOGLEVEL=DEBUG make testparser
 LOGLEVEL=DEBUG make testquery
 ```
 
+`make testquery` pairs the files **by number**: `query/query5.pro` is run
+against `test/test5.pro`, so a missing or misnamed file fails the target
+(`set -e` aborts on the first failure).
+
+### Run it by hand — from this directory only
+
+```sh
+./prolog-interpreter -logLevel INFO test/test1.pro query/query1.pro
+```
+
+The interpreter loads `resource/builtin.pro` with a **path relative to the
+current directory**, so it must be started inside `goyacc5/` (all `make`
+targets run there for you). From the repo root you would get:
+
+```
+level=fatal msg="... failed to open resource/builtin.pro: no such file or directory"
+```
+
+`make run` starts the binary without arguments, which only prints
+`Usage: prolog <source-file> <query-file>` — invoke the binary directly as
+above (argument 0 = the program to load, argument 1 = the queries to run).
+
+> **Transcript format**: the examples below show the output of an
+> interactive terminal, where logrus prints `INFO[0000] ...`. When you
+> redirect or pipe the output, the same log lines come out as
+> `time="..." level=info msg="..."` instead — the content is identical.
+
+## Files
+
+* `pkg/prolog/grammar.go.y` ... grammar (input to goyacc); generates
+  `grammar.go` (committed, so you can read the generated parser) and
+  `y.output` (state machine / conflict report)
+* `pkg/prolog/lexer.go` ... tokenizer; lexer errors are stored and returned
+  through `Lexer.Err()` rather than panicking
+* `pkg/prolog/term.go` ... term representation (atom, number, string,
+  variable, compound term, list)
+* `pkg/prolog/clause.go` ... fact and rule clauses
+* `pkg/prolog/unifier.go` ... `unify()` plus backtracking over rule bodies
+* `pkg/prolog/eval.go` ... `Load()` (parses builtins + program), `Query()`,
+  solution printing
+* `pkg/prolog/lexer_test.go`, `pkg/prolog/unifier_test.go` ... unit tests
+* `cmd/prolog-interpreter/main.go` ... flags, loads the two files, runs the
+  query
+* `resource/builtin.pro` ... built-in predicates (`write/1`, `writeln/1`)
+* `test/testN.pro` ... sample programs; `query/queryN.pro` ... queries run
+  against the program with the same number
+
+## How it works
+
+1. `Load()` parses `resource/builtin.pro` and then the program file with
+   the goyacc parser; the action
+   `input: clause_list { yylex.(*lexer).program = $1 }` hands the clause
+   list back through the lexer — the same trick as goyacc2c/3/4.
+2. The query file is parsed the same way (queries are clauses too:
+   `food(orange).` ends with a dot).
+3. `Query()` walks the clauses top-down for each query term. `unify()`
+   matches a goal against a clause head, producing a substitution
+   (variable bindings); rule bodies are solved recursively, and every
+   choice point keeps its alternatives so a later goal failing backtracks
+   into them (depth-first).
+4. Solutions are printed back by substituting bindings into the query
+   (`X = 5`), and `writeln/1` inside a rule body has the side effect of
+   writing output. Quirk worth studying: in `test5.pro`,
+   `print_list([5,6,7,8,9])` prints every element and still ends up
+   `false` — once `[H|T]` has consumed the list, the base case
+   `print_list([]).` no longer unifies with the empty tail (empty-list
+   unification only works literal-to-literal; see "List is partially
+   supported" below), and the side effects are not undone.
+
 ## Grammar
 
-* [Please look at the grammar file](<./pkg/prolog/grammar.go.y>)
+* [Grammar file](./pkg/prolog/grammar.go.y), in outline (actions omitted):
+
+  ```
+  input       : /* empty */ | clause_list
+  clause_list : clause | clause_list clause
+  clause      : fact_clause | rule_clause
+  fact_clause : term '.'
+  rule_clause : term COLON_DASH term_list '.'        -- "head :- body."
+  term_list   : term | term_list ',' term
+  term        : IDENT | VAR | '_' | NUMBER_LITERAL | STRING_LITERAL
+              | IDENT '(' term_list ')'              -- compound: f(A,B)
+              | '[' term_list ']'                    -- [5,6,7]
+              | '[' term_list '|' term ']'           -- [H|T]
+              | '[' ']'                              -- []
+              | BUILTIN_WRITE '(' term_list ')' | BUILTIN_NL
+  ```
+
+  Note that a list is represented three different ways internally
+  (`Args`, `Head`/`Tail`, `IsEmpty`) — that shortcut is what makes list
+  support "partial" (see the `print_list` quirk under How it works).
+
 * Supported built-in predicates
   * write/1
   * writeln/1

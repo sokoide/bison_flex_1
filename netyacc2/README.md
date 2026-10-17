@@ -2,7 +2,26 @@
 
 ## About
 
-* Simple compiler for a stack machine and the stack machine
+* A small language (assignments, `if`/`else`, `while`, `return`, typed
+  variables) **compiled to bytecode for a stack machine**, plus the stack
+  machine (VM) itself. The compiler is built with YaccLexTools (gppg/gplex,
+  the .NET ports of yacc/flex).
+* Compilation pipeline: source → intermediate code (`PushN`, `Pop`,
+  `PutI`, `PutS`, `Jump`, ...) → label resolution → execution by the VM.
+  `--verbose` shows each stage.
+
+## Files
+
+* `interp-lib/Interp/Interp.Language.grammar.y` /
+  `Interp.Language.analyzer.lex` ... grammar and lexer (inputs to
+  YaccLexTools); `Interp.Parser.Generated.cs` / `Interp.Scanner.Generated.cs`
+  are the generated results (committed)
+* `interp-lib/Interp/VM.cs` (`Cpu.cs`) ... the stack machine
+* `interp-exe/` ... command-line front end (`--file <script>`, `--verbose`,
+  `demo`)
+* `interp-test/` ... unit tests (`dotnet test`, 34 tests)
+* `samples/` ... example programs (`sample1.txt` ... `sample5.txt`,
+  `sample_fib.txt`)
 
 ## Prereqs
 

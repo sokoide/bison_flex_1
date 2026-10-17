@@ -23,6 +23,22 @@ make testcli   # exact assertions against the compiled binary
 make clean     # removes ./mini-compiler grammar.go y.output
 ```
 
+The binary takes `-logLevel (TRACE|DEBUG|INFO|WARN|ERROR)`: `put()` output
+goes to stdout, all log lines to stderr, so `-logLevel ERROR` keeps
+transcripts clean.
+
+Example (note the scope rule: `b` is created inside the loop and vanishes
+after it, so `a+b` is `5+0`):
+
+```
+$ printf 'a=0;while(a<5){a=a+1;b=b+1;};put(a+b);\n' | ./mini-compiler -logLevel ERROR
+5
+$ printf 'put(1/0);\n' | ./mini-compiler -logLevel ERROR
+time="..." level=error msg="[stmt 0] evaluation error: division by zero"
+time="..." level=error msg="Evaluation error: division by zero"
+(exit 1)
+```
+
 ## What is this?
 
 Similar to goyacc3, but each grammar symbol carries whole statements,

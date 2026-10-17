@@ -21,6 +21,20 @@ make test     # exact assertions, exits non-zero on mismatch
 make clean    # removes ./calc y.go y.output (make regenerates them)
 ```
 
+Example:
+
+```
+$ printf '(1*2)+10/3\n' | ./calc
+5
+$ printf '1+@\n' | ./calc
+2026/10/17 12:45:37 parse error: Line 1, Column 3: "@" syntax error: unexpected ILLEGAL, expecting NUMBER or '('
+(exit 1; the date/time prefix comes from Go's default logger)
+```
+
+goyacc3 is the Go counterpart of the C calculator in [2020_2](../2020_2);
+reading the two side by side shows the same precedence/AST ideas in both
+toolchains.
+
 ## What is this?
 
 1. `%union` carries values between the parser and the semantic actions.

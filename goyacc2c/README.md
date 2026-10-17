@@ -20,14 +20,32 @@ evaluation out of the grammar actions.
 
 ## Why defer evaluation? The `1/0` teaching point
 
-In goyacc1/2/2b the actions run DURING parsing, so `1/0` panics mid-parse,
-inside the `expr '/' expr` action — while the parser is still on the stack.
-You would not get an error return from `yyParse` (the panic bypasses it).
+In goyacc1/2/2b the actions run DURING parsing, so a division by zero
+panics mid-parse, inside the `expr '/' expr` action — while the parser is
+still on the stack. You would not get an error return from `yyParse` (the
+panic bypasses it).
 
-In goyacc2c parsing only builds the tree, so the panic (if any) happens in
-`ast.go`'s `evaluateNode`, after the parser finished — parse and execution
-are now cleanly separated, which is exactly the shape needed later for
-interpreter optimizations, byte code, or backends.
+In goyacc2c parsing only builds the tree, so `yyParse` returns normally and
+the panic (if any) happens later, in the evaluator:
+
+```
+$ printf 'put(1/0);\n' | ./hoge
+panic: runtime error: integer divide by zero
+    ... ast.go:53 (evaluateNode), called from evaluateNodes ...
+```
+
+Same input, two different crash sites — that difference *is* the lesson:
+parse and execution are now cleanly separated, which is exactly the shape
+needed later for interpreter optimizations, byte code, or backends.
+
+## Build / Run / Test
+
+```
+make          # goyacc hoge.go.y -> y.go, then build ./hoge
+make test     # exact assertions, exits non-zero on mismatch
+make run      # read statements from stdin
+make clean    # removes ./hoge y.go y.output
+```
 
 ## Handing the tree back to the caller
 

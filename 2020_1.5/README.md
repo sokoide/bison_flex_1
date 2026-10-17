@@ -30,6 +30,8 @@ reported to stderr as `Unknown character: '<c>'`.
     make
     ./calc
 
+or `make run`.
+
 ## Example input/output
 
     $ printf 'I LIKE SOCCER\n' | ./calc

@@ -16,12 +16,15 @@ matched.
 ## Pieces
 
 - `calc.l` — the flex lexer specification (contains `main()`)
-- `Makefile` — runs `flex calc.l` and compiles `lex.yy.c` with `-ly -lm`
+- `Makefile` — runs `flex calc.l` and compiles `lex.yy.c` with
+  `$(CC) $(CFLAGS) ... $(LDFLAGS)` (defaults: `clang`, `-O2`, `-lm`)
 
 ## Build and run
 
     make
     ./calc
+
+or `make run`.
 
 ## Example
 

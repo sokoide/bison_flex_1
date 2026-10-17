@@ -18,18 +18,34 @@ Builds on [goyacc1](../goyacc1). This is the same single-file pipeline (main.go 
   the grammar uses — and they are staged for goyacc2b/2c.
 * `%` is lexed and given a rule: `expr '%' expr { $$ = $1 % $3 }`.
 * `IDENT` ([a-z]+) is lexed but not accepted by the grammar yet, so
-  `a=3;` fails to parse. Variables arrive in goyacc2b.
+  `a=3;` fails to parse with `syntax error: unexpected IDENT`.
+  Variables arrive in goyacc2b.
+
+## Build / Run / Test
+
+```
+make          # goyacc hoge.go.y -> y.go, then build ./hoge
+make test     # exact assertions, exits non-zero on mismatch
+make run      # read statements from stdin
+make clean    # removes ./hoge y.go y.output
+```
 
 ## Teaching points
 
-* The `%%` trick in test: in a Make recipe `%%` of printf is needed because
-  `printf '20%7 +...'` would eat `%7` as a format spec.
 * `yyErrorVerbose = true` is set in `lexer.go`'s `init()`. Run
-  `printf '1+' | ./hoge` to see the verbose form
-  (`unexpected $end, expecting NUMBER or '('`) instead of plain
-  `syntax error`. When something is off in a grammar, this is the message
-  to study first.
-* main.go now checks `yyParse()`'s return value and exits non-zero on failure.
+  `printf '1+\n' | ./hoge` to see the verbose form
+  (`syntax error: unexpected $end, expecting NUMBER or '('`)
+  instead of plain `syntax error`. When something is off in a grammar,
+  this is the message to study first.
+* The `%%` in the test recipe is **printf** escaping, not make escaping:
+  `printf '20%%7 + 10%%3\n'` — a single `%7` would be consumed by printf
+  as a format specification.
+* `1;` fails with `syntax error: unexpected $unk, at token: ;` — lexing a
+  character is not the same as the grammar accepting it; `'='`, `';'`,
+  `'{'`, `'}'` are all lexed-but-unused at this step.
+* As in goyacc1, an invalid character (e.g. `@`) is a *lexer* decision: this
+  lexer panics rather than calling `Error()` (which is only for syntax).
+* main.go checks `yyParse()`'s return value and exits non-zero on failure.
 
 ## Files
 

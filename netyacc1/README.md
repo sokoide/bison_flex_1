@@ -44,6 +44,7 @@ Enter one expression per line (`Ctrl+D` or an empty line to exit):
 
 ## Notes
 
-* The project targets **.NET 7**. If your machine has only a newer runtime
-  installed, run with `DOTNET_ROLL_FORWARD=Major dotnet run`.
+* The project targets **.NET 7**, which is out of support: the build prints
+  warning `NETSDK1138`. The example still runs; if your machine has only a
+  newer runtime installed, run with `DOTNET_ROLL_FORWARD=Major dotnet run`.
 * There is no unit test project here; use `goyacc1` for the tested Go version.
