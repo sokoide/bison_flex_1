@@ -1,3 +1,3 @@
-module sokoide.com/bison_flex_1/goyacc2
+module sokoide.com/bison_flex_1/goyacc2c
 
 go 1.16

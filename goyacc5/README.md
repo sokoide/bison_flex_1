@@ -6,12 +6,12 @@
 * Please look at the 2 test scripts
 
 ```sh
-# DEBUG logging
+# INFO logging (default)
 make testparser
-make testqquery
-# INFO logging
-LOGLEVEL=INFO make testparser
-LOGLEVEL=INFO make testqquery
+make testquery
+# DEBUG logging (verbose lexer/parser traces)
+LOGLEVEL=DEBUG make testparser
+LOGLEVEL=DEBUG make testquery
 ```
 
 ## Grammar
@@ -29,6 +29,9 @@ LOGLEVEL=INFO make testqquery
   * arithmetic (+ - * / ** // mod) operators
   * cut (!) operator
   * other built-in predicates
+* The lexer already tokenizes `+ - * / = ; { }`,
+  but no grammar rules accept them yet; using them in a .pro file is a
+  syntax error until the grammar grows the corresponding rules.
 
 ## Examples
 
@@ -48,9 +51,9 @@ food(car).
 
 $ ./prolog-interpreter -logLevel INFO  test/test1.pro  query/query1.pro
 INFO[0000] querying...
-INFO[0000] result: food(orange). -> true
-INFO[0000] result: meal(orange). -> true
-INFO[0000] result: food(car). -> false
+INFO[0000] food(orange). -> true
+INFO[0000] meal(orange). -> true
+INFO[0000] food(car). -> false
 INFO[0000] query completed.
 ```
 
@@ -169,7 +172,6 @@ INFO[0000] first([hello, world], Y). -> true
 7
 8
 9
-No solutions found.
 INFO[0000] print_list([5, 6, 7, 8, 9]). -> false
 INFO[0000] query completed.
 ```

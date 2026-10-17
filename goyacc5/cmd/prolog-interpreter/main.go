@@ -52,7 +52,7 @@ func main() {
 	log.Debugf("lexer: %+v", lexer)
 	program, err := prolog.Load(lexer)
 	if err != nil {
-		log.Fatalf("Error loading program: %v", err)
+		log.Fatalf("Error loading program from %s: %v", flag.Arg(0), err)
 	}
 	if o.dump {
 		prolog.Dump(program)
@@ -66,7 +66,7 @@ func main() {
 		defer queryLexer.Close()
 		queryProgram, err := prolog.Load(queryLexer)
 		if err != nil {
-			log.Fatalf("Error loading query program: %v", err)
+			log.Fatalf("Error loading query program from %s: %v", flag.Arg(1), err)
 		}
 
 		if o.dump {

@@ -6,11 +6,11 @@ LF         [\n]
 %option noyywrap
 
 %%
-{WHITESPACE}
+{WHITESPACE} { /* skip whitespace so it is not echoed to stdout */ }
 {INTEGER} { yylval.int_value = atoi(yytext);
             return(INTEGER); }
 {SYMBOL}  { return(yytext[0]); }
 {LF}      { return(LF); }
-. { fprintf(stderr, "Unknown character: '%c'\\n", yytext[0]); }
+. { fprintf(stderr, "Unknown character: '%c'\n", yytext[0]); }
 %%
 

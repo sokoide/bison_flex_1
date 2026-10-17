@@ -49,10 +49,23 @@ make testcli
 
 The language supports:
 - Variable assignment: `a=42;`
-- Arithmetic: `+`, `-`, `*`, `/` with parentheses
+- Arithmetic: `+`, `-`, `*`, `/`, `%` with parentheses
 - Conditionals: `==`, `!=`, `>=`, `>`, `<=`, `<`
 - While loops: `while(condition){statements}`
 - Output: `put("text", variable);`
+
+Known limitations:
+- No unary minus (`put(-1);` is a syntax error)
+- Strings are only valid as direct `put()` literals; anywhere else
+  (`"a"+"b"`, `a="x";`, `"a"=="b"`) is an evaluation error
+- Reading an undefined variable yields 0 (auto-created in the current scope)
+
+`make clean` deletes `grammar.go`; regenerate it with `make generate`
+before a plain `go build` (make does this automatically via its
+`grammar.go:` rule). Parse and lex errors are returned as Go errors from
+`parse()` — the lexer stores the message instead of exiting — so they can
+be unit-tested; evaluation errors are handled by `main` with a non-zero
+exit status.
 
 ## Testing
 

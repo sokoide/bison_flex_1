@@ -8,10 +8,13 @@ package main
 }
 
 %type<expr> program expr
+// ILLEGAL is returned by the scanner for any character the language does not
+// use. It must NOT be 0 (0 is the EOF token in goyacc's yyTok tables).
+%token ILLEGAL
 %token<tok> NUMBER
 
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%'
 
 %start program
 
@@ -35,6 +38,9 @@ expr: NUMBER {
 	}
     | expr '/' expr {
         $$ = &binOpExpression{LHS: $1, Operator: int('/'), RHS: $3}
+	}
+    | expr '%' expr {
+        $$ = &binOpExpression{LHS: $1, Operator: int('%'), RHS: $3}
 	}
     | '(' expr ')' {
         $$ = &parenExpression{SubExpr: $2}

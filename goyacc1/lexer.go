@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type lexer struct {
 	src   string
@@ -13,6 +16,11 @@ var recentToken string
 func (l *lexer) Lex(lval *yySymType) int {
 	for l.index < len(l.src) {
 		c := l.src[l.index]
+		if isWhiteSpace(c) {
+			l.index++
+			continue
+		}
+
 		l.index++
 		switch c {
 		case '+', '-', '*', '/', '(', ')':
@@ -24,7 +32,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 		case '0' <= c && c <= '9':
 			// left value is a number
 			lval.val = l.getNumber()
-			recentToken = string(lval.val)
+			recentToken = strconv.Itoa(lval.val)
 			return NUMBER
 		default:
 			panic(fmt.Sprintf("invalid character %s\n", string(c)))
@@ -35,8 +43,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 
 // Error Called by goyacc
 func (l *lexer) Error(e string) {
-	fmt.Printf("error: %s, at token: %s", e, recentToken)
-
+	fmt.Printf("error: %s, at token: %s\n", e, recentToken)
 }
 
 func (l *lexer) getNumber() int {
@@ -48,4 +55,8 @@ func (l *lexer) getNumber() int {
 		l.index++
 	}
 	return n
+}
+
+func isWhiteSpace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || ch == '\n'
 }

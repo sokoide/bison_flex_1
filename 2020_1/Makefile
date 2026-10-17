@@ -9,4 +9,4 @@ lex.yy.c: calc.l
 	flex calc.l
 
 clean:
-	rm $(TARGET) lex.yy.c
+	rm -f $(TARGET) lex.yy.c

@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
+	"fmt"
 	"os"
 	"strings"
 
@@ -38,25 +39,35 @@ func main() {
 
 	s := bufio.NewScanner(os.Stdin)
 	scanner := new(scanner)
-	source := []string{}
+	var source []string
 	for s.Scan() {
 		source = append(source, s.Text())
 	}
 
 	scanner.Init(strings.Join(source, "\n"))
 
-	var prog []expression = parse(scanner)
-	_, err := evaluateStmts(prog)
+	prog, err := parse(scanner)
 	if err != nil {
-		panic(err)
+		log.Errorf("Parse error: %v", err)
+		os.Exit(1)
+	}
+
+	_, err = evaluateStmts(prog)
+	if err != nil {
+		log.Errorf("Evaluation error: %v", err)
+		os.Exit(1)
 	}
 }
 
-func parse(s *scanner) []expression {
+func parse(s *scanner) ([]expression, error) {
 	l := lexer{s: s}
 	yyErrorVerbose = true
 	if yyParse(&l) != 0 {
-		panic("Parse error")
+		err := l.err
+		if err == nil {
+			err = fmt.Errorf("parse error")
+		}
+		return nil, err
 	}
-	return l.program
+	return l.program, nil
 }

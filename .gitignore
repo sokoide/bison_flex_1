@@ -1,15 +1,36 @@
 *.tab.c
+*.tab.h
 *.yy.c
 *.output
+*.lst
 y.go
 tags
-*.lst
 .vscode/
 
-# binaries
-hoge
-calc
-mini-compiler
+# Generated binaries. Use exact paths: bare names like "goyacc1" would also
+# match the source directory of the same name and hide newly added files.
+/goyacc1/hoge
+/goyacc1/goyacc1
+/goyacc2/hoge
+/goyacc2/goyacc2
+/goyacc2b/hoge
+/goyacc2b/goyacc2
+/goyacc2b/goyacc2b
+/goyacc2c/hoge
+/goyacc2c/goyacc2
+/goyacc2c/goyacc2c
+/goyacc3/calc
+/goyacc3/goyacc3
+/goyacc4/mini-compiler
+/goyacc4/goyacc4
+/goyacc5/prolog-interpreter
+/2020_1/calc
+/2020_1.5/calc
+/2020_2/calc
+
+# build/editor junk
+*.dSYM/
+.serena/
 **/bin/*
 **/obj/*
 **/YaccLexTools*/*

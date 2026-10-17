@@ -24,7 +24,7 @@ program: line
     | program line
     ;
 
-line:  LF { exit(0); }
+line:  LF { exit(0); }  /* a blank line ends the demo */
     | SUBJECT VERB obj LF { printf("result: %d\n", $3 ); }
     ;
 

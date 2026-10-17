@@ -3,11 +3,15 @@ package main
 const (
 	// EOF end of file
 	EOF = -1
-	// UNKNOWN unknown token
-	UNKNOWN = 0 * iota
 )
 
-var keywords = map[string]int{}
+// Token-value contract for the parser:
+//   - Lex() returns 0 or a negative value to mean EOF (goyacc's $end,
+//     stored in yyTok1[0]). It must NEVER return 0 for a real token,
+//     otherwise the parser silently stops as if the input was over.
+// - Any token number returned must be > 0 and must be a token declared
+//   in calc.go.y. Unrecognized characters therefore return ILLEGAL.
+//   - EOF (-1 here) is converted to 0 in Lex().
 
 type token struct {
 	tok int
@@ -44,6 +48,12 @@ func (s *scanner) Scan() (tok int, lit string, pos position) {
 		case '(', ')', ';', '+', '-', '*', '/', '%', '=':
 			tok = int(ch)
 			lit = string(ch)
+		default:
+			// illegal character: report ILLEGAL (>0) so the parser
+			// fails with a syntax error instead of silently
+			// treating it as end-of-input (tok 0 is EOF for goyacc).
+			tok = ILLEGAL
+			lit = string(ch)
 		}
 		s.next()
 	}
@@ -51,10 +61,6 @@ func (s *scanner) Scan() (tok int, lit string, pos position) {
 }
 
 // ========================================
-
-func isLetter(ch rune) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
 
 func isDigit(ch rune) bool {
 	return '0' <= ch && ch <= '9'
@@ -94,15 +100,6 @@ func (s *scanner) skipWhiteSpace() {
 	for isWhiteSpace(s.peek()) {
 		s.next()
 	}
-}
-
-func (s *scanner) scanIdentifier() string {
-	var ret []rune
-	for isLetter(s.peek()) || isDigit(s.peek()) {
-		ret = append(ret, s.peek())
-		s.next()
-	}
-	return string(ret)
 }
 
 func (s *scanner) scanNumber() string {

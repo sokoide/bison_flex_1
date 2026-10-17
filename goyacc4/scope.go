@@ -6,6 +6,11 @@ type Scope struct {
 	parent    *Scope
 }
 
+// scopeStack is the multi-level scope the interpreter runs in.
+// Lives here (plain Go, not grammar.go.y) so it survives regeneration
+// of grammar.go. Tests reassign it via scopeStack = NewScopeStack().
+var scopeStack = NewScopeStack()
+
 // ScopeStack manages the stack of scopes
 type ScopeStack struct {
 	current *Scope

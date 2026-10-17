@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -36,14 +37,20 @@ func evaluate(expr expression) (int, error) {
 		case '*':
 			return lhsV * rhsV, nil
 		case '/':
+			if rhsV == 0 {
+				return 0, fmt.Errorf("division by zero")
+			}
 			return lhsV / rhsV, nil
 		case '%':
+			if rhsV == 0 {
+				return 0, fmt.Errorf("modulo by zero")
+			}
 			return lhsV % rhsV, nil
 		default:
-			panic("Unknown operator")
+			return 0, fmt.Errorf("unknown operator: %d", e.Operator)
 		}
 	default:
-		panic("Unknown Expression type")
+		return 0, fmt.Errorf("unknown expression type: %T", expr)
 	}
 
 }

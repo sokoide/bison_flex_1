@@ -26,13 +26,13 @@ import(
 %type<terms> term_list
 
 // Tokens
-%token<tok> IDENT NUMBER_LITERAL STRING_LITERAL VAR OP COLON_DASH
+%token<tok> IDENT NUMBER_LITERAL STRING_LITERAL VAR COLON_DASH
 // built-in
 %token<tok> BUILTIN_WRITE BUILTIN_NL
 
-// Operator precedence rules
-%left '+' '-'
-%left '*' '/'
+// NOTE: arithmetic (+ - * /) and comparison operators are not declared
+// here yet; the lexer already produces tokens for some of them, but no
+// grammar rules accept them (see README TODO).
 
 %start input
 

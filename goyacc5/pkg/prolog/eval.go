@@ -18,15 +18,29 @@ func Load(lexer *Lexer) (*Program, error) {
 	// parse builtin program
 	builtinLexer, err := NewLexer("resource/builtin.pro")
 	if err != nil {
-		log.Errorf("failed to load builtin.pro, err: %s", err)
-		return &Program{}, err
+		return &Program{}, fmt.Errorf("failed to open resource/builtin.pro: %w", err)
 	}
+	defer builtinLexer.Close()
 	parseResult := yyNewParser().Parse(builtinLexer)
 	log.Debugf("builtin parseResult: %d", parseResult)
+	if parseResult != 0 || builtinLexer.Err() != nil {
+		parseErr := builtinLexer.Err()
+		if parseErr == nil {
+			parseErr = fmt.Errorf("syntax error (parse result %d)", parseResult)
+		}
+		return &Program{}, fmt.Errorf("failed to parse resource/builtin.pro: %w", parseErr)
+	}
 
 	// parse user program
 	parseResult = yyNewParser().Parse(lexer)
 	log.Debugf("user parseResult: %d", parseResult)
+	if parseResult != 0 || lexer.Err() != nil {
+		parseErr := lexer.Err()
+		if parseErr == nil {
+			parseErr = fmt.Errorf("syntax error (parse result %d)", parseResult)
+		}
+		return &Program{}, fmt.Errorf("failed to parse: %w", parseErr)
+	}
 
 	// combine the 2
 	clauses := append(builtinLexer.program, lexer.program...)
@@ -110,8 +124,8 @@ func predicatesMatch(queryPredicate *compoundTerm, clause clause) bool {
 		return false
 	}
 
-	return queryPredicate.Functor == clausePredicate.Functor && 
-		   len(queryPredicate.Args) == len(clausePredicate.Args)
+	return queryPredicate.Functor == clausePredicate.Functor &&
+		len(queryPredicate.Args) == len(clausePredicate.Args)
 }
 
 func evaluateClause(program *Program, clause clause, query term) []map[string]term {

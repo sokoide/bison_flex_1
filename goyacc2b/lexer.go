@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type lexer struct {
@@ -31,7 +32,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 		case '0' <= c && c <= '9':
 			// left value is a number
 			lval.val = l.getNumber()
-			recentToken = string(lval.val)
+			recentToken = strconv.Itoa(lval.val)
 			return NUMBER
 		case 'a' <= c && c <= 'z':
 			lval.ident = l.getString()
@@ -49,8 +50,7 @@ func (l *lexer) Lex(lval *yySymType) int {
 
 // Error Called by goyacc
 func (l *lexer) Error(e string) {
-	fmt.Printf("error: %s, at token: %s", e, recentToken)
-
+	fmt.Printf("error: %s, at token: %s\n", e, recentToken)
 }
 
 func (l *lexer) getNumber() int {

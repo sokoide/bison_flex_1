@@ -12,7 +12,7 @@ lex.yy.c: calc.l
 	flex calc.l
 
 clean:
-	rm $(TARGET) *.tab.c lex.yy.c
+	rm -f $(TARGET) *.tab.c lex.yy.c
 
 run: $(TARGET)
 	$(TARGET)

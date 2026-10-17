@@ -17,10 +17,14 @@ func main() {
 	}
 	scanner.Init(strings.Join(source, "\n"))
 
-	var program expression = parse(scanner)
+	program, err := parse(scanner)
+	if err != nil {
+		log.Fatalf("parse error: %v", err)
+	}
+
 	v, err := evaluate(program)
 	if err != nil {
-		panic(nil)
+		log.Fatalf("eval error: %v", err)
 	}
 	fmt.Println(v)
 }
@@ -30,6 +34,7 @@ type lexer struct {
 	recentLit string
 	recentPos position
 	program   expression
+	err       error
 }
 
 // Lex Called by goyacc
@@ -44,16 +49,24 @@ func (l *lexer) Lex(lval *yySymType) int {
 	return tok
 }
 
-// Error Called by goyacc
+// Error Called by goyacc. Stores the message instead of exiting, so that
+// parse() can return it and the caller decides what to do.
 func (l *lexer) Error(e string) {
-	log.Fatalf("Line %d, Column %d: %q %s",
-		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
+	if l.err == nil {
+		l.err = fmt.Errorf("Line %d, Column %d: %q %s",
+			l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
+	}
 }
 
-func parse(s *scanner) expression {
+func parse(s *scanner) (expression, error) {
 	l := lexer{s: s}
+	yyErrorVerbose = true
 	if yyParse(&l) != 0 {
-		panic("Parse error")
+		err := l.err
+		if err == nil {
+			err = fmt.Errorf("syntax error")
+		}
+		return nil, err
 	}
-	return l.program
+	return l.program, nil
 }

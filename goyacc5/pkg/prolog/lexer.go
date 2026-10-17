@@ -2,6 +2,7 @@ package prolog
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -11,7 +12,7 @@ import (
 )
 
 const (
-	ErrUnexpectedToken = "unexpected token %c(%d)"
+	ErrUnexpectedToken    = "unexpected token %c(%d)"
 	ErrUnterminatedString = "unterminated string literal"
 )
 
@@ -20,6 +21,7 @@ type Lexer struct {
 	ch      rune
 	file    *os.File
 	program []clause
+	err     error
 }
 
 func NewLexer(filename string) (*Lexer, error) {
@@ -44,22 +46,39 @@ func (l *Lexer) Close() error {
 	return nil
 }
 
-// Lex Called by goyacc
+// Lex Called by goyacc. On a tokenize error it records the error in the
+// lexer and returns 0 (EOF) so the parser stops cleanly instead of
+// panicking or calling os.Exit; callers should check Err afterwards.
 func (l *Lexer) Lex(lval *yySymType) int {
 	var id int
 	var err error
 
 	id, lval.tok, err = l.NextToken()
 	if err != nil {
-		panic(err)
+		l.setErr(err)
+		log.Debugf("Lexer: %s", err)
+		return 0
 	}
 	log.Debugf("Lexer: %d %s '%s'", id, tokenTypeToString[lval.tok.Type], lval.tok.Value)
 	return id
 }
 
-// Error Called by goyacc
+// Error Called by goyacc.
 func (l *Lexer) Error(e string) {
-	log.Fatalf("Lexer: Error: %s", e)
+	l.setErr(errors.New(e))
+	log.Debugf("Lexer: Error: %s", e)
+}
+
+// setErr keeps the FIRST error seen while lexing or parsing.
+func (l *Lexer) setErr(err error) {
+	if l.err == nil {
+		l.err = err
+	}
+}
+
+// Err returns the first error seen while lexing or parsing, if any.
+func (l *Lexer) Err() error {
+	return l.err
 }
 
 // ========================================
@@ -100,7 +119,10 @@ func (l *Lexer) readChar() {
 		if err == io.EOF {
 			l.ch = 0
 		} else {
-			panic(err)
+			// record a real read error instead of panicking; Lex() will
+			// report it via Err()
+			l.setErr(err)
+			l.ch = 0
 		}
 	} else {
 		l.ch = ch
@@ -170,6 +192,11 @@ func (l *Lexer) NextToken() (int, token, error) {
 		tok = token{Type: tokenTypeNumberLiteral, Value: l.readNumber()}
 	default:
 		switch l.ch {
+		// NOTE: ',', '.', '[', ']', '|', '(', ')' are used by the grammar.
+		// '+', '-', '*', '/', '=', ';', '{', '}' are tokenized but no
+		// grammar rule accepts them yet (arithmetic, comparison, cut are
+		// still unimplemented; see README TODO). '%' starts a comment and is
+		// consumed by skipComment, so it never reaches here as an operator.
 		case ',', '.', '[', ']', '|', '(', ')', '{', '}', ';', '+', '-', '*', '/', '%', '=':
 			id = int(l.ch)
 			tok = token{Type: tokenTypeOp, Value: string(l.ch)}

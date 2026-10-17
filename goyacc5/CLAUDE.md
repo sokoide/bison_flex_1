@@ -46,6 +46,13 @@ make debug
 2. **Parser Generation**: The `//go:generate goyacc -o grammar.go grammar.go.y` directive in `pkg/prolog/generate.go` handles code generation
 3. **Testing**: Use matching pairs of `test/testN.pro` and `query/queryN.pro` files for testing
 
+
+## Error Handling
+
+- The lexer records tokenize errors (`l.err`) and reports parse errors via `Lexer.Error`; it does not panic or `os.Exit` internally
+- `Lexer.Err()` exposes the first error, and `prolog.Load` fails fast by propagating it (plus the `yyParse` result) to the caller
+- `cmd/prolog-interpreter` exits with a non-zero status (via `log.Fatalf`) whenever `Load` returns an error, for both the program and query files
+
 ## Running the Interpreter
 
 ```bash
@@ -75,3 +82,4 @@ make debug
 - No cut (!) operator
 - Limited built-in predicates (only write/1, writeln/1)
 - Partial list support
+- The lexer produces tokens for `+ - * / =`, but the grammar has no rules accepting them (dead declarations for OP arithmetic/comparison operators were removed from the grammar)

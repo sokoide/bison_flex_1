@@ -19,6 +19,10 @@ import (
 %token<tok> EQOP, NEOP, GEOP, GTOP, LEOP, LTOP
 %token<tok> NUMBER_LITERAL IDENT STRING_LITERAL
 
+// ILLEGAL is returned by the scanner for any character the language does not
+// use. It must NOT be 0 (0 is the EOF token in goyacc's yyTok tables).
+%token ILLEGAL
+
 
 %left '+' '-'
 %left '*' '/' '%'
@@ -133,5 +137,3 @@ expr:
 	;
 
 %%
-// global scope stack
-var scopeStack = NewScopeStack()

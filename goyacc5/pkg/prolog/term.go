@@ -160,7 +160,7 @@ func (l *listTerm) Evaluate(context map[string]term) term {
 	if l.IsEmpty {
 		return l
 	}
-	
+
 	if l.Head != nil && l.Tail != nil {
 		evaluatedHead := make([]term, len(l.Head))
 		for i, h := range l.Head {
@@ -169,7 +169,7 @@ func (l *listTerm) Evaluate(context map[string]term) term {
 		evaluatedTail := l.Tail.Evaluate(context)
 		return &listTerm{Head: evaluatedHead, Tail: evaluatedTail}
 	}
-	
+
 	if l.Args != nil {
 		evaluatedArgs := make([]term, len(l.Args))
 		for i, arg := range l.Args {
@@ -177,7 +177,7 @@ func (l *listTerm) Evaluate(context map[string]term) term {
 		}
 		return &listTerm{Args: evaluatedArgs}
 	}
-	
+
 	return l
 }
 

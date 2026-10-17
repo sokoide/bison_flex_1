@@ -17,7 +17,7 @@ pkg/prolog/grammar.go: pkg/prolog/grammar.go.y
 	go generate ./pkg/prolog/...
 
 clean:
-	rm $(TARGET) pkg/prolog/y.output pkg/prolog/grammar.go
+	rm -f $(TARGET) pkg/prolog/y.output pkg/prolog/grammar.go
 
 run: $(TARGET)
 	$(TARGET)
@@ -26,16 +26,16 @@ test: $(TARGET)
 	go test -v ./...
 
 testparser: $(TARGET)
-	for file in ./test/*.pro; do \
+	set -e; for file in ./test/*.pro; do \
 	echo "* Testing $$file"; \
 	$(TARGET) -logLevel $(LL) $$file; \
 	done
 
 testquery: $(TARGET)
-	num=`ls query/*.pro |wc -l`; \
-	for i in `seq $$num`; do \
-	echo "* Testing query$$i.pro"; \
-	$(TARGET) -logLevel $(LL) ./test/test$$i.pro ./query/query$$i.pro; \
+	set -e; for query in ./query/*.pro; do \
+	name=$${query##*/}; number=$${name#query}; number=$${number%.pro}; \
+	echo "* Testing $$name"; \
+	$(TARGET) -logLevel $(LL) ./test/test$$number.pro $$query; \
 	done
 
 debug: $(TARGET)

@@ -1,12 +1,13 @@
 package main
 
-import "log"
+import "fmt"
 
 type lexer struct {
 	s         *scanner
 	recentLit string
 	recentPos position
 	program   []expression
+	err       error
 }
 
 // Lex Called by goyacc
@@ -21,19 +22,28 @@ func (l *lexer) Lex(lval *yySymType) int {
 	return tok
 }
 
-// Error Called by goyacc
+// Error Called by goyacc. Stores the message instead of exiting, so that
+// parse() can return it and the caller decides what to do.
 func (l *lexer) Error(e string) {
-	log.Fatalf("[Line:%d Column:%d] Lexer error: recentLit:%q err:%s",
-		l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
+	if l.err == nil {
+		l.err = fmt.Errorf("[Line:%d Column:%d] Lexer error: recentLit:%q err:%s",
+			l.recentPos.Line, l.recentPos.Column, l.recentLit, e)
+	}
 }
 
 // ========================================
 const (
 	// EOF end of file
 	EOF = -1
-	// UNKNOWN unknown token
-	UNKNOWN = 0 * iota
 )
+
+// Token-value contract for the parser:
+//   - Lex() returns 0 or a negative value to mean EOF (goyacc's $end,
+//     stored in yyTok1[0]). It must NEVER return 0 for a real token,
+//     otherwise the parser silently stops as if the input was over.
+// - Any token number returned must be > 0 and must be a token declared
+//   in grammar.go.y. Unrecognized characters therefore return ILLEGAL.
+//   - EOF (-1 here) is converted to 0 in Lex().
 
 var keywords = map[string]int{
 	"put":   PUT,
@@ -147,9 +157,9 @@ func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
 			tok = keywords[lit]
 			tt = tokenTypeOp
 		} else {
-			tok = UNKNOWN
+			// `!` alone is not part of the language
+			tok = ILLEGAL
 			lit = "!"
-			tt = tokenTypeOp
 		}
 	default:
 		switch ch {
@@ -159,6 +169,12 @@ func (s *scanner) Scan() (tok int, lit string, pos position, tt tokenType) {
 			tok = int(ch)
 			lit = string(ch)
 			tt = tokenTypeOp
+		default:
+			// illegal character: report ILLEGAL (>0) so the parser
+			// fails with a syntax error instead of silently
+			// treating it as end-of-input (tok 0 is EOF for goyacc).
+			tok = ILLEGAL
+			lit = string(ch)
 		}
 		s.next()
 	}

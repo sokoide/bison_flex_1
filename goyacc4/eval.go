@@ -15,7 +15,7 @@ func evaluateStmts(stmts []expression) (int, error) {
 	for line, stmt := range stmts {
 		ret, err = evaluateStmt(stmt)
 		if err != nil {
-			log.Errorf("[line: %d] Parser error: syntax error %v", line, err)
+			log.Errorf("[stmt %d] evaluation error: %v", line, err)
 			return 0, err
 		}
 	}
@@ -49,10 +49,12 @@ func evaluateStmt(stmt expression) (int, error) {
 		return 0, err
 	case *putStatement:
 		for _, expr := range s.Exprs {
-			printExpr(expr)
+			if err := printExpr(expr); err != nil {
+				return 0, err
+			}
 		}
 		fmt.Println()
-		return 0, err
+		return 0, nil
 	case *whileStatement:
 		log.Debug("whileStatement - scope pushed")
 		scopeStack.PushScope()
@@ -85,7 +87,7 @@ func evaluateStmt(stmt expression) (int, error) {
 	}
 }
 
-func printExpr(expr expression) {
+func printExpr(expr expression) error {
 	log.Debugf("printExpr %+v\n", expr)
 
 	var ret int
@@ -99,18 +101,22 @@ func printExpr(expr expression) {
 		if ret, scope = scopeStack.Get(e.Lit); scope != nil {
 			fmt.Printf("%d", ret)
 		} else {
-			log.Errorf("%s doesn't exist", e.Lit)
+			// Same semantics as evaluateExpr: reading an undefined
+			// variable yields 0 (and auto-creates it in the current
+			// scope) instead of failing.
+			scopeStack.Set(e.Lit, 0)
+			fmt.Printf("%d", 0)
 		}
 	case *stringExpression:
 		fmt.Printf("%s", e.Lit)
 	default:
 		ret, err = evaluateExpr(expr)
-		if err == nil {
-			fmt.Printf("%d", ret)
-			return
+		if err != nil {
+			return err
 		}
-		log.Errorf("expr: %v failed to print", expr)
+		fmt.Printf("%d", ret)
 	}
+	return nil
 }
 
 func evaluateExpr(expr expression) (int, error) {
@@ -160,7 +166,7 @@ func evaluateExpr(expr expression) (int, error) {
 			}
 			return lhsV % rhsV, nil
 		default:
-			panic("Unknown operator")
+			return 0, fmt.Errorf("unknown operator: %v", e.Operator)
 		}
 	case *variableExpression:
 		var v int
@@ -168,11 +174,14 @@ func evaluateExpr(expr expression) (int, error) {
 		if v, scope = scopeStack.Get(e.Lit); scope != nil {
 			return v, nil
 		}
+		// Reading an undefined variable yields 0 (and auto-creates it in
+		// the current scope so assignments like `b=b+1;` inside a while
+		// body still work).
 		scopeStack.Set(e.Lit, 0)
-		log.Warnf("err: variable %s not found, 0 assigned", e.Lit)
+		log.Warnf("variable %s not found, 0 assigned", e.Lit)
 		return 0, nil
 	case *stringExpression:
-		return 0, nil
+		return 0, fmt.Errorf("string %q not supported in arithmetic", e.Lit)
 	case *condExpression:
 		lhsV, err := evaluateExpr(e.LHS)
 		if err != nil {
@@ -219,6 +228,6 @@ func evaluateExpr(expr expression) (int, error) {
 			return 0, fmt.Errorf("invalid Operator %v", e.Operator)
 		}
 	default:
-		panic(fmt.Sprintf("Unknown Expression type %s for %+v", reflect.TypeOf(e), e))
+		return 0, fmt.Errorf("unknown expression type %s for %+v", reflect.TypeOf(e), e)
 	}
 }
